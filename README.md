@@ -1,6 +1,6 @@
 # svelte-knobby
 
-Add knobs to your Svelte apps.
+Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a45a8bf72d2401ba)
 
 ```svelte
 <script>
