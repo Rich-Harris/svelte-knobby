@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import { onDestroy } from 'svelte';
 import Knobby from './Knobby.svelte';
 import Group from './Group.svelte';
@@ -26,41 +26,46 @@ function remove(array, item) {
 }
 
 function update() {
-	knobby.$set(root);
-}
-
-function create_knob(component, label, initial, options) {
-	return {
-		component,
-		label,
-		options,
-		store: writable(initial)
-	};
-}
-
-function add_knob(knob) {
 	if (typeof document === 'undefined') return;
 
 	if (!knobby) {
 		knobby = new Knobby({ target: document.body });
 	}
 
-	const { knobs } = current;
-
-	knobs.push(knob);
-	update();
-
-	onDestroy(() => {
-		remove(knobs, knob);
-		update();
-	});
+	knobby.$set(root);
 }
 
 function knobber(component) {
 	return function (label, initial, options) {
-		const knob = create_knob(component, label, initial, options);
-		add_knob(knob);
-		return knob.store;
+		const { knobs } = current;
+
+		// create separate public/private stores so we can
+		// track subscriptions to the public store for
+		// lifecycle management
+		const private_store = writable(initial);
+
+		const public_store = readable(initial, (set) => {
+			const unsubscribe = private_store.subscribe(set);
+
+			knobs.push(knob);
+			update();
+
+			return () => {
+				unsubscribe();
+
+				remove(knobs, knob);
+				update();
+			};
+		});
+
+		const knob = {
+			component,
+			label,
+			options,
+			store: private_store
+		};
+
+		return public_store;
 	};
 }
 
@@ -81,11 +86,30 @@ export const text = knobber(Text);
  * @param {() => void} action
  */
 export function action(label, action) {
-	add_knob({
+	const { knobs } = current;
+
+	const knob = {
 		component: Action,
 		label,
 		action
-	});
+	};
+
+	knobs.push(knob);
+	update();
+
+	const destroy = () => {
+		remove(knobs, knob);
+		update();
+	};
+
+	try {
+		onDestroy(destroy);
+	} catch (e) {
+		// action was created outside component lifecycle,
+		// we can't auto-destroy
+	}
+
+	return destroy;
 }
 
 const groups = new Map();
@@ -105,8 +129,7 @@ export function group(label) {
 
 		groups.set(label, group);
 
-		current = root;
-		add_knob(group);
+		root.knobs.push(group);
 	}
 
 	current = groups.get(label);

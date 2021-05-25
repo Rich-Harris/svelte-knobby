@@ -14,7 +14,7 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 
 ## Knobs
 
-The following functions add a control to the control panel and return a [store](https://svelte.dev/tutorial/writable-stores):
+The following functions create a [readable store](https://svelte.dev/tutorial/readable-stores):
 
 ```js
 const text = knobby.text('my text control', 'text');
@@ -23,13 +23,13 @@ const color = knobby.color('my color control', '#ff3e00');
 const number = knobby.range('my range control', 50, { min: 0, max: 100, step: 1 });
 ```
 
-You can also add an _action_, which adds a button to the control panel but does not create a store:
+Controls are added to the control panel when their stores are subscribed to, and removed when there are no more subscribers.
+
+You can also add an _action_, which adds a button to the control panel but does not create a store. If created inside a component's initialisation block it will be destroyed along with the component, otherwise you must manually call the returned `destroy` function:
 
 ```js
-knobby.action('say hello', () => alert('hello!'));
+const destroy = knobby.action('say hello', () => alert('hello!'));
 ```
-
-All controls are associated with a component, and must be created when the component is first initialised.
 
 ## Groups
 
