@@ -8,8 +8,8 @@
 	<h1>{label}</h1>
 
 	<div class="group">
-		{#each knobs as knob}
-			<svelte:component this={knob.component} {...knob}/>
+		{#each knobs as { component, ...knob }}
+			<svelte:component this={component} {...knob}/>
 		{/each}
 	</div>
 </section>

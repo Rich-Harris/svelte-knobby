@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.0.4
+
+- Prevent unknown prop warnings
+
 ## 0.0.3
 
 - Better lifecycle management
