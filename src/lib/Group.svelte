@@ -1,10 +1,11 @@
 <script>
 	export let label;
+	export let open;
 	export let knobs;
 
 </script>
 
-<details open>
+<details {open}>
 	<summary>{label}</summary>
 
 	<div class="group">

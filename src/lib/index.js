@@ -115,15 +115,15 @@ export function action(label, action) {
 const groups = new Map();
 
 /**
- *
  * @param {string} label
- * @returns
+ * @param {boolean} [open]
  */
-export function group(label) {
+export function group(label, open = true) {
 	if (!groups.has(label)) {
 		const group = {
 			component: Group,
 			label,
+			open,
 			knobs: []
 		};
 

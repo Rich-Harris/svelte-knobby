@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.0.6 (unreleased)
+
+- Set open state of groups on creation
+
 ## 0.0.5
 
 - Make folders collapsible
