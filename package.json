@@ -8,6 +8,8 @@
 		"lint": "prettier --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
 		"format": "prettier --write --plugin-search-dir=. .",
 		"package": "svelte-kit package",
+		"release": "npm run package && npm publish package",
+		"postversion": "git push && git push --tags",
 		"prepublishOnly": "echo \"Did you mean to run 'svelte-kit package && npm publish package'?\" && exit 1"
 	},
 	"devDependencies": {
