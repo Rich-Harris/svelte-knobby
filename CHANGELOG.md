@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.0.7
+
+- Hide empty groups
+
 ## 0.0.6
 
 - Set open state of groups on creation

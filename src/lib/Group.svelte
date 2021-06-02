@@ -5,15 +5,17 @@
 
 </script>
 
-<details {open}>
-	<summary>{label}</summary>
+{#if knobs.length > 0}
+	<details {open}>
+		<summary>{label}</summary>
 
-	<div class="group">
-		{#each knobs as { component, ...knob }}
-			<svelte:component this={component} {...knob}/>
-		{/each}
-	</div>
-</details>
+		<div class="group">
+			{#each knobs as { component, ...knob }}
+				<svelte:component this={component} {...knob}/>
+			{/each}
+		</div>
+	</details>
+{/if}
 
 <style>
 	summary {
