@@ -10,14 +10,14 @@
 
 <style>
 	button {
-		width: 100%;
+		width: calc(100% - 0.5rem);
 		border-radius: 16px;
 		background: var(--bg);
 		box-shadow: 5px 5px 5px var(--dark), -5px -5px 5px var(--light);
 		border: 1px solid var(--dark);
 		border-radius: var(--border-radius);
 		font: inherit;
-		margin: 0.5rem 0;
+		margin: 0.5rem 0 0.5rem 0.5rem;
 		padding: 0.25rem 0.5rem;
 	}
 

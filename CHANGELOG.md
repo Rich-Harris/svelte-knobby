@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.0.8
+
+- Tweak button style
+
 ## 0.0.7
 
 - Hide empty groups
