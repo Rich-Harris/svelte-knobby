@@ -5,9 +5,10 @@ import Group from './Group.svelte';
 import Action from './knobs/Action.svelte';
 import Checkbox from './knobs/Checkbox.svelte';
 import Color from './knobs/Color.svelte';
-import Range from './knobs/Range.svelte';
-import Text from './knobs/Text.svelte';
 import Radio from './knobs/Radio.svelte';
+import Range from './knobs/Range.svelte';
+import Select from './knobs/Select.svelte';
+import Text from './knobs/Text.svelte';
 
 let knobby;
 
@@ -76,14 +77,17 @@ export const checkbox = knobber(Checkbox);
 /** @type {import('./types').Knobber<string>} */
 export const color = knobber(Color);
 
+/** @type {import('./types').Knobber<string, { options?: array }>} */
+export const radio = knobber(Radio);
+
 /** @type {import('./types').Knobber<number, { min?: number, max?: number, step?: number }>} */
 export const range = knobber(Range);
 
 /** @type {import('./types').Knobber<string>} */
 export const text = knobber(Text);
 
-/** @type {import('./types').Knobber<string, { options?: array }>} */
-export const radio = knobber(Radio);
+/** @type {import('./types').Knobber<string, { options: array}>} */
+export const select = knobber(Select);
 
 /**
  * @param {string} label
