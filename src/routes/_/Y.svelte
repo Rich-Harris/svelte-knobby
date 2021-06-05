@@ -8,6 +8,9 @@
 
 	const bg = knobby.color('background', '#557899');
 	const fg = knobby.color('foreground', '#ccee33');
+
+	const e = knobby.select('e', 'a', { options: ['a','b','c','d']});
+
 </script>
 
 <div class="y" style="--bg: {$bg}; --fg: {$fg}">
@@ -15,6 +18,8 @@
 
 	<p>c: {$c}</p>
 	<p>d: {$d}</p>
+	<p>e: {$e}</p>
+
 </div>
 
 <style>
