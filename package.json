@@ -1,6 +1,7 @@
 {
-	"name": "svelte-knobby",
-	"version": "0.0.8",
+	"name": "svelte-knobby-wolfr",
+	"description": "based on svelte-knobby 0.0.8",
+	"version": "0.0.1",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
