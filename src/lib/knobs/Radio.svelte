@@ -9,10 +9,10 @@
 
 <Knob {label}>
 
-	{#each options.options as item, i}
+	{#each options.options as option}
 		<label>
-			<input id={item} type="radio" bind:group={$store} value={item} />
-			{item}
+			<input id={option} type="radio" bind:group={$store} value={option} />
+			{option}
 		</label>
 	{/each}
 
