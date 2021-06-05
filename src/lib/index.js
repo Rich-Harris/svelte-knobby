@@ -82,7 +82,7 @@ export const range = knobber(Range);
 /** @type {import('./types').Knobber<string>} */
 export const text = knobber(Text);
 
-/** @type {import('./types').Knobber<string, { groupName?: string, radioOptions?: array }>} */
+/** @type {import('./types').Knobber<string, { radioOptions?: array }>} */
 export const radio = knobber(Radio);
 
 /**

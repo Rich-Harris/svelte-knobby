@@ -9,7 +9,7 @@
 	const bg = knobby.color('background', '#DCFF7A');
 	const fg = knobby.color('foreground', '#5000C7');
 
-	const c = knobby.radio('style', 'one', { groupName: 'style', radioOptions: [ 'one', 'two', 'three' ]} );
+	const c = knobby.radio('style', 'one', { options: [ 'one', 'two', 'three' ]} );
 
 </script>
 
