@@ -8,6 +8,9 @@
 
 	const bg = knobby.color('background', '#DCFF7A');
 	const fg = knobby.color('foreground', '#5000C7');
+
+	const c = knobby.radio('style', 'one', { groupName: 'style', radioOptions: [ 'one', 'two', 'three' ]} );
+
 </script>
 
 <div class="x" style="--bg: {$bg}; --fg: {$fg}">
@@ -15,6 +18,9 @@
 
 	<p>a: {$a}</p>
 	<p>b: {$b}</p>
+
+	<p>c: {$c}</p>
+
 </div>
 
 <style>

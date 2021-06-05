@@ -7,6 +7,7 @@ import Checkbox from './knobs/Checkbox.svelte';
 import Color from './knobs/Color.svelte';
 import Range from './knobs/Range.svelte';
 import Text from './knobs/Text.svelte';
+import Radio from './knobs/Radio.svelte';
 
 let knobby;
 
@@ -80,6 +81,9 @@ export const range = knobber(Range);
 
 /** @type {import('./types').Knobber<string>} */
 export const text = knobber(Text);
+
+/** @type {import('./types').Knobber<string, { groupName?: string, radioOptions?: array }>} */
+export const radio = knobber(Radio);
 
 /**
  * @param {string} label
