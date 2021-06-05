@@ -1,3 +1,5 @@
+**Note: in this fork of svelte-knobby, I added a select, radio button and the ability to drag your window around** 
+
 # svelte-knobby
 
 Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a45a8bf72d2401ba)
@@ -21,6 +23,8 @@ const text = knobby.text('my text control', 'text');
 const checked = knobby.checkbox('my checkbox control', true);
 const color = knobby.color('my color control', '#ff3e00');
 const number = knobby.range('my range control', 50, { min: 0, max: 100, step: 1 });
+const radio = knobby.radio('my radio control', 'one', { options: ['one','two','three'] });
+const select = knobby.select('my select control', 'a', { options: ['a','b','c'] });
 ```
 
 Controls are added to the control panel when their stores are subscribed to, and removed when there are no more subscribers.
