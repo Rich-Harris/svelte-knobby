@@ -5,4 +5,15 @@
 	export let step = undefined;
 </script>
 
-<input type="range" bind:value {min} {max} {step}>
+<div>
+	<input type="range" bind:value {min} {max} {step}>
+	<input type="number" bind:value {min} {max} {step}>
+</div>
+
+<style>
+	div {
+		display: grid;
+		grid-template-columns: 1fr 4em;
+		grid-gap: var(--gap);
+	}
+</style>

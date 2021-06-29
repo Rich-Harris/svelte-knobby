@@ -46,6 +46,7 @@ function interpret(state) {
 		};
 	}
 
+	// TODO proper support for user-supplied components
 	if (state.component) {
 		return { ...state };
 	}

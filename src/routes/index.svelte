@@ -7,7 +7,16 @@
 		text: 'Hello world!',
 		show_x: true,
 		show_y: false,
-		alert: value => alert(value.text)
+		alert: value => alert(value.text),
+		nested: {
+			foo: 1,
+			bar: 2,
+			baz: {
+				a: 1,
+				b: 2,
+				c: '#ff0000'
+			}
+		}
 	});
 </script>
 

@@ -10,4 +10,17 @@
 	});
 </script>
 
-<Items bind:children={$store.children}/>
+<div class="root">
+	<Items bind:children={$store.children}/>
+</div>
+
+<style>
+	.root {
+		padding: 0.5em 0;
+		border-bottom: 1px solid var(--dark);
+	}
+
+	.root:last-child {
+		border: none;
+	}
+</style>

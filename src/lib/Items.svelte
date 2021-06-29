@@ -10,19 +10,17 @@
 
 <div>
 	{#each Object.entries(children) as [name, state]}
-		{#if (state.$visible ? run(state.$visible) : true)}
-			{#if state.component}
-				<div class="item">
-					<span>{name}</span>
-					<div>
-						<svelte:component this={state.component} bind:value={children[name].value} {...get_opts(state)}/>
-					</div>
+		{#if state.component}
+			<div class="item">
+				<span>{name}</span>
+				<div>
+					<svelte:component this={state.component} bind:value={children[name].value} {...get_opts(state)}/>
 				</div>
-			{:else if state.children}
-				<Folder bind:children={children[name].children}/>
-			{:else}
-				<button on:click={() => run(state.value)}>{name}</button>
-			{/if}
+			</div>
+		{:else if state.children}
+			<Folder {name} bind:children={children[name].children}/>
+		{:else}
+			<button on:click={() => run(state.value)}>{name}</button>
 		{/if}
 	{/each}
 </div>
@@ -31,8 +29,30 @@
 	.item {
 		display: grid;
 		grid-template-columns: 1fr 200px;
-		grid-gap: 0.5em;
+		grid-gap: var(--gap);
 		align-items: center;
-		min-height: 2em;
+		min-height: 2rem;
+		margin: 0 0 0.2rem 0;
+	}
+
+	.item div {
+		display: flex;
+		height: 100%;
+	}
+
+	button {
+		width: 100%;
+		border-radius: 16px;
+		background: var(--bg);
+		box-shadow: 5px 5px 5px var(--dark), -5px -5px 5px var(--light);
+		border: 1px solid var(--dark);
+		border-radius: var(--border-radius);
+		font: inherit;
+		margin: 0.5rem 0 0.5rem 0;
+		padding: 0.25rem 0.5rem;
+	}
+
+	button:active {
+		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
 	}
 </style>
