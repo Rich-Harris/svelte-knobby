@@ -39,7 +39,7 @@
 	$values.message = 'Hello Knobby!';
 </script>
 
-<h1>{$values.message}</h1>
+<h1 style="color: {$values.color}">{$values.message}</h1>
 <button on:click={() => $values.clicks += 1}>
 	clicks: {$values.clicks}
 </button>

@@ -1,8 +1,12 @@
 # svelte-knobby changelog
 
+## 0.1.1
+
+- Fix some bugs
+
 ## 0.1.0
 
-* Overhaul API
+- Overhaul API
 
 ## 0.0.8
 
