@@ -35,7 +35,7 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
       b: 2,
       nested: {
         c: 3, // accessed as $values.group.nested.c
-        4: 4
+        d: 4
       }
     }
   });

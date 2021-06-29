@@ -1,12 +1,16 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
-	import { extract } from './utils.js';
+	import { extract, merge } from './utils.js';
 
 	export let store;
 
 	setContext('knobby', {
-		run: fn => fn(extract($store))
+		run: fn => fn(extract($store)),
+		set: values => {
+			const merged = merge($store, values);
+			store.set(merged);
+		}
 	});
 </script>
 

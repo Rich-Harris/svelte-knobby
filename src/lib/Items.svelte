@@ -5,7 +5,7 @@
 
 	export let children;
 
-	const { run } = getContext('knobby');
+	const { run, set } = getContext('knobby');
 </script>
 
 <div>
@@ -20,7 +20,10 @@
 		{:else if state.children}
 			<Folder {name} bind:children={children[name].children}/>
 		{:else}
-			<button on:click={() => run(state.value)}>{name}</button>
+			<button on:click={() => {
+				const new_value = run(state.value);
+				if (new_value) set(new_value);
+			}}>{name}</button>
 		{/if}
 	{/each}
 </div>

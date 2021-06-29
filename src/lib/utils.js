@@ -15,3 +15,22 @@ export function extract(state) {
 
 	return state.value;
 }
+
+export function merge(state, value) {
+	if (state.children) {
+		const new_state = {
+			children: {}
+		};
+
+		for (const key in state.children) {
+			new_state.children[key] = merge(state.children[key], value[key]);
+		}
+
+		return new_state;
+	}
+
+	return {
+		...state,
+		value
+	};
+}

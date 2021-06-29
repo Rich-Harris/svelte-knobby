@@ -6,7 +6,7 @@ import String from './components/String.svelte';
 import Color from './components/Color.svelte';
 import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
-import { extract } from './utils';
+import { extract, merge } from './utils';
 
 function interpret(state) {
 	// TODO make this a list that users can add to
@@ -73,21 +73,6 @@ function interpret(state) {
 	return interpreted;
 }
 
-function merge(state, value) {
-	if (state.component === Folder) {
-		const new_state = {};
-		for (const key in state.value) {
-			new_state[key] = merge(state.value[key], value[key]);
-		}
-		return new_state;
-	}
-
-	return {
-		...state,
-		value
-	};
-}
-
 let controls;
 const stores = [];
 
@@ -139,6 +124,7 @@ export function knobby(initial) {
 		// changes to the public store need to be reflected in
 		// the private store
 		updating = true;
+		public_store.set(values);
 		private_store.update(state => merge(state, values));
 		updating = false;
 	}
