@@ -1,4 +1,3 @@
-import Folder from './components/Folder.svelte';
 import Number from './components/Number.svelte';
 import Range from './components/Range.svelte';
 import Boolean from './components/Boolean.svelte';
