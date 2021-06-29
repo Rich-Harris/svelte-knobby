@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.0
+
+* Overhaul API
+
 ## 0.0.8
 
 - Tweak button style
