@@ -1,20 +1,23 @@
 <script>
-	import * as knobby from '$lib';
+	import { knobby } from '$lib';
 
-	knobby.group('x');
-
-	const a = knobby.range('a', 1, { min: 0, max: 5 });
-	const b = knobby.checkbox('b', true);
-
-	const bg = knobby.color('background', '#DCFF7A');
-	const fg = knobby.color('foreground', '#5000C7');
+	const opts = knobby({
+		a: {
+			value: 1,
+			min: 0,
+			max: 5
+		},
+		b: true,
+		bg: '#DCFF7A',
+		fg: '#5000C7'
+	});
 </script>
 
-<div class="x" style="--bg: {$bg}; --fg: {$fg}">
+<div class="x" style="--bg: {$opts.bg}; --fg: {$opts.fg}">
 	<h2>X</h2>
 
-	<p>a: {$a}</p>
-	<p>b: {$b}</p>
+	<p>a: {$opts.a}</p>
+	<p>b: {$opts.b}</p>
 </div>
 
 <style>

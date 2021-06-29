@@ -1,11 +1,12 @@
 <script>
-	export let knobs = [];
+	import Root from './Root.svelte';
 
+	export let stores = [];
 </script>
 
 <div class="knobby">
-	{#each knobs as { component, ...knob }}
-		<svelte:component this={component} {...knob} />
+	{#each stores as store}
+		<Root {store}/>
 	{/each}
 </div>
 
