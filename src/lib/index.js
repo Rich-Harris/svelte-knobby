@@ -1,140 +1,153 @@
-import { readable, writable } from 'svelte/store';
-import { onDestroy } from 'svelte';
+import Folder from './components/Folder.svelte';
+import Number from './components/Number.svelte';
+import Range from './components/Range.svelte';
+import Boolean from './components/Boolean.svelte';
+import String from './components/String.svelte';
+import Color from './components/Color.svelte';
 import Knobby from './Knobby.svelte';
-import Group from './Group.svelte';
-import Action from './knobs/Action.svelte';
-import Checkbox from './knobs/Checkbox.svelte';
-import Color from './knobs/Color.svelte';
-import Range from './knobs/Range.svelte';
-import Text from './knobs/Text.svelte';
+import { writable } from 'svelte/store';
+import { extract } from './utils';
 
-let knobby;
+function interpret(state) {
+	// TODO make this a list that users can add to
 
-const root = {
-	knobs: []
-};
+	if (typeof state === 'number') {
+		return {
+			component: Number,
+			value: state
+		};
+	}
 
-let current = root;
+	if (typeof state === 'boolean') {
+		return {
+			component: Boolean,
+			value: state
+		};
+	}
 
-function remove(array, item) {
-	let i = array.length;
-	while (i--) {
-		if (array[i] === item) {
-			array.splice(i, 1);
+	if (typeof state === 'string') {
+		if (/^#[a-fA-F0-9]{6}$/.test(state)) {
+			return {
+				component: Color,
+				value: state
+			};
+		}
+
+		return {
+			component: String,
+			value: state
+		};
+	}
+
+	if (typeof state === 'function') {
+		return {
+			// component: Button,
+			value: state
+		};
+	}
+
+	// TODO proper support for user-supplied components
+	if (state.component) {
+		return { ...state };
+	}
+
+	if (typeof state.value === 'number') {
+		if ('min' in state && 'max' in state) {
+			return {
+				...state,
+				component: Range
+			};
 		}
 	}
+
+	// TODO { value: number, min: number, max: number } etc
+
+	const interpreted = {
+		children: {}
+	};
+
+	for (const key in state) {
+		interpreted.children[key] = interpret(state[key]);
+	}
+
+	return interpreted;
 }
+
+function merge(state, value) {
+	if (state.component === Folder) {
+		const new_state = {};
+		for (const key in state.value) {
+			new_state[key] = merge(state.value[key], value[key]);
+		}
+		return new_state;
+	}
+
+	return {
+		...state,
+		value
+	};
+}
+
+let controls;
+const stores = [];
 
 function update() {
 	if (typeof document === 'undefined') return;
 
-	if (!knobby) {
-		knobby = new Knobby({ target: document.body });
+	if (!controls) {
+		controls = new Knobby({ target: document.body });
 	}
 
-	knobby.$set(root);
+	controls.$set({ stores });
 }
 
-function knobber(component) {
-	return function (label, initial, options) {
-		const { knobs } = current;
+export function knobby(initial) {
+	const children = {};
+	for (const key in initial) {
+		children[key] = interpret(initial[key]);
+	}
 
-		// create separate public/private stores so we can
-		// track subscriptions to the public store for
-		// lifecycle management
-		const private_store = writable(initial);
+	const state = {
+		children
+	};
 
-		const public_store = readable(initial, (set) => {
-			const unsubscribe = private_store.subscribe(set);
+	let values = extract(state);
 
-			knobs.push(knob);
-			update();
+	const private_store = writable(state);
 
-			return () => {
-				unsubscribe();
+	const public_store = writable(extract(state), (set) => {
+		// add to the UI
+		// TODO would be good if order was preserved when re-adding later
+		stores.push(private_store);
+		update();
 
-				remove(knobs, knob);
-				update();
-			};
+		private_store.subscribe(state => {
+			if (updating) return;
+			set(values = extract(state));
 		});
 
-		const knob = {
-			component,
-			label,
-			options,
-			store: private_store
+		return () => {
+			const index = stores.indexOf(private_store);
+			if (index !== -1) stores.splice(index, 1);
+			update();
 		};
+	});
 
-		return public_store;
-	};
-}
+	let updating = false;
 
-/** @type {import('./types').Knobber<boolean>} */
-export const checkbox = knobber(Checkbox);
-
-/** @type {import('./types').Knobber<string>} */
-export const color = knobber(Color);
-
-/** @type {import('./types').Knobber<number, { min?: number, max?: number, step?: number }>} */
-export const range = knobber(Range);
-
-/** @type {import('./types').Knobber<string>} */
-export const text = knobber(Text);
-
-/**
- * @param {string} label
- * @param {() => void} action
- */
-export function action(label, action) {
-	const { knobs } = current;
-
-	const knob = {
-		component: Action,
-		label,
-		action
-	};
-
-	knobs.push(knob);
-	update();
-
-	const destroy = () => {
-		remove(knobs, knob);
-		update();
-	};
-
-	try {
-		onDestroy(destroy);
-	} catch (e) {
-		// action was created outside component lifecycle,
-		// we can't auto-destroy
+	function set(values) {
+		// changes to the public store need to be reflected in
+		// the private store
+		updating = true;
+		private_store.update(state => merge(state, values));
+		updating = false;
 	}
 
-	return destroy;
-}
-
-const groups = new Map();
-
-/**
- * @param {string} label
- * @param {boolean} [open]
- */
-export function group(label, open = true) {
-	if (!groups.has(label)) {
-		const group = {
-			component: Group,
-			label,
-			open,
-			knobs: []
-		};
-
-		groups.set(label, group);
-
-		root.knobs.push(group);
+	return {
+		subscribe: public_store.subscribe,
+		update: (fn) => {
+			set(values = fn(values))
+		},
+		set
 	}
-
-	current = groups.get(label);
-}
-
-export function ungroup() {
-	current = root;
 }

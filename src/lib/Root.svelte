@@ -1,0 +1,26 @@
+<script>
+	import { setContext } from 'svelte';
+	import Items from './Items.svelte';
+	import { extract } from './utils.js';
+
+	export let store;
+
+	setContext('knobby', {
+		run: fn => fn(extract($store))
+	});
+</script>
+
+<div class="root">
+	<Items bind:children={$store.children}/>
+</div>
+
+<style>
+	.root {
+		padding: 0.5em 0;
+		border-bottom: 1px solid var(--dark);
+	}
+
+	.root:last-child {
+		border: none;
+	}
+</style>
