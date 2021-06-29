@@ -1,7 +1,7 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
-	import { get_opts } from './utils.js';
+	import { extract } from './utils.js';
 
 	export let store;
 
@@ -10,4 +10,4 @@
 	});
 </script>
 
-<svelte:component this={$store.component} bind:value={$store.value} {...get_opts($store)}/>
+<Items bind:children={$store.children}/>

@@ -6,6 +6,7 @@ import String from './components/String.svelte';
 import Color from './components/Color.svelte';
 import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
+import { extract } from './utils';
 
 function interpret(state) {
 	// TODO make this a list that users can add to
@@ -61,28 +62,14 @@ function interpret(state) {
 	// TODO { value: number, min: number, max: number } etc
 
 	const interpreted = {
-		component: Folder,
-		value: {}
+		children: {}
 	};
 
 	for (const key in state) {
-		interpreted[key] = interpret(state[key]);
+		interpreted.children[key] = interpret(state[key]);
 	}
 
 	return interpreted;
-}
-
-/** @param {import('./types').State} state */
-function extract(state) {
-	if (state.component === Folder) {
-		const value = {};
-		for (const key in state.value) {
-			value[key] = extract(state.value[key]);
-		}
-		return value;
-	}
-
-	return state.value;
 }
 
 function merge(state, value) {
@@ -114,14 +101,13 @@ function update() {
 }
 
 export function knobby(initial) {
-	const value = {};
+	const children = {};
 	for (const key in initial) {
-		value[key] = interpret(initial[key]);
+		children[key] = interpret(initial[key]);
 	}
 
 	const state = {
-		component: Folder,
-		value
+		children
 	};
 
 	let values = extract(state);
@@ -148,7 +134,7 @@ export function knobby(initial) {
 
 	let updating = false;
 
-	function set(value) {
+	function set(values) {
 		// changes to the public store need to be reflected in
 		// the private store
 		updating = true;

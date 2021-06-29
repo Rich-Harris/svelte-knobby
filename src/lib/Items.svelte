@@ -1,25 +1,25 @@
 <script>
 	import { getContext } from 'svelte';
 	import Folder from './components/Folder.svelte';
-	import { get_opts } from '../utils.js';
+	import { get_opts } from './utils.js';
 
-	export let value;
+	export let children;
 
 	const { run } = getContext('knobby');
 </script>
 
 <div>
-	{#each Object.entries(value) as [name, state]}
+	{#each Object.entries(children) as [name, state]}
 		{#if (state.$visible ? run(state.$visible) : true)}
 			{#if state.component}
 				<div class="item">
 					<span>{name}</span>
 					<div>
-						<svelte:component this={state.component} bind:value={value[name].value} {...get_opts(state)}/>
+						<svelte:component this={state.component} bind:value={children[name].value} {...get_opts(state)}/>
 					</div>
 				</div>
 			{:else if state.children}
-				<Folder bind:children={value[name].children}/>
+				<Folder bind:children={children[name].children}/>
 			{:else}
 				<button on:click={() => run(state.value)}>{name}</button>
 			{/if}
