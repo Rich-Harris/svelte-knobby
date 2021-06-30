@@ -1,13 +1,104 @@
 <script>
 	import Root from './Root.svelte';
+	import Chevron from './Chevron.svelte';
+	import { slide } from 'svelte/transition';
 
 	export let stores = [];
+
+	/** @type {HTMLElement} */
+	let knobby;
+
+	let top = 16;
+	let right = 16;
+	let bottom = null;
+	let left = null;
+	let transform = 'translate(0, 0)';
+
+	let visible = true;
+
+	$: vertical = (top === null ? `bottom: ${bottom}px` : `top: ${top}px`);
+	$: horizontal = (left === null ? `right: ${right}px` : `left: ${left}px`);
+
+	function clamp(n, a, b) {
+		return Math.max(a, Math.min(b, n));
+	}
+
+	function drag(e) {
+		if (!e.isPrimary) return;
+
+		const { clientX: x, clientY: y, pointerId } = e;
+		const bcr = knobby.getBoundingClientRect();
+
+		const range = {
+			left: -bcr.left,
+			right: window.innerWidth - bcr.right,
+			bottom: window.innerHeight - bcr.bottom,
+			top: -bcr.top
+		};
+
+		function move(e) {
+			if (e.pointerId !== pointerId) return;
+
+			const dx = Math.round(clamp(e.clientX - x, range.left, range.right));
+			const dy = Math.round(clamp(e.clientY - y, range.top, range.bottom));
+
+			transform = `translate(${dx}px, ${dy}px)`;
+		}
+
+		function up(e) {
+			if (e.pointerId !== pointerId) return;
+
+			const bcr = knobby.getBoundingClientRect();
+
+			if (bcr.left < window.innerWidth - bcr.right) {
+				left = Math.round(bcr.left);
+				right = null;
+			} else {
+				left = null;
+				right = Math.round(window.innerWidth - bcr.right);
+			}
+
+			if (bcr.top < window.innerHeight - bcr.bottom) {
+				top = Math.round(bcr.top);
+				bottom = null;
+			} else {
+				top = null;
+				bottom = Math.round(window.innerHeight - bcr.bottom);
+			}
+
+			transform = 'translate(0, 0)';
+
+			window.removeEventListener('pointermove', move);
+			window.removeEventListener('pointerup', up);
+			window.removeEventListener('pointercancel', up);
+		}
+
+		window.addEventListener('pointermove', move);
+		window.addEventListener('pointerup', up);
+		window.addEventListener('pointercancel', up);
+	}
 </script>
 
-<div class="knobby">
-	{#each stores as store}
-		<Root {store}/>
-	{/each}
+<div bind:this={knobby} class="knobby" style="{vertical}; {horizontal}; transform: {transform}">
+	<div class="title-bar">
+		<button on:click={() => visible = !visible}>
+			<Chevron open={visible}/>
+		</button>
+
+		<div class="drag-bar" on:pointerdown={drag}>
+			<svg role="img" aria-label="drag handle" viewBox="0 0 24 24">
+				<path fill="currentColor" d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
+			</svg>
+		</div>
+	</div>
+
+	{#if visible}
+		<div class="content" transition:slide={{duration:200}}>
+			{#each stores as store}
+				<Root {store}/>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -21,8 +112,6 @@
 
 		position: fixed;
 		z-index: 99999;
-		top: 1rem;
-		right: 1rem;
 		width: 320px;
 		max-height: calc(100% - 2rem);
 		padding: 0 0.5rem;
@@ -34,6 +123,30 @@
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
 		overflow-y: auto;
+	}
+
+	.title-bar {
+		display: grid;
+		grid-template-columns: 2rem 1fr 2rem;
+		grid-gap: 0.5rem;
+		user-select: none;
+		height: 2rem;
+		align-items: center;
+	}
+	.title-bar button {
+		padding: 0;
+		margin: 0;
+		border: none;
+		background: none;
+	}
+
+	.drag-bar svg {
+		opacity: 0.2;
+		transition: opacity 0.2s;
+	}
+
+	.drag-bar:hover svg {
+		opacity: 1;
 	}
 
 	.knobby :global(*) {
