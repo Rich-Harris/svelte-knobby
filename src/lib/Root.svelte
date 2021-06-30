@@ -1,6 +1,7 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
+	import Folder from './components/Folder.svelte';
 	import { extract, merge } from './utils.js';
 
 	export let store;
@@ -15,7 +16,11 @@
 </script>
 
 <div class="root">
-	<Items bind:children={$store.children}/>
+	{#if $store.$label}
+		<Folder name={$store.$label} bind:children={$store.children}/>
+	{:else}
+		<Items bind:children={$store.children}/>
+	{/if}
 </div>
 
 <style>

@@ -91,7 +91,11 @@ export function knobby(initial) {
 	};
 
 	for (const key in initial) {
-		state.children[key] = interpret(initial[key]);
+		if (key.startsWith('$')) {
+			state[key] = initial[key];
+		} else {
+			state.children[key] = interpret(initial[key]);
+		}
 	}
 
 	let values = extract(state);
