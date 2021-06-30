@@ -1,7 +1,7 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
-	// import Folder from './components/Folder.svelte';
+	// import Folder from './knobs/Folder.svelte';
 	import { extract, merge } from './utils.js';
 
 	export let store;

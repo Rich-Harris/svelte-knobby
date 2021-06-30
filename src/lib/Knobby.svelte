@@ -1,6 +1,6 @@
 <script>
 	import Root from './Root.svelte';
-	import Chevron from './Chevron.svelte';
+	import Chevron from './components/Chevron.svelte';
 	import { slide } from 'svelte/transition';
 
 	export let stores = [];
@@ -142,6 +142,7 @@
 	.title-bar button {
 		width: 100%;
 		height: 100%;
+		font-size: var(--size);
 		padding: 0;
 		margin: 0;
 		border: none;

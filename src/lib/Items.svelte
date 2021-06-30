@@ -1,6 +1,6 @@
 <script>
 	import { getContext } from 'svelte';
-	import Folder from './components/Folder.svelte';
+	import Folder from './knobs/Folder.svelte';
 	import { get_opts } from './utils.js';
 
 	export let children;

@@ -1,8 +1,8 @@
-import Number from './components/Number.svelte';
-import Range from './components/Range.svelte';
-import Boolean from './components/Boolean.svelte';
-import String from './components/String.svelte';
-import Color from './components/Color.svelte';
+import Number from './knobs/Number.svelte';
+import Range from './knobs/Range.svelte';
+import Boolean from './knobs/Boolean.svelte';
+import String from './knobs/String.svelte';
+import Color from './knobs/Color.svelte';
 import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
 import { extract, merge } from './utils';
@@ -108,9 +108,9 @@ export function knobby(initial) {
 		stores.push(private_store);
 		update();
 
-		private_store.subscribe(state => {
+		private_store.subscribe((state) => {
 			if (updating) return;
-			set(values = extract(state));
+			set((values = extract(state)));
 		});
 
 		return () => {
@@ -127,15 +127,15 @@ export function knobby(initial) {
 		// the private store
 		updating = true;
 		public_store.set(values);
-		private_store.update(state => merge(state, values));
+		private_store.update((state) => merge(state, values));
 		updating = false;
 	}
 
 	return {
 		subscribe: public_store.subscribe,
 		update: (fn) => {
-			set(values = fn(values))
+			set((values = fn(values)));
 		},
 		set
-	}
+	};
 }
