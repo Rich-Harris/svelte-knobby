@@ -114,7 +114,6 @@
 		z-index: 99999;
 		width: 320px;
 		max-height: calc(100% - 2rem);
-		padding: 0 0.5rem;
 		background-color: var(--bg);
 		color: var(--fg);
 		border-radius: var(--border-radius);
@@ -125,19 +124,39 @@
 		overflow-y: auto;
 	}
 
+	svg {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
 	.title-bar {
+		--size: 1.6rem;
 		display: grid;
-		grid-template-columns: 2rem 1fr 2rem;
+		grid-template-columns: var(--size) 1fr var(--size);
 		grid-gap: 0.5rem;
 		user-select: none;
-		height: 2rem;
+		height: var(--size);
 		align-items: center;
 	}
 	.title-bar button {
+		width: 100%;
+		height: 100%;
 		padding: 0;
 		margin: 0;
 		border: none;
 		background: none;
+		opacity: 0.2;
+		transition: opacity 0.2s;
+	}
+
+	.title-bar button:hover {
+		opacity: 1;
+	}
+
+	.drag-bar {
+		width: 100%;
+		height: 100%;
 	}
 
 	.drag-bar svg {
@@ -147,6 +166,10 @@
 
 	.drag-bar:hover svg {
 		opacity: 1;
+	}
+
+	.content {
+		padding: 0 0.5rem;
 	}
 
 	.knobby :global(*) {
