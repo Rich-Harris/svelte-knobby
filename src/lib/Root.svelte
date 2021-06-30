@@ -1,7 +1,7 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
-	import Folder from './components/Folder.svelte';
+	// import Folder from './components/Folder.svelte';
 	import { extract, merge } from './utils.js';
 
 	export let store;
@@ -16,11 +16,12 @@
 </script>
 
 <div class="root">
-	{#if $store.$label}
+	<!-- TODO reenable once Vite supports circular dependencies -->
+	<!-- {#if $store.$label}
 		<Folder name={$store.$label} bind:children={$store.children}/>
-	{:else}
+	{:else} -->
 		<Items bind:children={$store.children}/>
-	{/if}
+	<!-- {/if} -->
 </div>
 
 <style>
