@@ -18,15 +18,16 @@ export function extract(state) {
 
 export function merge(state, value) {
 	if (state.children) {
-		const new_state = {
-			children: {}
-		};
+		const children = {};
 
 		for (const key in state.children) {
-			new_state.children[key] = merge(state.children[key], value[key]);
+			children[key] = merge(state.children[key], value[key]);
 		}
 
-		return new_state;
+		return {
+			...state,
+			children
+		};
 	}
 
 	return {
