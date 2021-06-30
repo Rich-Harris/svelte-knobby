@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.2
+
+- Fix some CSS bugs
+
 ## 0.1.1
 
 - Fix some bugs

@@ -38,6 +38,11 @@
 		margin: 0 0 0.2rem 0;
 	}
 
+	.item span {
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.item div {
 		display: flex;
 		height: 100%;

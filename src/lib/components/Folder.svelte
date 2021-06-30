@@ -45,7 +45,7 @@
 	}
 
 	.folder {
-		margin: 0 0 1rem 0.2rem;
+		margin: 0 0 0 0.2rem;
 		padding: 0 0 0 0.4rem;
 		border-left: 2px solid var(--dark);
 	}

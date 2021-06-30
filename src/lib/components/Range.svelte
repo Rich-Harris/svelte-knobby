@@ -16,4 +16,8 @@
 		grid-template-columns: 1fr 4em;
 		grid-gap: var(--gap);
 	}
+
+	input[type=range] {
+		width: 100%;
+	}
 </style>
