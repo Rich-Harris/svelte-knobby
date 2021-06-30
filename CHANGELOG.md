@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.4
+
+- Remove `$lib` reference in package
+
 ## 0.1.3
 
 - Make panel draggable

@@ -1,5 +1,5 @@
 <script>
-	import Chevron from '$lib/components/Chevron.svelte';
+	import Chevron from '../components/Chevron.svelte';
 	import Items from '../Items.svelte';
 
 	export let name;
