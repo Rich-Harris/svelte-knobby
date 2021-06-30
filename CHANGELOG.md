@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.1.3
+
+- Make panel draggable
+- Cosmetic improvements
+
 ## 0.1.2
 
 - Fix some CSS bugs
