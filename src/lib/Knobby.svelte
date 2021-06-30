@@ -24,6 +24,7 @@
 		top: 1rem;
 		right: 1rem;
 		width: 320px;
+		max-height: calc(100% - 2rem);
 		padding: 0 0.5rem;
 		background-color: var(--bg);
 		color: var(--fg);
@@ -32,6 +33,7 @@
 		filter: drop-shadow(2px 3px 4px rgba(0, 0, 0, 0.2));
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
+		overflow-y: auto;
 	}
 
 	.knobby :global(*) {
