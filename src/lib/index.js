@@ -86,14 +86,13 @@ function update() {
 }
 
 export function knobby(initial) {
-	const children = {};
-	for (const key in initial) {
-		children[key] = interpret(initial[key]);
-	}
-
 	const state = {
-		children
+		children: {}
 	};
+
+	for (const key in initial) {
+		state.children[key] = interpret(initial[key]);
+	}
 
 	let values = extract(state);
 
