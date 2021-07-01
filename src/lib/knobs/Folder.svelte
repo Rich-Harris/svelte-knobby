@@ -40,6 +40,6 @@
 	.folder {
 		margin: 0;
 		padding: 0 0 0 0.5rem;
-		border-left: 1px solid var(--dark);
+		border-left: 1px solid hsla(var(--hue), 11%, 90%, 1);
 	}
 </style>

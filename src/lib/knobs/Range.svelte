@@ -13,7 +13,7 @@
 <style>
 	div {
 		display: grid;
-		grid-template-columns: 1fr 4em;
+		grid-template-columns: 1fr 5em;
 		grid-gap: var(--gap);
 	}
 

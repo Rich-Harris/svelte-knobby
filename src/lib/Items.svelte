@@ -52,12 +52,13 @@
 		width: 100%;
 		border-radius: 16px;
 		background: var(--bg);
-		box-shadow: 5px 5px 5px var(--dark), -5px -5px 5px var(--light);
-		border: 1px solid var(--dark);
+		box-shadow: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		/* border: 1px solid var(--dark); */
+		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
 		margin: 0.5rem 0 0.5rem 0;
-		padding: 0.25rem 0.5rem;
+		padding: 0.5rem 0.5rem;
 	}
 
 	button:active {

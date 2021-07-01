@@ -103,12 +103,13 @@
 
 <style>
 	.knobby {
-		--bg: #f4f4f4;
-		--fg: #333;
+		--hue: 240;
+		--bg: hsl(var(--hue), 11%, 95%);
+		--fg: hsla(var(--hue), 11%, 40%, 1);
 		--gap: 0.5rem;
-		--light: rgba(255, 255, 255, 0.2);
-		--dark: rgba(0, 0, 0, 0.05);
-		--border-radius: 2px;
+		--light: rgba(255, 255, 255, 1);
+		--dark: hsla(var(--hue), 11%, 88%, 1);
+		--border-radius: 0.4rem;
 
 		position: fixed;
 		z-index: 99999;
@@ -118,7 +119,7 @@
 		color: var(--fg);
 		border-radius: var(--border-radius);
 		box-shadow: inset 2px 2px 4px var(--light), inset -2px -2px 4px var(--dark);
-		filter: drop-shadow(2px 3px 4px rgba(0, 0, 0, 0.2));
+		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.1));
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
 		overflow-y: auto;
@@ -131,13 +132,14 @@
 	}
 
 	.title-bar {
-		--size: 1.6rem;
+		--size: 1.8rem;
 		display: grid;
 		grid-template-columns: var(--size) 1fr var(--size);
 		grid-gap: 0.5rem;
 		user-select: none;
 		height: var(--size);
 		align-items: center;
+		padding: 0rem 0.4rem;
 	}
 	.title-bar button {
 		width: 100%;
@@ -170,7 +172,7 @@
 	}
 
 	.content {
-		padding: 0 0.5rem;
+		padding: 0 0.8rem;
 	}
 
 	.knobby :global(*) {
@@ -191,11 +193,12 @@
 		margin: 0;
 		border-radius: var(--border-radius);
 		background: var(--bg);
-		box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 15px var(--light);
-		border: 1px solid rgba(0, 0, 0, 0.05);
+		box-shadow: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
+		/* border: 1px solid rgba(0, 0, 0, 0.05); */
+		border: none;
 		padding: 0.2rem 0.4rem;
 		font: inherit;
-		color: var(--fg);
+		color: hsla(var(--hue), 11%, 20%, 1);
 	}
 
 </style>
