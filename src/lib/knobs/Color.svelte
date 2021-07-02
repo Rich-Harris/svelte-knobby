@@ -25,7 +25,7 @@
 		width: 100%;
 		height: 100%;
 		border-radius: var(--border-radius);
-		box-shadow: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		box-shadow: var(--convex);
 		padding: 2px;
 	}
 

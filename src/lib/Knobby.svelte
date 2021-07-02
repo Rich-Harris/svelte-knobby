@@ -109,8 +109,11 @@
 		--gap: 0.5rem;
 		--light: rgba(255, 255, 255, 1);
 		--dark: hsla(var(--hue), 11%, 88%, 1);
+		--flash: hsla(var(--hue), 50%, 40%, 1);
 		--border-radius: 0.4rem;
 		--focus-color: hsla(var(--hue), 11%, 40%);
+		--convex: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		--concave: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
 
 		position: fixed;
 		z-index: 99999;
@@ -141,6 +144,7 @@
 		height: var(--size);
 		align-items: center;
 		padding: 0rem 0.4rem;
+		color: var(--flash);
 	}
 	.title-bar button {
 		width: 100%;
@@ -184,6 +188,7 @@
 	.knobby :global(input),
 	.knobby :global(button) {
 		font: inherit;
+		color: inherit;
 	}
 
 	.knobby :global(input:not([type])),
@@ -194,7 +199,7 @@
 		margin: 0;
 		border-radius: var(--border-radius);
 		background: var(--bg);
-		box-shadow: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
+		box-shadow: var(--concave);
 		/* border: 1px solid rgba(0, 0, 0, 0.05); */
 		border: none;
 		padding: 0.2rem 0.4rem;

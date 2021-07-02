@@ -52,7 +52,7 @@
 		width: 100%;
 		border-radius: 16px;
 		background: var(--bg);
-		box-shadow: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		box-shadow: var(--convex);
 		/* border: 1px solid var(--dark); */
 		border: none;
 		border-radius: var(--border-radius);
@@ -62,6 +62,6 @@
 	}
 
 	button:active {
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
+		box-shadow: var(--concave);
 	}
 </style>
