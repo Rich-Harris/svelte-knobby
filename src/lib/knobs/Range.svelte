@@ -40,7 +40,7 @@
 		height: 1rem;
 		width: 1rem;
 		border-radius: 50%;
-		background: hsla(var(--hue), 50%, 65%, 1);
+		background: hsl(var(--hue), 50%, 65%);
 		cursor: pointer;
 		margin-top: -0.35rem; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
 		box-shadow: var(--convex), var(--convex), var(--convex);
@@ -51,9 +51,17 @@
 		height: 1rem;
 		width: 1rem;
 		border-radius: 50%;
-		background: hsla(var(--hue), 50%, 65%, 1);
+		background: hsl(var(--hue), 50%, 65%);
 		cursor: pointer;
 		box-shadow: var(--convex), var(--convex), var(--convex);
+	}
+
+	input[type=range]:focus-visible::-webkit-slider-thumb {
+		box-shadow: 0 0 0 2px var(--focus-color);
+	}
+
+	input[type=range]:focus-visible::-moz-range-thumb {
+		box-shadow: 0 0 0 2px var(--focus-color);
 	}
 
 	/* track — chrome */

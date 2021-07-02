@@ -54,4 +54,9 @@
 		border-left: 1px solid var(--dark);
 		border-right: 1px solid var(--light);
 	}
+
+	summary:focus-visible + .folder::before {
+		height: 100%;
+		top: 0;
+	}
 </style>
