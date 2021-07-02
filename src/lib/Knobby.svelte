@@ -110,6 +110,7 @@
 		--light: rgba(255, 255, 255, 1);
 		--dark: hsla(var(--hue), 11%, 88%, 1);
 		--border-radius: 0.4rem;
+		--focus-color: hsla(var(--hue), 11%, 40%);
 
 		position: fixed;
 		z-index: 99999;
@@ -199,6 +200,10 @@
 		padding: 0.2rem 0.4rem;
 		font: inherit;
 		color: hsla(var(--hue), 11%, 20%, 1);
+	}
+
+	.knobby :global(:focus-visible) {
+		outline-color: var(--focus-color);
 	}
 
 </style>

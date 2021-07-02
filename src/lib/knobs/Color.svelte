@@ -4,8 +4,8 @@
 
 <div class="color">
 	<div class="picker">
-		<span style="background-color: {value}"></span>
 		<input type="color" bind:value>
+		<span style="background-color: {value}"></span>
 	</div>
 <input bind:value>
 </div>
@@ -49,5 +49,9 @@
 		margin: 0;
 		background: none;
 		opacity: 0.01;
+	}
+
+	input[type=color]:focus-visible + span {
+		box-shadow: 0 0 0 2px var(--focus-color);
 	}
 </style>
