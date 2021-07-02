@@ -79,7 +79,7 @@
 	}
 </script>
 
-<div bind:this={knobby} class="knobby" style="{vertical}; {horizontal}; transform: {transform}">
+<div bind:this={knobby} class="knobby" class:visible style="{vertical}; {horizontal}; transform: {transform}">
 	<div class="title-bar">
 		<button on:click={() => visible = !visible}>
 			<Chevron open={visible}/>
@@ -123,10 +123,15 @@
 		color: var(--fg);
 		border-radius: var(--border-radius);
 		box-shadow: inset 2px 2px 4px var(--light), inset -2px -2px 4px var(--dark);
-		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.1));
+		filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.03));
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
 		overflow-y: auto;
+		transition: filter 0.2s;
+	}
+
+	.knobby.visible {
+		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.05));
 	}
 
 	svg {

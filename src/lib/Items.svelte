@@ -31,7 +31,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 1fr 200px;
+		grid-template-columns: 1fr 160px;
 		grid-gap: var(--gap);
 		align-items: center;
 		min-height: 2rem;
@@ -53,7 +53,6 @@
 		border-radius: 16px;
 		background: var(--bg);
 		box-shadow: var(--convex);
-		/* border: 1px solid var(--dark); */
 		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
