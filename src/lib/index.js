@@ -70,7 +70,11 @@ function interpret(state) {
 	};
 
 	for (const key in state) {
-		interpreted.value[key] = interpret(state[key]);
+		if (key.startsWith('$')) {
+			interpreted[key] = state[key];
+		} else {
+			interpreted.value[key] = interpret(state[key]);
+		}
 	}
 
 	return interpreted;

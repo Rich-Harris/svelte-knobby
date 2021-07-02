@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.1.8
+
+- Improve accessibility
+- Add `$label` support
+
 ## 0.1.7
 
 - More style tweaks

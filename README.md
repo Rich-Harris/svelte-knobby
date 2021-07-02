@@ -6,12 +6,12 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 <script>
   import { knobby } from 'svelte-knobby';
 
-  const values = knobby({
+  const controls = knobby({
     // primitive values are handled automatically
     message: 'Hello World!',
-    checked: false,
     color: '#ff3e00',
     clicks: 0,
+    checked: false,
 
     // functions become buttons. if state is returned, it will
     // update the store
@@ -22,6 +22,9 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 
     // specify options by using a { value } object
     constrained: {
+      // any object can be given a $label which will
+      // appear in place of the property name
+      $label: 'labelled input',
       value: 50,
       min: 0,
       max: 100,
@@ -30,21 +33,22 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 
     // objects that can't be 'interpreted' (see below)
     // are treated as folders
-    group: {
-      a: 1, // accessed as $values.group.a
+    folder: {
+      $label: 'labelled folder',
+      a: 1, // accessed as $controls.folder.a
       b: 2,
       nested: {
-        c: 3, // accessed as $values.group.nested.c
+        c: 3, // accessed as $controls.folder.nested.c
         d: 4
       }
     }
   });
 
   // the returned store is writable
-  $values.message = 'Hello Knobby!';
+  $controls.message = 'Hello Knobby!';
 </script>
 
-<h1>{$values.message}</h1>
+<h1>{$controls.message}</h1>
 ```
 
 ## Interpreting values

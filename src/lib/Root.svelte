@@ -1,12 +1,10 @@
 <script>
 	import { setContext } from 'svelte';
 	import Items from './Items.svelte';
-	// import Folder from './knobs/Folder.svelte';
+	import Folder from './knobs/Folder.svelte';
 	import { extract, merge } from './utils.js';
 
 	export let store;
-
-	$: console.log('$store.value', $store.value);
 
 	setContext('knobby', {
 		run: fn => fn(extract($store)),
@@ -18,12 +16,11 @@
 </script>
 
 <div class="root">
-	<!-- TODO reenable once Vite supports circular dependencies -->
-	<!-- {#if $store.$label}
+	{#if $store.$label}
 		<Folder name={$store.$label} bind:value={$store.value}/>
-	{:else} -->
+	{:else}
 		<Items bind:value={$store.value}/>
-	<!-- {/if} -->
+	{/if}
 </div>
 
 <style>

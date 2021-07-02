@@ -1,12 +1,16 @@
 <script>
 	import { knobby } from '$lib';
+	import Thing from './_/Thing.svelte';
 
-	const values = knobby({
+	const controls = knobby({
+		// labelled control panels are collapsible
+		$label: 'Main options',
+
 		// primitive values are handled automatically
 		message: 'Hello World!',
-		checked: false,
 		color: '#ff3e00',
 		clicks: 0,
+		checked: false,
 
 		// functions become buttons. if state is returned, it will
 		// update the store
@@ -17,6 +21,9 @@
 
 		// specify options by using a { value } object
 		constrained: {
+			// any object can be given a $label which will
+			// appear in place of the property name
+			$label: 'labelled input',
 			value: 50,
 			min: 0,
 			max: 100,
@@ -25,21 +32,28 @@
 
 		// objects that can't be 'interpreted' (see below)
 		// are treated as folders
-		group: {
-			a: 1, // accessed as $values.group.a
+		folder: {
+			$label: 'labelled folder',
+			a: 1, // accessed as $controls.folder.a
 			b: 2,
 			nested: {
-				c: 3, // accessed as $values.group.nested.c
+				c: 3, // accessed as $controls.folder.nested.c
 				d: 4
 			}
 		}
 	});
 
 	// the returned store is writable
-	$values.message = 'Hello Knobby!';
+	$controls.message = 'Hello Knobby!';
 </script>
 
-<h1 style="color: {$values.color}">{$values.message}</h1>
-<button on:click={() => $values.clicks += 1}>
-	clicks: {$values.clicks}
+<h1 style="color: {$controls.color}">{$controls.message}</h1>
+<button on:click={() => $controls.clicks += 1}>
+	clicks: {$controls.clicks}
 </button>
+
+<pre>{JSON.stringify($controls.folder)}</pre>
+
+{#if $controls.checked}
+	<Thing/>
+{/if}
