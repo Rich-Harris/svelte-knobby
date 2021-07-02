@@ -93,10 +93,12 @@
 	</div>
 
 	{#if visible}
-		<div class="content" transition:slide={{duration:200}}>
-			{#each stores as store}
-				<Root {store}/>
-			{/each}
+		<div class="container" transition:slide={{duration:200}}>
+			<div class="content">
+				{#each stores as store}
+					<Root {store}/>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -116,6 +118,8 @@
 		--concave: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
 
 		position: fixed;
+		display: flex;
+		flex-direction: column;
 		z-index: 99999;
 		width: 320px;
 		max-height: calc(100% - 2rem);
@@ -126,7 +130,6 @@
 		filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.03));
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
-		overflow-y: auto;
 		transition: filter 0.2s;
 	}
 
@@ -181,8 +184,14 @@
 		opacity: 1;
 	}
 
+	.container {
+		overflow-y: hidden;
+	}
+
 	.content {
 		padding: 0 0.8rem;
+		max-height: calc(100vh - 3.8rem);
+		overflow-y: auto;
 	}
 
 	.knobby :global(*) {
