@@ -27,8 +27,8 @@
 		width: 100%;
 		background: transparent;
 		border: none;
-		padding: none;
-		margin: none;
+		padding: 0;
+		margin: 0;
 	}
 
 	input[type=range]::-webkit-slider-thumb {

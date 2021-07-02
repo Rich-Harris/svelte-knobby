@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.9
+
+- Fix range styles
+
 ## 0.1.8
 
 - Improve accessibility
