@@ -35,7 +35,7 @@
 		grid-gap: var(--gap);
 		align-items: center;
 		min-height: 2rem;
-		margin: 0 0 0.2rem 0;
+		margin: 0 0 0.3rem 0;
 	}
 
 	.item span {

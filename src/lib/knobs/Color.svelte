@@ -3,31 +3,51 @@
 </script>
 
 <div class="color">
-<input type="color" bind:value>
+	<div class="picker">
+		<span style="background-color: {value}"></span>
+		<input type="color" bind:value>
+	</div>
 <input bind:value>
 </div>
 
 <style>
 	.color {
 		display: grid;
-		grid-template-columns: 3em 1fr;
-		grid-gap: var(--gap);
+		grid-template-columns: 2rem 1fr;
+		grid-gap: 4px;
 	}
 
 	input {
 		width: 100%;
 	}
 
-	input[type=color] {
+	.picker {
+		width: 100%;
 		height: 100%;
+		border-radius: var(--border-radius);
+		box-shadow: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		padding: 2px;
+	}
+
+	.picker span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border-radius: var(--border-radius);
+		pointer-events: none;
+		box-shadow: inset 2px 2px 3px rgba(0,0,0,0.1), inset -2px -2px 3px rgba(255,255,255,0.05);
+	}
+
+	input[type=color] {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 		border: none;
 		padding: 0;
 		margin: 0;
 		background: none;
-	}
-
-	::-webkit-color-swatch,
-	::-moz-color-swatch {
-	border-color: transparent;
+		opacity: 0.01;
 	}
 </style>
