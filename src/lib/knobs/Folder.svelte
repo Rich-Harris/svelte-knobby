@@ -29,7 +29,7 @@
 		list-style: none;
 		user-select: none;
 		padding: 0.5rem 0;
-		margin: 0 0 0 -0.3rem;
+		margin: 0 0 0.1rem -0.3rem;
 		align-items: center;
 	}
 
@@ -38,8 +38,20 @@
 	}
 
 	.folder {
+		position: relative;
 		margin: 0;
 		padding: 0 0 0 0.5rem;
+		/* border-left: 1px solid hsla(var(--hue), 11%, 90%, 1); */
+	}
+
+	.folder::before {
+		content: '';
+		position: absolute;
+		width: 0;
+		height: calc(100% + 0.5rem);
+		left: 0rem;
+		top: -0.5rem;
 		border-left: 1px solid var(--dark);
+		border-right: 1px solid var(--light);
 	}
 </style>

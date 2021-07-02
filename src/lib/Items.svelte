@@ -31,11 +31,11 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 1fr 200px;
+		grid-template-columns: 1fr 160px;
 		grid-gap: var(--gap);
 		align-items: center;
 		min-height: 2rem;
-		margin: 0 0 0.2rem 0;
+		margin: 0 0 0.3rem 0;
 	}
 
 	.item span {
@@ -52,15 +52,15 @@
 		width: 100%;
 		border-radius: 16px;
 		background: var(--bg);
-		box-shadow: 5px 5px 5px var(--dark), -5px -5px 5px var(--light);
-		border: 1px solid var(--dark);
+		box-shadow: var(--convex);
+		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
 		margin: 0.5rem 0 0.5rem 0;
-		padding: 0.25rem 0.5rem;
+		padding: 0.5rem 0.5rem;
 	}
 
 	button:active {
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
+		box-shadow: var(--concave);
 	}
 </style>

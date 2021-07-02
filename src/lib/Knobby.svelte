@@ -79,7 +79,7 @@
 	}
 </script>
 
-<div bind:this={knobby} class="knobby" style="{vertical}; {horizontal}; transform: {transform}">
+<div bind:this={knobby} class="knobby" class:visible style="{vertical}; {horizontal}; transform: {transform}">
 	<div class="title-bar">
 		<button on:click={() => visible = !visible}>
 			<Chevron open={visible}/>
@@ -93,24 +93,33 @@
 	</div>
 
 	{#if visible}
-		<div class="content" transition:slide={{duration:200}}>
-			{#each stores as store}
-				<Root {store}/>
-			{/each}
+		<div class="container" transition:slide={{duration:200}}>
+			<div class="content">
+				{#each stores as store}
+					<Root {store}/>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
 
 <style>
 	.knobby {
-		--bg: #f4f4f4;
-		--fg: #333;
+		--hue: 240;
+		--bg: hsl(var(--hue), 11%, 95%);
+		--fg: hsla(var(--hue), 11%, 40%, 1);
 		--gap: 0.5rem;
-		--light: rgba(255, 255, 255, 0.2);
-		--dark: rgba(0, 0, 0, 0.05);
-		--border-radius: 2px;
+		--light: rgba(255, 255, 255, 1);
+		--dark: hsla(var(--hue), 11%, 88%, 1);
+		--flash: hsla(var(--hue), 50%, 40%, 1);
+		--border-radius: 0.4rem;
+		--focus-color: hsla(var(--hue), 11%, 40%);
+		--convex: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
+		--concave: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
 
 		position: fixed;
+		display: flex;
+		flex-direction: column;
 		z-index: 99999;
 		width: 320px;
 		max-height: calc(100% - 2rem);
@@ -118,10 +127,14 @@
 		color: var(--fg);
 		border-radius: var(--border-radius);
 		box-shadow: inset 2px 2px 4px var(--light), inset -2px -2px 4px var(--dark);
-		filter: drop-shadow(2px 3px 4px rgba(0, 0, 0, 0.2));
+		filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.03));
 		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
 		font-size: 13px;
-		overflow-y: auto;
+		transition: filter 0.2s;
+	}
+
+	.knobby.visible {
+		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.05));
 	}
 
 	svg {
@@ -131,13 +144,15 @@
 	}
 
 	.title-bar {
-		--size: 1.6rem;
+		--size: 1.8rem;
 		display: grid;
 		grid-template-columns: var(--size) 1fr var(--size);
 		grid-gap: 0.5rem;
 		user-select: none;
 		height: var(--size);
 		align-items: center;
+		padding: 0rem 0.4rem;
+		color: var(--flash);
 	}
 	.title-bar button {
 		width: 100%;
@@ -169,8 +184,14 @@
 		opacity: 1;
 	}
 
+	.container {
+		overflow-y: hidden;
+	}
+
 	.content {
-		padding: 0 0.5rem;
+		padding: 0 0.8rem;
+		max-height: calc(100vh - 3.8rem);
+		overflow-y: auto;
 	}
 
 	.knobby :global(*) {
@@ -181,6 +202,7 @@
 	.knobby :global(input),
 	.knobby :global(button) {
 		font: inherit;
+		color: inherit;
 	}
 
 	.knobby :global(input:not([type])),
@@ -191,11 +213,16 @@
 		margin: 0;
 		border-radius: var(--border-radius);
 		background: var(--bg);
-		box-shadow: inset 2px 2px 4px var(--dark), inset -2px -2px 15px var(--light);
-		border: 1px solid rgba(0, 0, 0, 0.05);
+		box-shadow: var(--concave);
+		/* border: 1px solid rgba(0, 0, 0, 0.05); */
+		border: none;
 		padding: 0.2rem 0.4rem;
 		font: inherit;
-		color: var(--fg);
+		color: hsla(var(--hue), 11%, 20%, 1);
+	}
+
+	.knobby :global(:focus-visible) {
+		outline-color: var(--focus-color);
 	}
 
 </style>
