@@ -1,13 +1,17 @@
 <script>
+	export let name;
 	export let value;
 </script>
 
-<div class="color">
-	<div class="picker">
-		<input type="color" bind:value>
-		<span style="background-color: {value}"></span>
+<div class="knobby-row">
+	<label for={name}>{name}</label>
+	<div class="color">
+		<div class="picker">
+			<input id={name} type="color" bind:value>
+			<span style="background-color: {value}"></span>
+		</div>
+		<input bind:value>
 	</div>
-<input bind:value>
 </div>
 
 <style>
@@ -15,6 +19,7 @@
 		display: grid;
 		grid-template-columns: 2rem 1fr;
 		grid-gap: 4px;
+		height: 100%;
 	}
 
 	input {

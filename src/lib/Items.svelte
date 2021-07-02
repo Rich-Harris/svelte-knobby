@@ -11,12 +11,13 @@
 <div>
 	{#each Object.entries(children) as [name, state]}
 		{#if state.component}
-			<div class="item">
+			<svelte:component this={state.component} {name} bind:value={children[name].value} {...get_opts(state)}/>
+			<!-- <div class="item">
 				<span>{name}</span>
 				<div>
-					<svelte:component this={state.component} bind:value={children[name].value} {...get_opts(state)}/>
+					<svelte:component this={state.component} {name} bind:value={children[name].value} {...get_opts(state)}/>
 				</div>
-			</div>
+			</div> -->
 		{:else if state.children}
 			<Folder {name} bind:children={children[name].children}/>
 		{:else}

@@ -225,4 +225,19 @@
 		outline-color: var(--focus-color);
 	}
 
+	.knobby :global(.knobby-row) {
+		display: grid;
+		grid-template-columns: 1fr 160px;
+		grid-gap: var(--gap);
+		align-items: center;
+		min-height: 2rem;
+		margin: 0 0 0.3rem 0;
+	}
+
+	.knobby :global(.knobby-row > :first-child) {
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+		user-select: none;
+	}
+
 </style>

@@ -1,13 +1,17 @@
 <script>
+	export let name;
 	export let value;
 	export let min = undefined;
 	export let max = undefined;
 	export let step = undefined;
 </script>
 
-<div>
-	<input type="range" bind:value {min} {max} {step}>
-	<input type="number" bind:value {min} {max} {step}>
+<div class="knobby-row">
+	<label for={name}>{name}</label>
+	<div>
+		<input type="range" bind:value {min} {max} {step}>
+		<input id={name} type="number" bind:value {min} {max} {step}>
+	</div>
 </div>
 
 <style>
