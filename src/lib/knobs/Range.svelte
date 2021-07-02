@@ -21,6 +21,9 @@
 		-webkit-appearance: none;
 		width: 100%;
 		background: transparent;
+		border: none;
+		padding: none;
+		margin: none;
 	}
 
 	input[type=range]::-webkit-slider-thumb {
