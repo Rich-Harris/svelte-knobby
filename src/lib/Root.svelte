@@ -6,6 +6,8 @@
 
 	export let store;
 
+	$: console.log('$store.value', $store.value);
+
 	setContext('knobby', {
 		run: fn => fn(extract($store)),
 		set: values => {
@@ -18,9 +20,9 @@
 <div class="root">
 	<!-- TODO reenable once Vite supports circular dependencies -->
 	<!-- {#if $store.$label}
-		<Folder name={$store.$label} bind:children={$store.children}/>
+		<Folder name={$store.$label} bind:value={$store.value}/>
 	{:else} -->
-		<Items bind:children={$store.children}/>
+		<Items bind:value={$store.value}/>
 	<!-- {/if} -->
 </div>
 

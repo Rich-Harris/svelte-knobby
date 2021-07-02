@@ -1,6 +1,8 @@
 import Number from './knobs/Number.svelte';
 import Range from './knobs/Range.svelte';
 import Boolean from './knobs/Boolean.svelte';
+import Button from './knobs/Button.svelte';
+import Folder from './knobs/Folder.svelte';
 import String from './knobs/String.svelte';
 import Color from './knobs/Color.svelte';
 import Knobby from './Knobby.svelte';
@@ -40,7 +42,7 @@ function interpret(state) {
 
 	if (typeof state === 'function') {
 		return {
-			// component: Button,
+			component: Button,
 			value: state
 		};
 	}
@@ -62,11 +64,13 @@ function interpret(state) {
 	// TODO { value: number, min: number, max: number } etc
 
 	const interpreted = {
-		children: {}
+		component: Folder,
+		type: 'folder',
+		value: {}
 	};
 
 	for (const key in state) {
-		interpreted.children[key] = interpret(state[key]);
+		interpreted.value[key] = interpret(state[key]);
 	}
 
 	return interpreted;
@@ -87,14 +91,15 @@ function update() {
 
 export function knobby(initial) {
 	const state = {
-		children: {}
+		type: 'folder',
+		value: {}
 	};
 
 	for (const key in initial) {
 		if (key.startsWith('$')) {
 			state[key] = initial[key];
 		} else {
-			state.children[key] = interpret(initial[key]);
+			state.value[key] = interpret(initial[key]);
 		}
 	}
 
@@ -102,7 +107,7 @@ export function knobby(initial) {
 
 	const private_store = writable(state);
 
-	const public_store = writable(extract(state), (set) => {
+	const public_store = writable(values, (set) => {
 		// add to the UI
 		// TODO would be good if order was preserved when re-adding later
 		stores.push(private_store);

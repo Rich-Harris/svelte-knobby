@@ -5,10 +5,10 @@ export function get_opts(state) {
 
 /** @param {import('./types').State} state */
 export function extract(state) {
-	if (state.children) {
+	if (state.type === 'folder') {
 		const value = {};
-		for (const key in state.children) {
-			value[key] = extract(state.children[key]);
+		for (const key in state.value) {
+			value[key] = extract(state.value[key]);
 		}
 		return value;
 	}
@@ -17,16 +17,16 @@ export function extract(state) {
 }
 
 export function merge(state, value) {
-	if (state.children) {
-		const children = {};
+	if (state.type === 'folder') {
+		const new_value = {};
 
-		for (const key in state.children) {
-			children[key] = merge(state.children[key], value[key]);
+		for (const key in state.value) {
+			new_value[key] = merge(state.value[key], value[key]);
 		}
 
 		return {
 			...state,
-			children
+			value: new_value
 		};
 	}
 

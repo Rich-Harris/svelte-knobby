@@ -1,6 +1,8 @@
 <script>
 	export let name;
 	export let value;
+
+	console.log({ name, value });
 </script>
 
 <label class="knobby-row">

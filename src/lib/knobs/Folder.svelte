@@ -3,7 +3,7 @@
 	import Items from '../Items.svelte';
 
 	export let name;
-	export let children;
+	export let value;
 
 	let open = true;
 
@@ -17,7 +17,7 @@
 	</summary>
 
 	<div class="folder">
-		<Items bind:children/>
+		<Items bind:value/>
 	</div>
 </details>
 

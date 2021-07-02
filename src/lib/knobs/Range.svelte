@@ -8,17 +8,18 @@
 
 <div class="knobby-row">
 	<label for={name}>{name}</label>
-	<div>
+	<div class="inputs">
 		<input type="range" bind:value {min} {max} {step}>
 		<input id={name} type="number" bind:value {min} {max} {step}>
 	</div>
 </div>
 
 <style>
-	div {
+	.inputs {
 		display: grid;
 		grid-template-columns: 1fr 5em;
 		grid-gap: var(--gap);
+		height: 100%;
 	}
 
 	input[type=range] {
