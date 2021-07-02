@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.5
+
+- Tweak styles
+
 ## 0.1.4
 
 - Remove `$lib` reference in package
