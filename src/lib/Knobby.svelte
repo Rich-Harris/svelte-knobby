@@ -154,7 +154,6 @@
 		display: block;
 		width: 1rem;
 		height: 1rem;
-		pointer-events: none;
 		transform: rotate(-90deg);
 		transition: transform 0.2s;
 	}

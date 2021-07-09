@@ -49,8 +49,14 @@
 	summary svg {
 		width: 0.8rem;
 		height: 0.8rem;
-		opacity: 0.4;
+		opacity: 0.2;
 		margin: 0 0.3rem 0 0;
+		color: var(--flash);
+		transition: opacity 0.2s;
+	}
+
+	summary:hover svg {
+		opacity: 1;
 	}
 
 	[open] > summary::before {
