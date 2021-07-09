@@ -1,4 +1,5 @@
 <script>
+	/** @type {boolean} */
 	export let open;
 </script>
 

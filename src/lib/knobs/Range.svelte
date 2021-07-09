@@ -1,8 +1,17 @@
 <script>
+	/** @type {string} */
 	export let name;
+
+	/** @type {number} */
 	export let value;
+
+	/** @type {number} */
 	export let min = undefined;
+
+	/** @type {number} */
 	export let max = undefined;
+
+	/** @type {number} */
 	export let step = undefined;
 </script>
 

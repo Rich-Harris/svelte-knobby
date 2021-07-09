@@ -4,6 +4,7 @@
 	import Folder from './knobs/Folder.svelte';
 	import { extract, merge } from './utils.js';
 
+	/** @type {import('svelte/store').Writable<any>}*/
 	export let store;
 
 	setContext('knobby', {

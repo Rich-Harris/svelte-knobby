@@ -1,5 +1,6 @@
 /** @param {import('./types').Node} node */
 export function get_opts(node) {
+	/** @type {Record<string, any>} */
 	const opts = {};
 
 	for (const key in node) {
@@ -14,10 +15,13 @@ export function get_opts(node) {
 /** @param {import('./types').Node} node */
 export function extract(node) {
 	if (node.__folder) {
+		/** @type {Record<string, any>} */
 		const value = {};
+
 		for (const key in node.value) {
 			value[key] = extract(node.value[key]);
 		}
+
 		return value;
 	}
 
@@ -30,6 +34,7 @@ export function extract(node) {
  */
 export function merge(node, value) {
 	if (node.__folder) {
+		/** @type {Record<string, any>} */
 		const new_value = {};
 
 		for (const key in node.value) {

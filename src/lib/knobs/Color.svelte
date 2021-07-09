@@ -1,5 +1,8 @@
 <script>
+	/** @type {string} */
 	export let name;
+
+	/** @type {string} */
 	export let value;
 </script>
 

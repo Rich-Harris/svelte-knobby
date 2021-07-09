@@ -1,12 +1,15 @@
 <script>
+	/** @type {string} */
 	export let name;
+
+	/** @type {number} */
 	export let value;
-	export let min = undefined;
-	export let max = undefined;
+
+	/** @type {number} */
 	export let step = undefined;
 </script>
 
 <label class="knobby-row">
 	<span>{name}</span>
-	<input type="number" bind:value {min} {max} {step}>
+	<input type="number" bind:value {step}>
 </label>

@@ -81,7 +81,10 @@ function interpret(input) {
 	return node;
 }
 
+/** @type {import('svelte').SvelteComponent} */
 let controls;
+
+/** @type {Array<import('svelte/store').Writable<any>>} */
 const stores = [];
 
 function update() {
@@ -94,6 +97,10 @@ function update() {
 	controls.$set({ stores });
 }
 
+/**
+ * @param {any} initial
+ * @returns {import('svelte/store').Writable<any>}
+ */
 export function knobby(initial) {
 	/** @type {import('./types').Node} */
 	const node = {
@@ -134,6 +141,7 @@ export function knobby(initial) {
 
 	let updating = false;
 
+	/** @param {any} values */
 	function set(values) {
 		// changes to the public store need to be reflected in
 		// the private store

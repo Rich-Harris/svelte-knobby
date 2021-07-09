@@ -1,5 +1,8 @@
 <script>
+	/** @type {string} */
 	export let name;
+
+	/** @type {boolean} */
 	export let value;
 </script>
 

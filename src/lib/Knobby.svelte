@@ -3,6 +3,7 @@
 	import Chevron from './components/Chevron.svelte';
 	import { slide } from 'svelte/transition';
 
+	/** @type {Array<import('svelte/store').Writable<any>>}*/
 	export let stores = [];
 
 	/** @type {HTMLElement} */
@@ -10,7 +11,9 @@
 
 	let top = 16;
 	let right = 16;
+	/** @type {number} */
 	let bottom = null;
+	/** @type {number} */
 	let left = null;
 	let transform = 'translate(0, 0)';
 
@@ -19,10 +22,16 @@
 	$: vertical = (top === null ? `bottom: ${bottom}px` : `top: ${top}px`);
 	$: horizontal = (left === null ? `right: ${right}px` : `left: ${left}px`);
 
+	/**
+	 * @param {number} n
+	 * @param {number} a
+	 * @param {number} b
+	 */
 	function clamp(n, a, b) {
 		return Math.max(a, Math.min(b, n));
 	}
 
+	/** @param {PointerEvent} e */
 	function drag(e) {
 		if (!e.isPrimary) return;
 
@@ -36,6 +45,7 @@
 			top: -bcr.top
 		};
 
+		/** @param {PointerEvent} e */
 		function move(e) {
 			if (e.pointerId !== pointerId) return;
 
@@ -45,6 +55,7 @@
 			transform = `translate(${dx}px, ${dy}px)`;
 		}
 
+		/** @param {PointerEvent} e */
 		function up(e) {
 			if (e.pointerId !== pointerId) return;
 

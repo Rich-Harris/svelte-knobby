@@ -1,7 +1,10 @@
 <script>
 	import { getContext } from 'svelte';
 
+	/** @type {string} */
 	export let name;
+
+	/** @type {(values?: any) => any} */
 	export let value;
 
 	const { run, set } = getContext('knobby');

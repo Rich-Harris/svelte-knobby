@@ -2,7 +2,10 @@
 	import Chevron from '../components/Chevron.svelte';
 	import Items from '../Items.svelte';
 
+	/** @type {string} */
 	export let name;
+
+	/** @type {Record<string, any>} */
 	export let value;
 
 	let open = true;
