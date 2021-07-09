@@ -1,8 +1,7 @@
 <script>
 	import { onMount, getContext } from 'svelte';
-	import bezier from 'bezier-easing';
-	import * as yootils from 'yootils';
-	import { get_ticks } from './ticks';
+	import { draw } from './draw';
+	import { drag } from '$lib/actions/drag.js';
 
 	/** @type {string} */
 	export let name;
@@ -43,110 +42,7 @@
 
 	fit();
 
-	/**
-	 * @param {import('./types').KeyframeTrack[]} tracks
-	 * @param {number} playhead
-	*/
-	function draw(tracks, playhead) {
-		const w = canvas.offsetWidth * devicePixelRatio;
-		const h = canvas.offsetHeight * devicePixelRatio;
-
-		canvas.width = w;
-		canvas.height = h;
-
-		const padding = 20 * devicePixelRatio;
-
-		const project = {
-			x: yootils.linearScale([bounds.x1, bounds.x2], [padding, w - padding]),
-			y: yootils.linearScale([bounds.y1, bounds.y2], [h - padding, padding])
-		};
-
-		// ticks
-		ctx.font = `normal ${10 * devicePixelRatio}px ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace`;
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'middle';
-
-		for (const tick of get_ticks(bounds.x1, bounds.x2)) {
-			const x = project.x(tick);
-			ctx.beginPath();
-			ctx.moveTo(x, 0);
-			ctx.lineTo(x, h);
-			ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-			ctx.lineWidth = devicePixelRatio;
-			ctx.stroke();
-
-			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 3 * devicePixelRatio;
-			ctx.fillStyle = 'rgba(0,0,0,0.5)';
-			ctx.strokeText(String(tick), x, h - padding * 0.5);
-			ctx.fillText(String(tick), x, h - padding * 0.5);
-		}
-
-		for (const tick of get_ticks(bounds.x1, bounds.x2)) {
-			const y = project.y(tick);
-			ctx.beginPath();
-			ctx.moveTo(0, y);
-			ctx.lineTo(w, y);
-			ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-			ctx.lineWidth = devicePixelRatio;
-			ctx.stroke();
-
-			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 3 * devicePixelRatio;
-			ctx.fillStyle = 'rgba(0,0,0,0.5)';
-			ctx.strokeText(String(tick), padding * 0.5, y + 2 * devicePixelRatio);
-			ctx.fillText(String(tick), padding * 0.5, y + 2 * devicePixelRatio);
-		}
-
-		ctx.strokeStyle = 'black';
-		ctx.lineWidth = devicePixelRatio;
-
-		for (const track of tracks) {
-			for (let i = 0; i < track.curves.length; i += 1) {
-				const curve = track.curves[i];
-				const a = track.points[i];
-				const b = track.points[i + 1];
-				const fn = bezier(curve[0], curve[1], curve[2], curve[3]);
-
-				const x1 = project.x(a[0]);
-				const x2 = project.x(b[0]);
-
-				const x_to_u = yootils.linearScale([x1, x2], [0, 1]);
-				const v_to_n = yootils.linearScale([0, 1], [a[1], b[1]]);
-
-				ctx.beginPath();
-
-				for (let x = x1; x < x2; x += 1) {
-					const u = x_to_u(x);
-					const v = fn(u);
-
-					const n = v_to_n(v);
-					const y = project.y(n);
-
-					ctx.lineTo(x, y);
-				}
-
-				ctx.stroke();
-			}
-
-			for (let i = 0; i < track.points.length; i += 1) {
-				const point = track.points[i];
-
-				const x = project.x(point[0]);
-				const y = project.y(point[1]);
-
-				ctx.beginPath();
-				ctx.arc(x, y, 5, 0, Math.PI * 2);
-				ctx.strokeStyle = 'white';
-				ctx.lineWidth = 8;
-				ctx.fillStyle = 'black';
-				ctx.stroke();
-				ctx.fill();
-			}
-		}
-	}
-
-	$: if (ctx) draw(value.tracks, 0); // TODO rerun x function automatically
+	$: if (ctx) draw(ctx, value.tracks, bounds, 0); // TODO rerun x function automatically
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -155,9 +51,55 @@
 
 <span>{name}</span>
 
-<div class="keyframe-editor" style="cursor: {cursor}">
+<div
+	class="keyframe-editor"
+	style="cursor: {cursor}"
+	use:drag={{
+		start: drag => {
+			drag.context.selection = null;
+		},
+		move: drag => {
+			const dx = drag.dx * (bounds.x2 - bounds.x1) / (canvas.offsetWidth);
+			const dy = drag.dy * (bounds.y2 - bounds.y1) / (canvas.offsetHeight);
+			bounds.x1 -= dx;
+			bounds.x2 -= dx;
+			bounds.y1 += dy;
+			bounds.y2 += dy;
+		},
+		end: drag => {
+
+		}
+	}}
+	on:wheel={e => {
+		if (e.metaKey || e.shiftKey) {
+			e.preventDefault();
+
+			const bcr = canvas.getBoundingClientRect();
+			const px = (e.clientX - bcr.left) / bcr.width;
+			const py = (e.clientY - bcr.top) / bcr.height;
+			const cx = bounds.x1 + px * (bounds.x2 - bounds.x1);
+			const cy = bounds.y1 + py * (bounds.y2 - bounds.y1);
+
+			const amount = Math.pow(Math.exp(-e.wheelDeltaY), 0.01);
+
+			if (e.metaKey) {
+				// zoom x
+				bounds.x1 = cx - amount * (cx - bounds.x1);
+				bounds.x2 = cx + amount * (bounds.x2 - cx);
+			}
+
+			if (e.shiftKey) {
+				// zoom y
+				bounds.y1 = cy - amount * (cy - bounds.y1);
+				bounds.y2 = cy + amount * (bounds.y2 - cy);
+			}
+		}
+	}}
+>
 	<canvas bind:this={canvas}></canvas>
 </div>
+
+<button on:click={fit}>fit</button>
 
 <style>
 	.keyframe-editor {
@@ -166,6 +108,8 @@
 		border-radius: var(--border-radius); /* TODO namespace and catalog these values */
 		box-shadow: var(--concave);
 		overflow: hidden;
+		user-select: none;
+		margin: 0 0 0.5rem 0;
 	}
 
 	.keyframe-editor::before {
