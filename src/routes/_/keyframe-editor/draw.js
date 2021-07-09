@@ -10,11 +10,11 @@ import { get_ticks } from './ticks';
  * @param {number} playhead
  */
 export function draw(ctx, tracks, project, bounds, playhead) {
-	const w = ctx.canvas.offsetWidth * devicePixelRatio;
-	const h = ctx.canvas.offsetHeight * devicePixelRatio;
+	const w = ctx.canvas.offsetWidth;
+	const h = ctx.canvas.offsetHeight;
 
-	ctx.canvas.width = w;
-	ctx.canvas.height = h;
+	ctx.canvas.width = w * devicePixelRatio;
+	ctx.canvas.height = h * devicePixelRatio;
 	ctx.scale(devicePixelRatio, devicePixelRatio);
 
 	const padding = 20;

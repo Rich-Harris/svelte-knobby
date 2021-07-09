@@ -78,6 +78,7 @@
 	use:drag={{
 		start: drag => {
 			drag.context.selection = null;
+			cursor = 'grabbing';
 		},
 		move: drag => {
 			const dx = drag.dx * (bounds.x2 - bounds.x1) / (canvas.offsetWidth);
@@ -88,23 +89,36 @@
 			bounds.y2 += dy;
 		},
 		end: drag => {
-
+			cursor = 'grab';
 		}
 	}}
 	on:pointerdown={e => {
 
 	}}
-	on:mousemove={e => {
-		// const bcr = canvas.getBoundingClientRect();
-		// const project = {
-		// 	x: yootils.linearScale([bounds.x1, bounds.x2], [bcr.left, bcr.right])
-		// }
+	on:pointermove={e => {
+		const bcr = canvas.getBoundingClientRect();
 
-		// for (const track of value.tracks) {
-		// 	for (const point of track.points) {
-		// 		console.log(point);
-		// 	}
-		// }
+		if (!e.buttons) {
+			const ox = e.clientX - bcr.left;
+			const oy = e.clientY - bcr.top;
+
+			cursor = 'grab';
+
+			set_cursor: for (const track of value.tracks) {
+				for (const point of track.points) {
+					const x = project.x(point[0]);
+					const y = project.y(point[1]);
+
+					const dx = x - ox;
+					const dy = y - oy;
+
+					if ((dx * dx + dy * dy) < 100) {
+						cursor = 'move';
+						break set_cursor;
+					}
+				}
+			}
+		}
 	}}
 	on:wheel={e => {
 		if (e.metaKey || e.shiftKey || e.altKey) {
