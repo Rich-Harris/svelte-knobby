@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.1.10 (unreleased)
+
+- Persist position/expanded state to localStorage
+- Internal tidying up
+
 ## 0.1.9
 
 - Fix range styles
