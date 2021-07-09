@@ -9,18 +9,21 @@ import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
 import { extract, merge } from './utils';
 
-/** @param {any} input */
+/**
+ * @param {any} input
+ * @returns {import('./types').Node}
+ */
 function interpret(input) {
 	if (typeof input === 'number') {
 		return {
-			component: Number,
+			$component: Number,
 			value: input
 		};
 	}
 
 	if (typeof input === 'boolean') {
 		return {
-			component: Boolean,
+			$component: Boolean,
 			value: input
 		};
 	}
@@ -28,20 +31,20 @@ function interpret(input) {
 	if (typeof input === 'string') {
 		if (/^#[a-fA-F0-9]{6}$/.test(input)) {
 			return {
-				component: Color,
+				$component: Color,
 				value: input
 			};
 		}
 
 		return {
-			component: String,
+			$component: String,
 			value: input
 		};
 	}
 
 	if (typeof input === 'function') {
 		return {
-			component: Button,
+			$component: Button,
 			value: input
 		};
 	}
@@ -60,9 +63,10 @@ function interpret(input) {
 		}
 	}
 
+	/** @type {import('./types').Node} */
 	const node = {
-		component: Folder,
-		type: 'folder',
+		__folder: true,
+		$component: Folder,
 		value: {}
 	};
 
@@ -91,8 +95,10 @@ function update() {
 }
 
 export function knobby(initial) {
+	/** @type {import('./types').Node} */
 	const node = {
-		type: 'folder',
+		__folder: true,
+		$component: null,
 		value: {}
 	};
 

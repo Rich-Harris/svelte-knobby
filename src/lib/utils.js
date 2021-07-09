@@ -1,12 +1,19 @@
 /** @param {import('./types').Node} node */
 export function get_opts(node) {
-	const { component, value, ...opts } = node;
+	const opts = {};
+
+	for (const key in node) {
+		if (!key.startsWith('$')) {
+			opts[key] = node[key];
+		}
+	}
+
 	return opts;
 }
 
 /** @param {import('./types').Node} node */
 export function extract(node) {
-	if (node.type === 'folder') {
+	if (node.__folder) {
 		const value = {};
 		for (const key in node.value) {
 			value[key] = extract(node.value[key]);
@@ -22,7 +29,7 @@ export function extract(node) {
  * @param {Record<string, any>} value
  */
 export function merge(node, value) {
-	if (node.type === 'folder') {
+	if (node.__folder) {
 		const new_value = {};
 
 		for (const key in node.value) {

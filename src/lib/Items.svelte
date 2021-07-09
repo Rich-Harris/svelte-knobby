@@ -6,6 +6,6 @@
 
 <div>
 	{#each Object.entries(value) as [name, node]}
-		<svelte:component this={node.component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
+		<svelte:component this={node.$component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
 	{/each}
 </div>
