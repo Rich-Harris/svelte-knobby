@@ -15,8 +15,10 @@
 
 	const { run } = getContext('knobby'); // TODO make a typed function for this
 
-	/** @type {Set<[number, number]>} */
-	const selected_points = new Set();
+	const EPSILON = 0.000001;
+
+	/** @type {Array<[number, number]>} */
+	let selected_points = [];
 
 	let w = 0;
 	let h = 0;
@@ -49,6 +51,34 @@
 
 	fit();
 
+	/**
+	 * @param {number} x
+	 * @param {number} y
+	 */
+	function select(x, y) {
+		const bcr = canvas.getBoundingClientRect();
+
+		const ox = x - bcr.left;
+		const oy = y - bcr.top;
+
+		for (const track of value.tracks) {
+			for (let index = 0; index < track.points.length; index += 1) {
+				const point = track.points[index];
+				const x = project.x(point[0]);
+				const y = project.y(point[1]);
+
+				const dx = x - ox;
+				const dy = y - oy;
+
+				if ((dx * dx + dy * dy) < 100) {
+					return { track, index, point };
+				}
+
+				// TODO check curve handles, if this point is selected
+			}
+		}
+	}
+
 	const padding = 20;
 
 	$: project = {
@@ -61,7 +91,7 @@
 		y: project.x.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value.tracks, project, bounds, 0); // TODO rerun x function automatically
+	$: if (ctx) draw(ctx, value.tracks, selected_points, project, bounds, 0); // TODO rerun x function automatically
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -77,16 +107,46 @@
 	bind:clientHeight={h}
 	use:drag={{
 		start: drag => {
-			drag.context.selection = null;
-			cursor = 'grabbing';
+			const selection = select(drag.start.x, drag.start.y);
+
+			drag.context.selection = selection;
+
+			// TODO support multiple selections
+			selected_points = [];
+
+			if (selection) {
+				const prev = selection.track.points[selection.index - 1];
+				const next = selection.track.points[selection.index + 1];
+
+				drag.context.bounds = {
+					x1: prev ? prev[0] + EPSILON : -Infinity,
+					x2: next ? next[0] - EPSILON : +Infinity
+				};
+
+				selected_points = [selection.point];
+			}
+
+			cursor = selection ? 'move' : 'grabbing';
 		},
 		move: drag => {
-			const dx = drag.dx * (bounds.x2 - bounds.x1) / (canvas.offsetWidth);
-			const dy = drag.dy * (bounds.y2 - bounds.y1) / (canvas.offsetHeight);
-			bounds.x1 -= dx;
-			bounds.x2 -= dx;
-			bounds.y1 += dy;
-			bounds.y2 += dy;
+			const dx = drag.dx * (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2);
+			const dy = drag.dy * (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2);
+
+			if (drag.context.selection) {
+				const { point } = drag.context.selection;
+				const { x1, x2 } = drag.context.bounds;
+
+				// TODO move point/handle
+				point[0] = yootils.clamp(point[0] + dx, x1, x2);
+				point[1] -= dy;
+
+				value = value;
+			} else {
+				bounds.x1 -= dx;
+				bounds.x2 -= dx;
+				bounds.y1 += dy;
+				bounds.y2 += dy;
+			}
 		},
 		end: drag => {
 			cursor = 'grab';
@@ -96,28 +156,8 @@
 
 	}}
 	on:pointermove={e => {
-		const bcr = canvas.getBoundingClientRect();
-
 		if (!e.buttons) {
-			const ox = e.clientX - bcr.left;
-			const oy = e.clientY - bcr.top;
-
-			cursor = 'grab';
-
-			set_cursor: for (const track of value.tracks) {
-				for (const point of track.points) {
-					const x = project.x(point[0]);
-					const y = project.y(point[1]);
-
-					const dx = x - ox;
-					const dy = y - oy;
-
-					if ((dx * dx + dy * dy) < 100) {
-						cursor = 'move';
-						break set_cursor;
-					}
-				}
-			}
+			cursor = select(e.clientX, e.clientY) ? 'move' : 'grab';
 		}
 	}}
 	on:wheel={e => {

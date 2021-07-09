@@ -5,11 +5,12 @@ import { get_ticks } from './ticks';
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {import('./types').KeyframeTrack[]} tracks
+ * @param {Array<[number, number]>} selected_points
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(ctx, tracks, project, bounds, playhead) {
+export function draw(ctx, tracks, selected_points, project, bounds, playhead) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -71,15 +72,15 @@ export function draw(ctx, tracks, project, bounds, playhead) {
 			const b = track.points[i + 1];
 			const fn = bezier(curve[0], curve[1], curve[2], curve[3]);
 
-			const x1 = project.x(a[0]);
-			const x2 = project.x(b[0]);
+			const x1 = Math.floor(project.x(a[0]));
+			const x2 = Math.ceil(project.x(b[0]));
 
 			const x_to_u = yootils.linearScale([x1, x2], [0, 1]);
 			const v_to_n = yootils.linearScale([0, 1], [a[1], b[1]]);
 
 			ctx.beginPath();
 
-			for (let x = x1; x < x2; x += 1) {
+			for (let x = x1; x <= x2; x += 1) {
 				const u = x_to_u(x);
 				const v = fn(u);
 
@@ -102,7 +103,7 @@ export function draw(ctx, tracks, project, bounds, playhead) {
 			ctx.arc(x, y, 3, 0, Math.PI * 2);
 			ctx.strokeStyle = 'white';
 			ctx.lineWidth = 5;
-			ctx.fillStyle = 'black';
+			ctx.fillStyle = selected_points.includes(point) ? 'red' : 'black';
 			ctx.stroke();
 			ctx.fill();
 		}

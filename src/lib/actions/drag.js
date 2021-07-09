@@ -1,5 +1,9 @@
 /**
  * @typedef {{
+ *   start: {
+ *     x: number;
+ *     y: number;
+ *   };
  *   x: number;
  *   y: number;
  *   dx: number;
@@ -28,6 +32,7 @@ export function drag(node, { start = () => {}, move = () => {}, end = () => {} }
 
 		/** @type {Drag} */
 		const drag = {
+			start: initial,
 			x: 0,
 			y: 0,
 			dx: 0,
