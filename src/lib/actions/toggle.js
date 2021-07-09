@@ -11,6 +11,31 @@ export function toggle(details, callback) {
 
 	let open = details.open;
 
+	/**
+	 * @param {number} a
+	 * @param {number} b
+	 * @param {boolean} value
+	 */
+	function animate(a, b, value) {
+		details.style.overflowY = 'hidden';
+		animation = details.animate(
+			{
+				height: [`${a}px`, `${b}px`]
+			},
+			{
+				duration: 30 * Math.log(Math.abs(b - a)),
+				easing: 'ease-out'
+			}
+		);
+
+		callback((open = value));
+
+		animation.onfinish = () => {
+			details.open = value;
+			details.style.overflowY = '';
+		};
+	}
+
 	/** @param {MouseEvent} e */
 	function handle_click(e) {
 		e.preventDefault();
@@ -19,42 +44,14 @@ export function toggle(details, callback) {
 			const a = details.offsetHeight;
 			const b = summary.offsetHeight;
 
-			animation = details.animate(
-				{
-					height: [`${a}px`, `${b}px`]
-				},
-				{
-					duration: 30 * Math.log(Math.abs(b - a)),
-					easing: 'ease-out'
-				}
-			);
-
-			callback((open = false));
-
-			animation.onfinish = () => {
-				details.open = false;
-			};
+			animate(a, b, false);
 		} else {
 			const a = details.offsetHeight;
 			if (animation) animation.cancel();
 			details.open = true;
 			const b = details.offsetHeight;
 
-			animation = details.animate(
-				{
-					height: [`${a}px`, `${b}px`]
-				},
-				{
-					duration: 30 * Math.log(Math.abs(b - a)),
-					easing: 'ease-out'
-				}
-			);
-
-			callback((open = true));
-
-			animation.onfinish = () => {
-				details.open = true;
-			};
+			animate(a, b, true);
 		}
 	}
 

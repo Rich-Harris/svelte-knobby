@@ -1,5 +1,4 @@
 <script>
-	import Chevron from '../components/Chevron.svelte';
 	import Items from '../Items.svelte';
 	import { toggle } from '../actions/toggle.js';
 
@@ -14,7 +13,14 @@
 
 <details use:toggle={value => (open = value)} open>
 	<summary>
-		<Chevron {open}/>
+		<svg viewBox="0 0 24 24">
+			{#if open}
+				<path fill="currentColor" d="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z" />
+			{:else}
+				<path fill="currentColor" d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" />
+			{/if}
+		</svg>
+
 		{name}
 	</summary>
 
@@ -25,7 +31,6 @@
 
 <style>
 	details {
-		overflow-y: hidden;
 		margin-left: -0.3rem;
 		padding-left: 0.3rem;
 	}
@@ -39,6 +44,13 @@
 		padding: 0.5rem 0;
 		margin: 0 0 0.1rem -0.3rem;
 		align-items: center;
+	}
+
+	summary svg {
+		width: 0.8rem;
+		height: 0.8rem;
+		opacity: 0.4;
+		margin: 0 0.3rem 0 0;
 	}
 
 	[open] > summary::before {

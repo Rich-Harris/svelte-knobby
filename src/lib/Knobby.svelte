@@ -1,8 +1,8 @@
 <script>
 	import Root from './Root.svelte';
-	import Chevron from './components/Chevron.svelte';
 	import { slide } from 'svelte/transition';
 	import * as storage from './storage.js';
+	import { toggle } from './actions/toggle.js';
 
 	/** @type {Array<import('svelte/store').Writable<any>>}*/
 	export let stores = [];
@@ -96,29 +96,29 @@
 	}
 </script>
 
-<div bind:this={knobby} class="knobby" class:expanded style="{vertical}; {horizontal}; transform: {transform}">
-	<div class="title-bar">
-		<button on:click={() => expanded = !expanded}>
-			<Chevron open={expanded}/>
-		</button>
+<details open bind:this={knobby} class="knobby" use:toggle={value => expanded = value} style="{vertical}; {horizontal}; transform: {transform}">
+	<summary class="title-bar">
+		<span class:open={expanded}>
+			<svg role="img" viewBox="0 0 24 24">
+				<path fill="currentColor" stroke="currentColor" style="stroke-linejoin: round; stroke-width: 3;" d="M5,8L19,8L12,15Z" />
+			</svg>
+		</span>
 
-		<div class="drag-bar" on:pointerdown={drag}>
+		<div class="drag-bar" on:click={e => (e.stopPropagation(), e.preventDefault())} on:pointerdown={drag}>
 			<svg role="img" aria-label="drag handle" viewBox="0 0 24 24">
 				<path fill="currentColor" d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
 			</svg>
 		</div>
-	</div>
+	</summary>
 
-	{#if expanded}
-		<div class="container" transition:slide={{duration:200}}>
-			<div class="content">
-				{#each stores as store}
-					<Root {store}/>
-				{/each}
-			</div>
+	<div class="container" transition:slide={{duration:200}}>
+		<div class="content">
+			{#each stores as store}
+				<Root {store}/>
+			{/each}
 		</div>
-	{/if}
-</div>
+	</div>
+</details>
 
 <style>
 	.knobby {
@@ -150,8 +150,17 @@
 		transition: filter 0.2s;
 	}
 
-	.knobby.expanded {
-		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.05));
+	summary span {
+		display: block;
+		width: 1rem;
+		height: 1rem;
+		pointer-events: none;
+		transform: rotate(-90deg);
+		transition: transform 0.2s;
+	}
+
+	summary span.open {
+		transform: rotate(0deg);
 	}
 
 	svg {
@@ -171,19 +180,13 @@
 		padding: 0rem 0.4rem;
 		color: var(--flash);
 	}
-	.title-bar button {
-		width: 100%;
-		height: 100%;
-		font-size: var(--size);
-		padding: 0;
-		margin: 0;
-		border: none;
-		background: none;
-		opacity: 0.2;
+
+	.title-bar svg {
 		transition: opacity 0.2s;
+		opacity: 0.2;
 	}
 
-	.title-bar button:hover {
+	.title-bar > :hover svg {
 		opacity: 1;
 	}
 
