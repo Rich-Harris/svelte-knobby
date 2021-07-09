@@ -5,27 +5,22 @@ import { get_ticks } from './ticks';
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {import('./types').KeyframeTrack[]} tracks
+ * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(ctx, tracks, bounds, playhead) {
+export function draw(ctx, tracks, project, bounds, playhead) {
 	const w = ctx.canvas.offsetWidth * devicePixelRatio;
 	const h = ctx.canvas.offsetHeight * devicePixelRatio;
 
 	ctx.canvas.width = w;
 	ctx.canvas.height = h;
+	ctx.scale(devicePixelRatio, devicePixelRatio);
 
-	const padding = 20 * devicePixelRatio;
-
-	const project = {
-		x: yootils.linearScale([bounds.x1, bounds.x2], [padding, w - padding]),
-		y: yootils.linearScale([bounds.y1, bounds.y2], [h - padding, padding])
-	};
+	const padding = 20;
 
 	// ticks
-	ctx.font = `normal ${
-		10 * devicePixelRatio
-	}px ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace`;
+	ctx.font = `normal ${10}px ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace`;
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
@@ -40,11 +35,11 @@ export function draw(ctx, tracks, bounds, playhead) {
 		ctx.moveTo(x, 0);
 		ctx.lineTo(x, h);
 		ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-		ctx.lineWidth = devicePixelRatio;
+		ctx.lineWidth = 1;
 		ctx.stroke();
 
 		ctx.strokeStyle = 'white';
-		ctx.lineWidth = 3 * devicePixelRatio;
+		ctx.lineWidth = 3;
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';
 		ctx.strokeText(String(tick), x, h - padding * 0.5);
 		ctx.fillText(String(tick), x, h - padding * 0.5);
@@ -56,18 +51,18 @@ export function draw(ctx, tracks, bounds, playhead) {
 		ctx.moveTo(0, y);
 		ctx.lineTo(w, y);
 		ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-		ctx.lineWidth = devicePixelRatio;
+		ctx.lineWidth = 1;
 		ctx.stroke();
 
 		ctx.strokeStyle = 'white';
-		ctx.lineWidth = 3 * devicePixelRatio;
+		ctx.lineWidth = 3;
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';
-		ctx.strokeText(String(tick), padding * 0.5, y + 2 * devicePixelRatio);
-		ctx.fillText(String(tick), padding * 0.5, y + 2 * devicePixelRatio);
+		ctx.strokeText(String(tick), padding * 0.5, y + 2);
+		ctx.fillText(String(tick), padding * 0.5, y + 2);
 	}
 
 	ctx.strokeStyle = 'black';
-	ctx.lineWidth = devicePixelRatio;
+	ctx.lineWidth = 1;
 
 	for (const track of tracks) {
 		for (let i = 0; i < track.curves.length; i += 1) {
@@ -104,9 +99,9 @@ export function draw(ctx, tracks, bounds, playhead) {
 			const y = project.y(point[1]);
 
 			ctx.beginPath();
-			ctx.arc(x, y, 5, 0, Math.PI * 2);
+			ctx.arc(x, y, 3, 0, Math.PI * 2);
 			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 8;
+			ctx.lineWidth = 5;
 			ctx.fillStyle = 'black';
 			ctx.stroke();
 			ctx.fill();

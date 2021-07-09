@@ -1,5 +1,6 @@
 <script>
 	import { onMount, getContext } from 'svelte';
+	import * as yootils from 'yootils';
 	import { draw } from './draw';
 	import { drag } from '$lib/actions/drag.js';
 
@@ -13,6 +14,12 @@
 	export let value;
 
 	const { run } = getContext('knobby'); // TODO make a typed function for this
+
+	/** @type {Set<[number, number]>} */
+	const selected_points = new Set();
+
+	let w = 0;
+	let h = 0;
 
 	/** @type {HTMLCanvasElement} */
 	let canvas;
@@ -42,7 +49,19 @@
 
 	fit();
 
-	$: if (ctx) draw(ctx, value.tracks, bounds, 0); // TODO rerun x function automatically
+	const padding = 20;
+
+	$: project = {
+		x: yootils.linearScale([bounds.x1, bounds.x2], [padding, w - padding]),
+		y: yootils.linearScale([bounds.y1, bounds.y2], [h - padding, padding])
+	};
+
+	$: unproject = {
+		x: project.x.inverse(),
+		y: project.x.inverse()
+	}
+
+	$: if (ctx) draw(ctx, value.tracks, project, bounds, 0); // TODO rerun x function automatically
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -54,6 +73,8 @@
 <div
 	class="keyframe-editor"
 	style="cursor: {cursor}"
+	bind:clientWidth={w}
+	bind:clientHeight={h}
 	use:drag={{
 		start: drag => {
 			drag.context.selection = null;
@@ -70,28 +91,54 @@
 
 		}
 	}}
+	on:pointerdown={e => {
+
+	}}
+	on:mousemove={e => {
+		// const bcr = canvas.getBoundingClientRect();
+		// const project = {
+		// 	x: yootils.linearScale([bounds.x1, bounds.x2], [bcr.left, bcr.right])
+		// }
+
+		// for (const track of value.tracks) {
+		// 	for (const point of track.points) {
+		// 		console.log(point);
+		// 	}
+		// }
+	}}
 	on:wheel={e => {
-		if (e.metaKey || e.shiftKey) {
+		if (e.metaKey || e.shiftKey || e.altKey) {
 			e.preventDefault();
 
 			const bcr = canvas.getBoundingClientRect();
-			const px = (e.clientX - bcr.left) / bcr.width;
-			const py = (e.clientY - bcr.top) / bcr.height;
-			const cx = bounds.x1 + px * (bounds.x2 - bounds.x1);
-			const cy = bounds.y1 + py * (bounds.y2 - bounds.y1);
 
-			const amount = Math.pow(Math.exp(-e.wheelDeltaY), 0.01);
+			if (e.altKey) {
+				const dx = e.wheelDeltaX * (bounds.x2 - bounds.x1) / bcr.width;
+				const dy = e.wheelDeltaY * (bounds.y2 - bounds.y1) / bcr.height;
 
-			if (e.metaKey) {
-				// zoom x
-				bounds.x1 = cx - amount * (cx - bounds.x1);
-				bounds.x2 = cx + amount * (bounds.x2 - cx);
-			}
+				bounds.x1 -= dx * 0.25;
+				bounds.x2 -= dx * 0.25;
+				bounds.y1 += dy * 0.25;
+				bounds.y2 += dy * 0.25;
+			} else {
+				const px = (e.clientX - bcr.left) / bcr.width;
+				const py = (e.clientY - bcr.top) / bcr.height;
+				const cx = bounds.x1 + px * (bounds.x2 - bounds.x1);
+				const cy = bounds.y1 + py * (bounds.y2 - bounds.y1);
 
-			if (e.shiftKey) {
-				// zoom y
-				bounds.y1 = cy - amount * (cy - bounds.y1);
-				bounds.y2 = cy + amount * (bounds.y2 - cy);
+				const amount = Math.pow(Math.exp(-e.wheelDeltaY), 0.01);
+
+				if (e.metaKey) {
+					// zoom x
+					bounds.x1 = cx - amount * (cx - bounds.x1);
+					bounds.x2 = cx + amount * (bounds.x2 - cx);
+				}
+
+				if (e.shiftKey) {
+					// zoom y
+					bounds.y1 = cy - amount * (cy - bounds.y1);
+					bounds.y2 = cy + amount * (bounds.y2 - cy);
+				}
 			}
 		}
 	}}
