@@ -99,7 +99,7 @@
 </script>
 
 <div class="keyframe-editor" tabindex="0" on:keydown={e => {
-	console.log(e);
+	// TODO nudge selection, undo/redo
 }}>
 	<span>{name}</span>
 
@@ -224,14 +224,18 @@
 </div>
 
 <style>
-	.keyframe-editor:focus-within {
+	.keyframe-editor:focus-visible {
 		position: relative;
 		margin: -2px;
 		padding: 2px;
 		outline: none;
-		border-radius: var(--border-radius);
-		box-shadow: 0 0 0 2px hsla(var(--hue), 11%, 40%, 0.4);
+		border-radius: calc(var(--border-radius) * 0.25);
+		box-shadow: 0 0 0 2px var(--focus-color);
 		z-index: 2;
+	}
+
+	.keyframe-editor:focus-within > span {
+		font-weight: bold;
 	}
 
 	.canvas-container {

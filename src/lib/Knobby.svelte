@@ -322,4 +322,8 @@
 		user-select: none;
 	}
 
+	.knobby :global(.knobby-row:focus-within > :first-child) {
+		font-weight: bold;
+	}
+
 </style>
