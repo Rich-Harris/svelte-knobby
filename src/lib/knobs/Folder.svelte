@@ -73,6 +73,8 @@
 <style>
 	details {
 		overflow-y: hidden;
+		margin-left: -0.3rem;
+		padding-left: 0.3rem;
 	}
 
 	summary {

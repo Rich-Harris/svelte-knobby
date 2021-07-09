@@ -251,6 +251,10 @@
 		margin: 0 0 0.3rem 0;
 	}
 
+	.knobby :global(.knobby-row:last-child) {
+		margin: 0;
+	}
+
 	.knobby :global(.knobby-row > :first-child) {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
