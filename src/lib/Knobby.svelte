@@ -2,6 +2,7 @@
 	import Root from './Root.svelte';
 	import Chevron from './components/Chevron.svelte';
 	import { slide } from 'svelte/transition';
+	import * as storage from './storage.js';
 
 	/** @type {Array<import('svelte/store').Writable<any>>}*/
 	export let stores = [];
@@ -9,18 +10,23 @@
 	/** @type {HTMLElement} */
 	let knobby;
 
-	let top = 16;
-	let right = 16;
-	/** @type {number} */
-	let bottom = null;
-	/** @type {number} */
-	let left = null;
-	let transform = 'translate(0, 0)';
+	let top = storage.get('top', 16);
+	let right = storage.get('right', 16);
+	let bottom = storage.get('bottom', null);
+	let left = storage.get('left', null);
+	let expanded = storage.get('expanded', true);
 
-	let visible = true;
+	let transform = 'translate(0, 0)';
 
 	$: vertical = (top === null ? `bottom: ${bottom}px` : `top: ${top}px`);
 	$: horizontal = (left === null ? `right: ${right}px` : `left: ${left}px`);
+
+	// persist values to localStorage
+	$: storage.set('top', top);
+	$: storage.set('right', right);
+	$: storage.set('bottom', bottom);
+	$: storage.set('left', left);
+	$: storage.set('expanded', expanded);
 
 	/**
 	 * @param {number} n
@@ -90,10 +96,10 @@
 	}
 </script>
 
-<div bind:this={knobby} class="knobby" class:visible style="{vertical}; {horizontal}; transform: {transform}">
+<div bind:this={knobby} class="knobby" class:expanded style="{vertical}; {horizontal}; transform: {transform}">
 	<div class="title-bar">
-		<button on:click={() => visible = !visible}>
-			<Chevron open={visible}/>
+		<button on:click={() => expanded = !expanded}>
+			<Chevron open={expanded}/>
 		</button>
 
 		<div class="drag-bar" on:pointerdown={drag}>
@@ -103,7 +109,7 @@
 		</div>
 	</div>
 
-	{#if visible}
+	{#if expanded}
 		<div class="container" transition:slide={{duration:200}}>
 			<div class="content">
 				{#each stores as store}
@@ -144,7 +150,7 @@
 		transition: filter 0.2s;
 	}
 
-	.knobby.visible {
+	.knobby.expanded {
 		filter: drop-shadow(4px 5px 3px rgba(0, 0, 0, 0.05));
 	}
 
