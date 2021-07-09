@@ -94,22 +94,22 @@ function update() {
 }
 
 export function knobby(initial) {
-	const state = {
+	const node = {
 		type: 'folder',
 		value: {}
 	};
 
 	for (const key in initial) {
 		if (key.startsWith('$')) {
-			state[key] = initial[key];
+			node[key] = initial[key];
 		} else {
-			state.value[key] = interpret(initial[key]);
+			node.value[key] = interpret(initial[key]);
 		}
 	}
 
-	let values = extract(state);
+	let values = extract(node);
 
-	const private_store = writable(state);
+	const private_store = writable(node);
 
 	const public_store = writable(values, (set) => {
 		// add to the UI
@@ -117,9 +117,9 @@ export function knobby(initial) {
 		stores.push(private_store);
 		update();
 
-		private_store.subscribe((state) => {
+		private_store.subscribe((node) => {
 			if (updating) return;
-			set((values = extract(state)));
+			set((values = extract(node)));
 		});
 
 		return () => {
@@ -136,7 +136,7 @@ export function knobby(initial) {
 		// the private store
 		updating = true;
 		public_store.set(values);
-		private_store.update((state) => merge(state, values));
+		private_store.update((node) => merge(node, values));
 		updating = false;
 	}
 
