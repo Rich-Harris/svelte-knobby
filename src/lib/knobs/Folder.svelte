@@ -13,7 +13,7 @@
 	/** @type {HTMLDetailsElement} */
 	let details;
 
-	/** @type {HTMLSummaryElement} */
+	/** @type {HTMLElement} */
 	let summary;
 
 	/** @type {Animation} */
