@@ -9,53 +9,52 @@ import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
 import { extract, merge } from './utils';
 
-function interpret(state) {
-	// TODO make this a list that users can add to
-
-	if (typeof state === 'number') {
+/** @param {any} input */
+function interpret(input) {
+	if (typeof input === 'number') {
 		return {
 			component: Number,
-			value: state
+			value: input
 		};
 	}
 
-	if (typeof state === 'boolean') {
+	if (typeof input === 'boolean') {
 		return {
 			component: Boolean,
-			value: state
+			value: input
 		};
 	}
 
-	if (typeof state === 'string') {
-		if (/^#[a-fA-F0-9]{6}$/.test(state)) {
+	if (typeof input === 'string') {
+		if (/^#[a-fA-F0-9]{6}$/.test(input)) {
 			return {
 				component: Color,
-				value: state
+				value: input
 			};
 		}
 
 		return {
 			component: String,
-			value: state
+			value: input
 		};
 	}
 
-	if (typeof state === 'function') {
+	if (typeof input === 'function') {
 		return {
 			component: Button,
-			value: state
+			value: input
 		};
 	}
 
 	// TODO proper support for user-supplied components
-	if (state.component) {
-		return { ...state };
+	if (input.component) {
+		return { ...input };
 	}
 
-	if (typeof state.value === 'number') {
-		if ('min' in state && 'max' in state) {
+	if (typeof input.value === 'number') {
+		if ('min' in input && 'max' in input) {
 			return {
-				...state,
+				...input,
 				component: Range
 			};
 		}
@@ -63,21 +62,21 @@ function interpret(state) {
 
 	// TODO { value: number, min: number, max: number } etc
 
-	const interpreted = {
+	const node = {
 		component: Folder,
 		type: 'folder',
 		value: {}
 	};
 
-	for (const key in state) {
+	for (const key in input) {
 		if (key.startsWith('$')) {
-			interpreted[key] = state[key];
+			node[key] = input[key];
 		} else {
-			interpreted.value[key] = interpret(state[key]);
+			node.value[key] = interpret(input[key]);
 		}
 	}
 
-	return interpreted;
+	return node;
 }
 
 let controls;

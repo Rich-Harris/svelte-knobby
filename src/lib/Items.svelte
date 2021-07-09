@@ -5,7 +5,7 @@
 </script>
 
 <div>
-	{#each Object.entries(value) as [name, state]}
-		<svelte:component this={state.component} name={state.$label || name} bind:value={value[name].value} {...get_opts(state)}/>
+	{#each Object.entries(value) as [name, node]}
+		<svelte:component this={node.component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
 	{/each}
 </div>
