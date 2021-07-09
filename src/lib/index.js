@@ -49,23 +49,21 @@ function interpret(input) {
 		};
 	}
 
-	// TODO proper support for user-supplied components
-	if (input.component) {
-		return { ...input };
-	}
+	if (input.$component) return input;
 
+	// try to figure out which component matches
 	if (typeof input.value === 'number') {
 		if ('min' in input && 'max' in input) {
 			return {
-				...input,
-				component: Range
+				$component: Range,
+				...input
 			};
 		}
 	}
 
 	/** @type {import('./types').Node} */
 	const node = {
-		__folder: true,
+		$folder: true,
 		$component: Folder,
 		value: {}
 	};
@@ -104,7 +102,7 @@ function update() {
 export function knobby(initial) {
 	/** @type {import('./types').Node} */
 	const node = {
-		__folder: true,
+		$folder: true,
 		$component: null,
 		value: {}
 	};

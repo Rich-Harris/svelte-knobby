@@ -14,7 +14,7 @@ export function get_opts(node) {
 
 /** @param {import('./types').Node} node */
 export function extract(node) {
-	if (node.__folder) {
+	if (node.$folder) {
 		/** @type {Record<string, any>} */
 		const value = {};
 
@@ -33,7 +33,7 @@ export function extract(node) {
  * @param {Record<string, any>} value
  */
 export function merge(node, value) {
-	if (node.__folder) {
+	if (node.$folder) {
 		/** @type {Record<string, any>} */
 		const new_value = {};
 
