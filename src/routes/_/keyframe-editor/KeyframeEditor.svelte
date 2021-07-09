@@ -115,6 +115,8 @@
 			selected_points = [];
 
 			if (selection) {
+				drag.context.start = [...selection.point];
+
 				const prev = selection.track.points[selection.index - 1];
 				const next = selection.track.points[selection.index + 1];
 
@@ -128,17 +130,25 @@
 
 			cursor = selection ? 'move' : 'grabbing';
 		},
-		move: drag => {
-			const dx = drag.dx * (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2);
-			const dy = drag.dy * (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2);
+		move: (drag, e) => {
+			let dx = drag.x * (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2);
+			let dy = drag.y * (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2);
 
 			if (drag.context.selection) {
 				const { point } = drag.context.selection;
 				const { x1, x2 } = drag.context.bounds;
 
-				// TODO move point/handle
-				point[0] = yootils.clamp(point[0] + dx, x1, x2);
-				point[1] -= dy;
+				if (e.shiftKey) {
+					if (Math.abs(drag.x) > Math.abs(drag.y)) {
+						dy = 0;
+					} else {
+						dx = 0;
+					}
+				}
+
+				// TODO move handles
+				point[0] = yootils.clamp(drag.context.start[0] + dx, x1, x2);
+				point[1] = drag.context.start[1] - dy;
 
 				value = value;
 			} else {

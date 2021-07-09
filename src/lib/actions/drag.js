@@ -15,9 +15,9 @@
 /**
  * @param {HTMLElement} node
  * @param {{
- *   start?: (drag: Drag) => void;
- *   move?: (drag: Drag) => void;
- *   end?: (drag: Drag) => void;
+ *   start?: (drag: Drag, e: PointerEvent) => void;
+ *   move?: (drag: Drag, e: PointerEvent) => void;
+ *   end?: (drag: Drag, e: PointerEvent) => void;
  * }} handlers
  */
 export function drag(node, { start = () => {}, move = () => {}, end = () => {} } = {}) {
@@ -40,7 +40,7 @@ export function drag(node, { start = () => {}, move = () => {}, end = () => {} }
 			context: {}
 		};
 
-		start(drag);
+		start(drag, e);
 
 		/** @param {PointerEvent} e */
 		function handle_move(e) {
@@ -57,14 +57,14 @@ export function drag(node, { start = () => {}, move = () => {}, end = () => {} }
 			last.x = x;
 			last.y = y;
 
-			move(drag);
+			move(drag, e);
 		}
 
 		/** @param {PointerEvent} e */
 		function handle_end(e) {
 			if (e.pointerId !== pointerId) return;
 
-			end(drag);
+			end(drag, e);
 
 			window.removeEventListener('pointermove', handle_move);
 			window.removeEventListener('pointerup', handle_end);
