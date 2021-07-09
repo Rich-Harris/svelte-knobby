@@ -1,6 +1,7 @@
 <script>
 	import Chevron from '../components/Chevron.svelte';
 	import Items from '../Items.svelte';
+	import { toggle } from '../actions/toggle.js';
 
 	/** @type {string} */
 	export let name;
@@ -9,58 +10,10 @@
 	export let value;
 
 	let open = true;
-
-	/** @type {HTMLDetailsElement} */
-	let details;
-
-	/** @type {HTMLElement} */
-	let summary;
-
-	/** @type {Animation} */
-	let animation;
-
-	/** @param {MouseEvent} e */
-	function toggle(e) {
-		if (open) {
-			const a = details.offsetHeight;
-			const b = summary.offsetHeight;
-
-			animation = details.animate({
-				height: [`${a}px`, `${b}px`]
-			}, {
-				duration: 30 * Math.log(Math.abs(b - a)),
-				easing: 'ease-out'
-			});
-
-			open = false;
-
-			animation.onfinish = () => {
-				details.open = false;
-			};
-		} else {
-			const a = details.offsetHeight;
-			if (animation) animation.cancel();
-			details.open = true;
-			const b = details.offsetHeight;
-
-			animation = details.animate({
-				height: [`${a}px`, `${b}px`]
-			}, {
-				duration: 30 * Math.log(Math.abs(b - a)),
-				easing: 'ease-out'
-			});
-
-			open = true;
-
-			animation.onfinish = () => {
-				details.open = true;
-			};
-		}
-	}
 </script>
 
-<details bind:this={details} open>
-	<summary bind:this={summary} on:click|preventDefault={toggle}>
+<details use:toggle={value => (open = value)} open>
+	<summary>
 		<Chevron {open}/>
 		{name}
 	</summary>
