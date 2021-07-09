@@ -17,7 +17,7 @@ export function toggle(details, callback) {
 	 * @param {boolean} value
 	 */
 	function animate(a, b, value) {
-		details.style.overflowY = 'hidden';
+		details.style.overflow = 'hidden';
 		animation = details.animate(
 			{
 				height: [`${a}px`, `${b}px`]
@@ -32,7 +32,7 @@ export function toggle(details, callback) {
 
 		animation.onfinish = () => {
 			details.open = value;
-			details.style.overflowY = '';
+			details.style.overflow = '';
 		};
 	}
 
