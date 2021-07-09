@@ -1,11 +1,13 @@
 <script>
 	import Root from './Root.svelte';
-	import { slide } from 'svelte/transition';
 	import * as storage from './storage.js';
 	import { toggle } from './actions/toggle.js';
+	import { drag } from './actions/drag.js';
 
 	/** @type {Array<import('svelte/store').Writable<any>>}*/
 	export let stores = [];
+
+	const min_width = 280;
 
 	/** @type {HTMLElement} */
 	let knobby;
@@ -14,7 +16,11 @@
 	let right = storage.get('right', 16);
 	let bottom = storage.get('bottom', null);
 	let left = storage.get('left', null);
+	let width = storage.get('width', 320);
 	let expanded = storage.get('expanded', true);
+
+	// we only want the initial value to have any direct effect on the DOM
+	const open = expanded;
 
 	let transform = 'translate(0, 0)';
 
@@ -26,6 +32,7 @@
 	$: storage.set('right', right);
 	$: storage.set('bottom', bottom);
 	$: storage.set('left', left);
+	$: storage.set('width', width);
 	$: storage.set('expanded', expanded);
 
 	/**
@@ -37,66 +44,36 @@
 		return Math.max(a, Math.min(b, n));
 	}
 
-	/** @param {PointerEvent} e */
-	function drag(e) {
-		if (!e.isPrimary) return;
-
-		const { clientX: x, clientY: y, pointerId } = e;
+	function update_positions() {
 		const bcr = knobby.getBoundingClientRect();
 
-		const range = {
-			left: -bcr.left,
-			right: window.innerWidth - bcr.right,
-			bottom: window.innerHeight - bcr.bottom,
-			top: -bcr.top
-		};
-
-		/** @param {PointerEvent} e */
-		function move(e) {
-			if (e.pointerId !== pointerId) return;
-
-			const dx = Math.round(clamp(e.clientX - x, range.left, range.right));
-			const dy = Math.round(clamp(e.clientY - y, range.top, range.bottom));
-
-			transform = `translate(${dx}px, ${dy}px)`;
+		if (bcr.left < window.innerWidth - bcr.right) {
+			left = Math.round(bcr.left);
+			right = null;
+		} else {
+			left = null;
+			right = Math.round(window.innerWidth - bcr.right);
 		}
 
-		/** @param {PointerEvent} e */
-		function up(e) {
-			if (e.pointerId !== pointerId) return;
-
-			const bcr = knobby.getBoundingClientRect();
-
-			if (bcr.left < window.innerWidth - bcr.right) {
-				left = Math.round(bcr.left);
-				right = null;
-			} else {
-				left = null;
-				right = Math.round(window.innerWidth - bcr.right);
-			}
-
-			if (bcr.top < window.innerHeight - bcr.bottom) {
-				top = Math.round(bcr.top);
-				bottom = null;
-			} else {
-				top = null;
-				bottom = Math.round(window.innerHeight - bcr.bottom);
-			}
-
-			transform = 'translate(0, 0)';
-
-			window.removeEventListener('pointermove', move);
-			window.removeEventListener('pointerup', up);
-			window.removeEventListener('pointercancel', up);
+		if (bcr.top < window.innerHeight - bcr.bottom) {
+			top = Math.round(bcr.top);
+			bottom = null;
+		} else {
+			top = null;
+			bottom = Math.round(window.innerHeight - bcr.bottom);
 		}
 
-		window.addEventListener('pointermove', move);
-		window.addEventListener('pointerup', up);
-		window.addEventListener('pointercancel', up);
+		width = Math.round(width);
 	}
 </script>
 
-<details open bind:this={knobby} class="knobby" use:toggle={value => expanded = value} style="{vertical}; {horizontal}; transform: {transform}">
+<details
+	{open}
+	bind:this={knobby}
+	class="knobby"
+	use:toggle={value => expanded = value}
+	style="{vertical}; {horizontal}; --knobby-panel-width: {width}px; --knobby-column-width: {Math.max(width - 200, 160)}px; transform: {transform}"
+>
 	<summary class="title-bar">
 		<span class:open={expanded}>
 			<svg role="img" viewBox="0 0 24 24">
@@ -104,20 +81,86 @@
 			</svg>
 		</span>
 
-		<div class="drag-bar" on:click={e => (e.stopPropagation(), e.preventDefault())} on:pointerdown={drag}>
+		<div
+			class="drag-bar"
+			on:click={e => (e.stopPropagation(), e.preventDefault())}
+			use:drag={{
+				start: (drag) => {
+					const bcr = knobby.getBoundingClientRect();
+					drag.context.bounds = {
+						left: -bcr.left,
+						right: window.innerWidth - bcr.right,
+						bottom: window.innerHeight - bcr.bottom,
+						top: -bcr.top
+					};
+				},
+				move: (drag) => {
+					const x = Math.round(clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right));
+					const y = Math.round(clamp(drag.y, drag.context.bounds.top, drag.context.bounds.bottom));
+
+					transform = `translate(${x}px, ${y}px)`;
+				},
+				end: drag => {
+					update_positions();
+					transform = 'translate(0, 0)';
+				}
+			}}
+		>
 			<svg role="img" aria-label="drag handle" viewBox="0 0 24 24">
 				<path fill="currentColor" d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
 			</svg>
 		</div>
 	</summary>
 
-	<div class="container" transition:slide={{duration:200}}>
-		<div class="content">
-			{#each stores as store}
-				<Root {store}/>
-			{/each}
-		</div>
+	<div class="content">
+		{#each stores as store}
+			<Root {store}/>
+		{/each}
 	</div>
+
+	<div class="drag-handle left" use:drag={{
+		start: (drag) => {
+			const bcr = knobby.getBoundingClientRect();
+
+			drag.context.bounds = {
+				left: -bcr.left,
+				right: bcr.width - min_width
+			};
+
+			drag.context.initial = { left, width };
+		},
+		move: drag => {
+			const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
+
+			width = drag.context.initial.width - dx;
+			if (left !== null) left = drag.context.initial.left + dx;
+		},
+		end: drag => {
+			update_positions();
+		}
+	}}></div>
+
+	<div class="drag-handle right" use:drag={{
+		start: (drag) => {
+			const bcr = knobby.getBoundingClientRect();
+
+			drag.context.bounds = {
+				left: -(bcr.width - min_width),
+				right: window.innerWidth - bcr.right
+			};
+
+			drag.context.initial = { right, width };
+		},
+		move: drag => {
+			const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
+
+			width = drag.context.initial.width + dx;
+			if (right !== null) right = drag.context.initial.right - dx;
+		},
+		end: drag => {
+			update_positions();
+		}
+	}}></div>
 </details>
 
 <style>
@@ -138,7 +181,8 @@
 		display: flex;
 		flex-direction: column;
 		z-index: 99999;
-		width: 320px;
+		width: var(--knobby-panel-width);
+		max-width: calc(100% - 2rem);
 		max-height: calc(100% - 2rem);
 		background-color: var(--bg);
 		color: var(--fg);
@@ -203,14 +247,28 @@
 		opacity: 1;
 	}
 
-	.container {
-		overflow-y: hidden;
-	}
-
 	.content {
 		padding: 0 0.8rem;
 		max-height: calc(100vh - 3.8rem);
 		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	.drag-handle {
+		position: absolute;
+		width: 6px;
+		height: 100%;
+		top: 0;
+		cursor: ew-resize;
+		user-select: none;
+	}
+
+	.drag-handle.left {
+		left: -3px;
+	}
+
+	.drag-handle.right {
+		right: -3px;
 	}
 
 	.knobby :global(*) {
@@ -246,7 +304,7 @@
 
 	.knobby :global(.knobby-row) {
 		display: grid;
-		grid-template-columns: 1fr 160px;
+		grid-template-columns: 1fr var(--knobby-column-width);
 		grid-gap: var(--gap);
 		align-items: center;
 		min-height: 2rem;
@@ -260,6 +318,7 @@
 	.knobby :global(.knobby-row > :first-child) {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
+		white-space: nowrap;
 		user-select: none;
 	}
 
