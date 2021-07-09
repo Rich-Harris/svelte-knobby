@@ -1,5 +1,6 @@
 <script>
 	import { knobby } from '$lib';
+	import KeyframeEditor from './_/keyframe-editor/KeyframeEditor.svelte';
 	import Thing from './_/Thing.svelte';
 
 	const controls = knobby({
@@ -7,7 +8,6 @@
 		$label: 'Main options',
 
 		// primitive values are handled automatically
-		message: 'Hello World!',
 		color: '#ff3e00',
 		clicks: 0,
 		checked: false,
@@ -18,6 +18,34 @@
 			...value,
 			clicks: value.clicks + 1
 		}),
+
+		reset: value => ({
+			...value,
+			clicks: 0
+		}),
+
+		phi: {
+			$component: KeyframeEditor,
+			value: {
+				x: values => values.constrained,
+				tracks: [
+					{
+						label: 'a label',
+						points: [
+							[0, 0],
+							[50, 20],
+							[75, 90],
+							[100, 50]
+						],
+						curves: [
+							[0.33, 0.33, 0.67, 0.8],
+							[0.33, 0.1, 0.67, 1],
+							[0.33, 0, 0.67, 1]
+						]
+					}
+				]
+			}
+		},
 
 		// specify options by using a { value } object
 		constrained: {
@@ -44,15 +72,10 @@
 	});
 
 	// the returned store is writable
-	$controls.message = 'Hello Knobby!';
+	// $controls.message = 'Hello Knobby!';
 </script>
 
-<h1 style="color: {$controls.color}">{$controls.message}</h1>
-<button on:click={() => $controls.clicks += 1}>
-	clicks: {$controls.clicks}
-</button>
-
-<pre>{JSON.stringify($controls.folder)}</pre>
+<pre>{JSON.stringify($controls.phi.tracks, null, '  ')}</pre>
 
 {#if $controls.checked}
 	<Thing/>
