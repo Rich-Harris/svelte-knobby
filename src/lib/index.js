@@ -60,8 +60,6 @@ function interpret(input) {
 		}
 	}
 
-	// TODO { value: number, min: number, max: number } etc
-
 	const node = {
 		component: Folder,
 		type: 'folder',
