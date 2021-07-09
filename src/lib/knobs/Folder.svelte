@@ -10,11 +10,57 @@
 
 	let open = true;
 
-	// TODO collapsed, label, etc
+	/** @type {HTMLDetailsElement} */
+	let details;
+
+	/** @type {HTMLSummaryElement} */
+	let summary;
+
+	/** @type {Animation} */
+	let animation;
+
+	/** @param {MouseEvent} e */
+	function toggle(e) {
+		if (open) {
+			const a = details.offsetHeight;
+			const b = summary.offsetHeight;
+
+			animation = details.animate({
+				height: [`${a}px`, `${b}px`]
+			}, {
+				duration: 30 * Math.log(Math.abs(b - a)),
+				easing: 'ease-out'
+			});
+
+			open = false;
+
+			animation.onfinish = () => {
+				details.open = false;
+			};
+		} else {
+			const a = details.offsetHeight;
+			if (animation) animation.cancel();
+			details.open = true;
+			const b = details.offsetHeight;
+
+			animation = details.animate({
+				height: [`${a}px`, `${b}px`]
+			}, {
+				duration: 30 * Math.log(Math.abs(b - a)),
+				easing: 'ease-out'
+			});
+
+			open = true;
+
+			animation.onfinish = () => {
+				details.open = true;
+			};
+		}
+	}
 </script>
 
-<details bind:open>
-	<summary>
+<details bind:this={details} open>
+	<summary bind:this={summary} on:click|preventDefault={toggle}>
 		<Chevron {open}/>
 		{name}
 	</summary>
@@ -25,6 +71,10 @@
 </details>
 
 <style>
+	details {
+		overflow-y: hidden;
+	}
+
 	summary {
 		display: flex;
 		position: relative;
