@@ -3,6 +3,8 @@
 ## 0.1.10 (unreleased)
 
 - Persist position/expanded state to localStorage
+- Make panel resizable
+- Improve icons and styles
 - Internal tidying up
 
 ## 0.1.9
