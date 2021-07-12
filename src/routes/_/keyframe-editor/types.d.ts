@@ -1,5 +1,8 @@
+export type Point = [number, number];
+export type Curve = [number, number, number, number];
+
 export type KeyframeTrack = {
 	label: string;
-	points: Array<[number, number]>;
-	curves: Array<[number, number, number, number]>;
+	points: Point[];
+	curves: Curve[];
 };

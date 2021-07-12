@@ -1,6 +1,7 @@
 import * as yootils from 'yootils';
 import bezier from 'bezier-easing';
-import { get_ticks } from './ticks';
+import { get_ticks } from './ticks.js';
+import { mix } from './utils.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -109,22 +110,26 @@ export function draw(ctx, tracks, selected_points, project, bounds, playhead) {
 					const curve = track.curves[i - 1];
 					const handle = [mix(prev[0], point[0], curve[2]), mix(prev[1], point[1], curve[3])];
 
-					const x = project.x(handle[0]);
-					const y = project.y(handle[1]);
-					circle(ctx, x, y, 3, 'red');
+					const hx = project.x(handle[0]);
+					const hy = project.y(handle[1]);
+
+					line(ctx, x, y, hx, hy, '#ff3e00', 1);
+					circle(ctx, hx, hy, 3, '#ff3e00');
 				}
 
 				if (next) {
 					const curve = track.curves[i];
 					const handle = [mix(point[0], next[0], curve[0]), mix(point[1], next[1], curve[1])];
 
-					const x = project.x(handle[0]);
-					const y = project.y(handle[1]);
-					circle(ctx, x, y, 3, 'red');
+					const hx = project.x(handle[0]);
+					const hy = project.y(handle[1]);
+
+					line(ctx, x, y, hx, hy, '#ff3e00', 1);
+					circle(ctx, hx, hy, 3, '#ff3e00');
 				}
 			}
 
-			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? 'red' : 'black');
+			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? '#ff3e00' : 'black');
 		}
 	}
 }
@@ -147,10 +152,20 @@ function circle(ctx, x, y, r, fill) {
 }
 
 /**
- * @param {number} a
- * @param {number} b
- * @param {number} t
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} x2
+ * @param {number} y2
+ * @param {string} stroke
+ * @param {number} width
  */
-function mix(a, b, t) {
-	return a + t * (b - a);
+function line(ctx, x1, y1, x2, y2, stroke, width) {
+	ctx.beginPath();
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+
+	ctx.strokeStyle = stroke;
+	ctx.lineWidth = width;
+	ctx.stroke();
 }

@@ -1,8 +1,9 @@
 <script>
 	import { onMount, getContext } from 'svelte';
 	import * as yootils from 'yootils';
-	import { draw } from './draw';
+	import { draw } from './draw.js';
 	import { drag } from '$lib/actions/drag.js';
+	import { mix } from './utils.js';
 
 	/** @type {string} */
 	export let name;
@@ -17,7 +18,7 @@
 
 	const EPSILON = 0.000001;
 
-	/** @type {Array<[number, number]>} */
+	/** @type {import('./types').Point[]} */
 	let selected_points = [];
 
 	let w = 0;
@@ -54,12 +55,79 @@
 	/**
 	 * @param {number} x
 	 * @param {number} y
+	 * @returns {{
+	 *   track: import('./types').KeyframeTrack;
+	 *   index: number;
+	 *   point: import('./types').Point;
+	 *   prev: import('./types').Point;
+	 *   next: import('./types').Point;
+	 *   curve: import('./types').Curve;
+	 * }}
 	 */
 	function select(x, y) {
 		const bcr = canvas.getBoundingClientRect();
 
 		const ox = x - bcr.left;
 		const oy = y - bcr.top;
+
+		/** @param {import('./types').Point} point */
+		function near(point) {
+			const x = project.x(point[0]);
+			const y = project.y(point[1]);
+
+			const dx = x - ox;
+			const dy = y - oy;
+
+			return (dx * dx + dy * dy) < 100;
+		}
+
+		// try to select handle first
+		for (const track of value.tracks) {
+			for (let i = 0; i < track.points.length; i += 1) {
+				const point = track.points[i];
+
+				if (selected_points.includes(point)) {
+					const prev = track.points[i - 1];
+					const next = track.points[i + 1];
+
+					if (prev) {
+						const curve = track.curves[i - 1];
+
+						/** @type {import('./types').Point} */
+						const handle = [mix(prev[0], point[0], curve[2]), mix(prev[1], point[1], curve[3])];
+
+						if (near(handle)) {
+							return {
+								track,
+								index: i,
+								point,
+								curve,
+								prev,
+								next: null
+							};
+						}
+					}
+
+					if (next) {
+						const curve = track.curves[i];
+
+						/** @type {import('./types').Point} */
+						const handle = [mix(point[0], next[0], curve[0]), mix(point[1], next[1], curve[1])];
+
+						if (near(handle)) {
+							return {
+								track,
+								index: i,
+								point,
+								curve,
+								prev: null,
+								next
+							};
+						}
+					}
+				}
+			}
+		}
 
 		for (const track of value.tracks) {
 			for (let index = 0; index < track.points.length; index += 1) {
@@ -71,7 +139,7 @@
 				const dy = y - oy;
 
 				if ((dx * dx + dy * dy) < 100) {
-					return { track, index, point };
+					return { track, index, point, curve: null, prev: null, next: null };
 				}
 
 				// TODO check curve handles, if this point is selected
@@ -112,26 +180,46 @@
 			start: drag => {
 				const selection = select(drag.start.x, drag.start.y);
 
+				console.log('selection', selection);
+
 				drag.context.selection = selection;
-				drag.context.multiplier = {
-					x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
-					y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
-				}
 
 				// TODO support multiple selections
 				selected_points = [];
 
 				if (selection) {
-					drag.context.start = [...selection.point];
-
-					const prev = selection.track.points[selection.index - 1];
-					const next = selection.track.points[selection.index + 1];
-
-					drag.context.bounds = {
-						x1: prev ? prev[0] + EPSILON : -Infinity,
-						x2: next ? next[0] - EPSILON : +Infinity
+					drag.context.multiplier = {
+						x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
+						y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
 					};
 
+					if (selection.curve) {
+						drag.context.start = selection.prev ? [selection.curve[2], selection.curve[3]] : [selection.curve[0], selection.curve[1]];
+
+						drag.context.multiplier.x /= (selection.prev ? selection.point[0] - selection.prev[0] : selection.next[0] - selection.point[0]);
+						drag.context.multiplier.y /= (selection.prev ? selection.point[1] - selection.prev[1] : selection.next[1] - selection.point[1]);
+
+						drag.context.bounds = {
+							x1: EPSILON,
+							x2: 1 - EPSILON,
+							y1: 0,
+							y2: 1
+						};
+					} else {
+						drag.context.start = [...selection.point];
+
+						const prev = selection.track.points[selection.index - 1];
+						const next = selection.track.points[selection.index + 1];
+
+						drag.context.bounds = {
+							x1: prev ? prev[0] + EPSILON : -Infinity,
+							x2: next ? next[0] - EPSILON : +Infinity,
+							y1: -Infinity,
+							y2: +Infinity
+						};
+					}
+
+					// TODO allow multiple points to be selected
 					selected_points = [selection.point];
 				}
 
@@ -139,11 +227,8 @@
 			},
 			move: (drag, e) => {
 				if (drag.context.selection) {
-					let dx = drag.x * drag.context.multiplier.x;
-					let dy = drag.y * drag.context.multiplier.y;
-
-					const { point } = drag.context.selection;
-					const { x1, x2 } = drag.context.bounds;
+					let dx = drag.x;
+					let dy = drag.y;
 
 					if (e.shiftKey) {
 						if (Math.abs(drag.x) > Math.abs(drag.y)) {
@@ -153,9 +238,25 @@
 						}
 					}
 
-					// TODO move handles
-					point[0] = yootils.clamp(drag.context.start[0] + dx, x1, x2);
-					point[1] = drag.context.start[1] - dy;
+					const { x1, x2, y1, y2 } = drag.context.bounds;
+
+					const x = yootils.clamp(drag.context.start[0] + dx * drag.context.multiplier.x, x1, x2);
+					const y = yootils.clamp(drag.context.start[1] - dy * drag.context.multiplier.y, y1, y2);
+
+					if (drag.context.selection.curve) {
+						if (drag.context.selection.prev) {
+							drag.context.selection.curve[2] = x;
+							drag.context.selection.curve[3] = y;
+						} else {
+							drag.context.selection.curve[0] = x;
+							drag.context.selection.curve[1] = y;
+						}
+					} else {
+						const { point } = drag.context.selection;
+
+						point[0] = x;
+						point[1] = y;
+					}
 
 					value = value;
 				} else {
