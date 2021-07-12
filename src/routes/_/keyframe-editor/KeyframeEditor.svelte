@@ -453,24 +453,38 @@
 		<canvas bind:this={canvas}></canvas>
 	</div>
 
-	<button on:click={fit}>fit</button>
-	<button on:click={() => smooth(true)}>smooth all</button>
-	<button disabled={selected_points.length === 0} on:click={() => smooth(false)}>smooth selected</button>
-	<button disabled={selected_points.length === 0} on:click={() => {
+	<button on:click={fit} title="Fit to window" aria-label="Fit to window">
+		<svg viewBox="0 0 24 24">
+			<path fill="currentColor" d="M20,2H4C2.89,2 2,2.89 2,4V20C2,21.11 2.89,22 4,22H20C21.11,22 22,21.11 22,20V4C22,2.89 21.11,2 20,2M20,20H4V4H20M13,8V10H11V8H9L12,5L15,8M16,15V13H14V11H16V9L19,12M10,13H8V15L5,12L8,9V11H10M15,16L12,19L9,16H11V14H13V16" />
+		</svg>
+	</button>
+
+	<button on:click={() => smooth(selected_points.length === 0)} title="Smooth {selected_points.length > 0 ? 'selected point' : 'all points'}" aria-label="Smooth">
+		<svg viewBox="0 0 24 24">
+			<path fill="currentColor" d="M18.5,2A1.5,1.5 0 0,1 20,3.5A1.5,1.5 0 0,1 18.5,5C18.27,5 18.05,4.95 17.85,4.85L14.16,8.55L14.5,9C16.69,7.74 19.26,7 22,7L23,7.03V9.04L22,9C19.42,9 17,9.75 15,11.04A3.96,3.96 0 0,1 11.04,15C9.75,17 9,19.42 9,22L9.04,23H7.03L7,22C7,19.26 7.74,16.69 9,14.5L8.55,14.16L4.85,17.85C4.95,18.05 5,18.27 5,18.5A1.5,1.5 0 0,1 3.5,20A1.5,1.5 0 0,1 2,18.5A1.5,1.5 0 0,1 3.5,17C3.73,17 3.95,17.05 4.15,17.15L7.84,13.45C7.31,12.78 7,11.92 7,11A4,4 0 0,1 11,7C11.92,7 12.78,7.31 13.45,7.84L17.15,4.15C17.05,3.95 17,3.73 17,3.5A1.5,1.5 0 0,1 18.5,2M11,9A2,2 0 0,0 9,11A2,2 0 0,0 11,13A2,2 0 0,0 13,11A2,2 0 0,0 11,9Z" />
+		</svg>
+	</button>
+
+	<button disabled={selected_points.length === 0} title="Remove selected point" aria-label="Remove selected point" on:click={() => {
 		for (const track of value.tracks) {
 			let i = track.points.length;
 			while (i--) {
 				const point = track.points[i];
 				if (selected_points.includes(point)) {
 					track.points.splice(i, 1);
-					const [curve] = track.curves.splice(i, 1);
-					console.log(i, curve);
+					track.curves.splice(i, 1);
+
+					selected_points = selected_points.filter(x => x !== point);
 				}
 			}
 		}
 
 		value = value;
-	}}>remove selected</button>
+	}}>
+		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+			<path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+		</svg>
+	</button>
 </div>
 
 <style>
@@ -510,5 +524,32 @@
 		width: 100%;
 		height: 100%;
 		mix-blend-mode: multiply;
+	}
+
+	button {
+		width: 2rem;
+		border-radius: 16px;
+		background: var(--bg);
+		box-shadow: var(--convex);
+		border: none;
+		border-radius: var(--border-radius);
+		font: inherit;
+		margin: 0.5rem 0 0.5rem 0;
+		padding: 0.2rem;
+	}
+
+	button:disabled {
+		box-shadow: none;
+		opacity: 0.4;
+	}
+
+	button:active {
+		box-shadow: var(--concave);
+	}
+
+	button svg {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 </style>
