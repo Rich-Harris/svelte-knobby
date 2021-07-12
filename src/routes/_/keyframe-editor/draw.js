@@ -99,13 +99,58 @@ export function draw(ctx, tracks, selected_points, project, bounds, playhead) {
 			const x = project.x(point[0]);
 			const y = project.y(point[1]);
 
-			ctx.beginPath();
-			ctx.arc(x, y, 3, 0, Math.PI * 2);
-			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 5;
-			ctx.fillStyle = selected_points.includes(point) ? 'red' : 'black';
-			ctx.stroke();
-			ctx.fill();
+			const is_selected = selected_points.includes(point);
+
+			if (is_selected) {
+				const prev = track.points[i - 1];
+				const next = track.points[i + 1];
+
+				if (prev) {
+					const curve = track.curves[i - 1];
+					const handle = [mix(prev[0], point[0], curve[2]), mix(prev[1], point[1], curve[3])];
+
+					const x = project.x(handle[0]);
+					const y = project.y(handle[1]);
+					circle(ctx, x, y, 3, 'red');
+				}
+
+				if (next) {
+					const curve = track.curves[i];
+					const handle = [mix(point[0], next[0], curve[0]), mix(point[1], next[1], curve[1])];
+
+					const x = project.x(handle[0]);
+					const y = project.y(handle[1]);
+					circle(ctx, x, y, 3, 'red');
+				}
+			}
+
+			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? 'red' : 'black');
 		}
 	}
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} x
+ * @param {number} y
+ * @param {number} r
+ * @param {string} fill
+ */
+function circle(ctx, x, y, r, fill) {
+	ctx.beginPath();
+	ctx.arc(x, y, r, 0, Math.PI * 2);
+	ctx.strokeStyle = 'white';
+	ctx.lineWidth = 5;
+	ctx.fillStyle = fill;
+	ctx.stroke();
+	ctx.fill();
+}
+
+/**
+ * @param {number} a
+ * @param {number} b
+ * @param {number} t
+ */
+function mix(a, b, t) {
+	return a + t * (b - a);
 }
