@@ -65,9 +65,6 @@ export function draw(ctx, tracks, selected_points, project, unproject, bounds, p
 		ctx.fillText(String(tick), padding * 0.5, y + 2);
 	}
 
-	ctx.strokeStyle = 'black';
-	ctx.lineWidth = 1;
-
 	for (const track of tracks) {
 		const fn = curve(track);
 
@@ -80,6 +77,9 @@ export function draw(ctx, tracks, selected_points, project, unproject, bounds, p
 
 			ctx.lineTo(x, y);
 		}
+
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 1;
 		ctx.stroke();
 
 		for (let i = 0; i < track.points.length; i += 1) {
