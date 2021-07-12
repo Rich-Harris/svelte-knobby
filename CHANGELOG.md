@@ -1,10 +1,11 @@
 # svelte-knobby changelog
 
-## 0.1.10 (unreleased)
+## 0.1.10
 
 - Persist position/expanded state to localStorage
 - Make panel resizable
 - Improve icons and styles
+- Add an experimental keyframe editor
 - Internal tidying up
 
 ## 0.1.9
