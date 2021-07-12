@@ -454,8 +454,23 @@
 	</div>
 
 	<button on:click={fit}>fit</button>
-	<button on:click={() => smooth(false)}>smooth selected</button>
 	<button on:click={() => smooth(true)}>smooth all</button>
+	<button disabled={selected_points.length === 0} on:click={() => smooth(false)}>smooth selected</button>
+	<button disabled={selected_points.length === 0} on:click={() => {
+		for (const track of value.tracks) {
+			let i = track.points.length;
+			while (i--) {
+				const point = track.points[i];
+				if (selected_points.includes(point)) {
+					track.points.splice(i, 1);
+					const [curve] = track.curves.splice(i, 1);
+					console.log(i, curve);
+				}
+			}
+		}
+
+		value = value;
+	}}>remove selected</button>
 </div>
 
 <style>
