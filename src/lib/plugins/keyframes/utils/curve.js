@@ -1,6 +1,6 @@
 import bezier from 'bezier-easing';
 
-/** @param {import('./types').KeyframeTrack} track */
+/** @param {import('../types').KeyframeTrack} track */
 export function curve(track) {
 	let i = 0;
 

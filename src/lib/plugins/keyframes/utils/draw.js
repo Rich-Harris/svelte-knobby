@@ -1,12 +1,10 @@
-import * as yootils from 'yootils';
-import bezier from 'bezier-easing';
 import { get_ticks } from './ticks.js';
 import { mix } from './utils.js';
 import { curve } from './curve.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
- * @param {import('./types').KeyframeTrack[]} tracks
+ * @param {import('../types').KeyframeTrack[]} tracks
  * @param {Array<[number, number]>} selected_points
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject

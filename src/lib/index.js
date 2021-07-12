@@ -9,6 +9,8 @@ import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
 import { extract, merge } from './utils';
 
+/** @typedef {import('./types').Node} Node */
+
 /**
  * @param {any} input
  * @returns {import('./types').Node}

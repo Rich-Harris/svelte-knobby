@@ -1,6 +1,6 @@
 <script>
 	import { knobby } from '$lib';
-	import KeyframeEditor from './_/keyframe-editor/KeyframeEditor.svelte';
+	import { keyframes } from '$lib/plugins/keyframes';
 	import Thing from './_/Thing.svelte';
 
 	const controls = knobby({
@@ -24,42 +24,39 @@
 			clicks: 0
 		}),
 
-		phi: {
-			$component: KeyframeEditor,
-			value: {
-				x: values => values.constrained,
-				tracks: [
-					{
-						label: 'a label',
-						points: [
-							[0, 0],
-							[50, 20],
-							[75, 90],
-							[100, 50]
-						],
-						curves: [
-							[0.33, 0.33, 0.67, 0.8],
-							[0.33, 0.1, 0.67, 1],
-							[0.33, 0, 0.67, 1]
-						]
-					},
-					{
-						label: 'another label',
-						points: [
-							[0, 20],
-							[50, 30],
-							[60, 40],
-							[100, 10]
-						],
-						curves: [
-							[0.33, 0.33, 0.67, 0.8],
-							[0.33, 0.1, 0.67, 1],
-							[0.33, 0, 0.67, 1]
-						]
-					}
-				]
-			}
-		},
+		phi: keyframes({
+			playhead: values => values.constrained,
+			tracks: [
+				{
+					label: 'a label',
+					points: [
+						[0, 0],
+						[50, 20],
+						[75, 90],
+						[100, 50]
+					],
+					curves: [
+						[0.33, 0.33, 0.67, 0.8],
+						[0.33, 0.1, 0.67, 1],
+						[0.33, 0, 0.67, 1]
+					]
+				},
+				{
+					label: 'another label',
+					points: [
+						[0, 20],
+						[50, 30],
+						[60, 40],
+						[100, 10]
+					],
+					curves: [
+						[0.33, 0.33, 0.67, 0.8],
+						[0.33, 0.1, 0.67, 1],
+						[0.33, 0, 0.67, 1]
+					]
+				}
+			]
+		}),
 
 		// specify options by using a { value } object
 		constrained: {
@@ -89,7 +86,7 @@
 	// $controls.message = 'Hello Knobby!';
 </script>
 
-<pre>{JSON.stringify($controls.phi.tracks, null, '  ')}</pre>
+<pre>{JSON.stringify($controls.phi, null, '  ')}</pre>
 
 {#if $controls.checked}
 	<Thing/>

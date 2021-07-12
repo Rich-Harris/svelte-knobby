@@ -1,26 +1,25 @@
 <script>
 	import { onMount, getContext } from 'svelte';
 	import * as yootils from 'yootils';
-	import { draw } from './draw.js';
+	import { draw } from '../utils/draw.js';
 	import { drag } from '$lib/actions/drag.js';
-	import { mag, mix } from './utils.js';
-	import bezier from 'bezier-easing';
-	import { curve } from './curve.js';
+	import { mix } from '../utils/utils.js';
+	import { curve } from '../utils/curve.js';
 
 	/** @type {string} */
 	export let name;
 
-	/** @type {{
-	 *   x: (values: any) => number;
-	 *   tracks: import('./types').KeyframeTrack[]
-	 * }} */
+	/** @type {import('../types').KeyframeTrack[]} */
 	export let value;
+
+	/** @type {(values: any) => number} */
+	export let playhead = null;
 
 	const { run } = getContext('knobby'); // TODO make a typed function for this
 
 	const EPSILON = 0.000001;
 
-	/** @type {import('./types').Point[]} */
+	/** @type {import('../types').Point[]} */
 	let selected_points = [];
 
 	let w = 0;
@@ -42,7 +41,7 @@
 		bounds.y1 = +Infinity;
 		bounds.y2 = -Infinity;
 
-		/** @param {import('./types').Point} point */
+		/** @param {import('../types').Point} point */
 		function test(point) {
 			if (point[0] < bounds.x1) bounds.x1 = point[0];
 			if (point[0] > bounds.x2) bounds.x2 = point[0];
@@ -50,7 +49,7 @@
 			if (point[1] > bounds.y2) bounds.y2 = point[1];
 		}
 
-		for (const track of value.tracks) {
+		for (const track of value) {
 			for (let i = 0; i < track.points.length; i += 1) {
 				const point = track.points[i];
 				const prev = track.points[i - 1];
@@ -83,12 +82,12 @@
 	 * @param {number} x
 	 * @param {number} y
 	 * @returns {{
-	 *   track: import('./types').KeyframeTrack;
+	 *   track: import('../types').KeyframeTrack;
 	 *   index: number;
-	 *   point: import('./types').Point;
-	 *   prev: import('./types').Point;
-	 *   next: import('./types').Point;
-	 *   curve: import('./types').Curve;
+	 *   point: import('../types').Point;
+	 *   prev: import('../types').Point;
+	 *   next: import('../types').Point;
+	 *   curve: import('../types').Curve;
 	 *   new: boolean;
 	 * }}
 	 */
@@ -98,7 +97,7 @@
 		const ox = x - bcr.left;
 		const oy = y - bcr.top;
 
-		/** @param {import('./types').Point} point */
+		/** @param {import('../types').Point} point */
 		function near(point) {
 			const x = project.x(point[0]);
 			const y = project.y(point[1]);
@@ -110,7 +109,7 @@
 		}
 
 		// try to select handle first
-		for (const track of value.tracks) {
+		for (const track of value) {
 			for (let i = 0; i < track.points.length; i += 1) {
 				const point = track.points[i];
 
@@ -121,7 +120,7 @@
 					if (prev) {
 						const curve = track.curves[i - 1];
 
-						/** @type {import('./types').Point} */
+						/** @type {import('../types').Point} */
 						const handle = [mix(prev[0], point[0], curve[2]), mix(prev[1], point[1], curve[3])];
 
 						if (near(handle)) {
@@ -140,7 +139,7 @@
 					if (next) {
 						const curve = track.curves[i];
 
-						/** @type {import('./types').Point} */
+						/** @type {import('../types').Point} */
 						const handle = [mix(point[0], next[0], curve[0]), mix(point[1], next[1], curve[1])];
 
 						if (near(handle)) {
@@ -160,7 +159,7 @@
 		}
 
 		// then select existing point
-		for (const track of value.tracks) {
+		for (const track of value) {
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
 				const x = project.x(point[0]);
@@ -179,7 +178,7 @@
 		const x1 = ox - 10; // TODO make this number less magical
 		const x2 = ox + 10;
 
-		for (const track of value.tracks) {
+		for (const track of value) {
 			const fn = curve(track);
 
 			const candidates = [];
@@ -197,7 +196,7 @@
 
 				if (d < 100) {
 					candidates.push({
-						/** @type {import('./types').Point} */
+						/** @type {import('../types').Point} */
 						point: [u, v],
 						d
 					});
@@ -224,7 +223,7 @@
 
 	/** @param {boolean} all */
 	function smooth(all) {
-		for (const track of value.tracks) {
+		for (const track of value) {
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
 				if (all || selected_points.includes(point)) {
@@ -243,13 +242,13 @@
 					} else {
 						// equalize gradient either side of the point
 
-						/** @type {import('./types').Point} */
+						/** @type {import('../types').Point} */
 						const prev_handle = [
 							(prev[0] - point[0]) * (1 - prev_curve[2]),
 							(prev[1] - point[1]) * (1 - prev_curve[3])
 						];
 
-						/** @type {import('./types').Point} */
+						/** @type {import('../types').Point} */
 						const next_handle = [
 							(next[0] - point[0]) * (next_curve[0]),
 							(next[1] - point[1]) * (next_curve[1])
@@ -290,7 +289,7 @@
 		y: project.x.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value.tracks, selected_points, project, unproject, bounds, 0); // TODO rerun x function automatically
+	$: if (ctx) draw(ctx, value, selected_points, project, unproject, bounds, 0); // TODO rerun x function automatically
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -460,7 +459,7 @@
 	</button>
 
 	<button disabled={selected_points.length === 0} title="Remove selected point" aria-label="Remove selected point" on:click={() => {
-		for (const track of value.tracks) {
+		for (const track of value) {
 			let i = track.points.length;
 			while (i--) {
 				const point = track.points[i];
@@ -481,7 +480,7 @@
 	</button>
 
 	<button on:click={() => {
-		navigator.clipboard.writeText(JSON.stringify(value.tracks));
+		navigator.clipboard.writeText(JSON.stringify(value));
 	}} title="Copy to clipboard" aria-label="Copy to clipboard">
 		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 			<path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
