@@ -42,12 +42,37 @@
 		bounds.y1 = +Infinity;
 		bounds.y2 = -Infinity;
 
+		/** @param {import('./types').Point} point */
+		function test(point) {
+			if (point[0] < bounds.x1) bounds.x1 = point[0];
+			if (point[0] > bounds.x2) bounds.x2 = point[0];
+			if (point[1] < bounds.y1) bounds.y1 = point[1];
+			if (point[1] > bounds.y2) bounds.y2 = point[1];
+		}
+
 		for (const track of value.tracks) {
-			for (const point of track.points) {
-				if (point[0] < bounds.x1) bounds.x1 = point[0];
-				if (point[0] > bounds.x2) bounds.x2 = point[0];
-				if (point[1] < bounds.y1) bounds.y1 = point[1];
-				if (point[1] > bounds.y2) bounds.y2 = point[1];
+			for (let i = 0; i < track.points.length; i += 1) {
+				const point = track.points[i];
+				const prev = track.points[i - 1];
+				const next = track.points[i + 1];
+
+				test(point);
+
+				if (prev) {
+					const curve = track.curves[i - 1];
+					test([
+						prev[0] + (point[0] - prev[0]) * curve[2],
+						prev[1] + (point[1] - prev[1]) * curve[3]
+					]);
+				}
+
+				if (next) {
+					const curve = track.curves[i];
+					test([
+						point[0] + (next[0] - point[0]) * curve[0],
+						point[1] + (next[1] - point[1]) * curve[1]
+					]);
+				}
 			}
 		}
 	}
@@ -182,9 +207,11 @@
 			const closest = candidates.sort((a, b) => a.d - b.d)[0];
 
 			if (closest) {
+				const index = track.points.findIndex(point => point[0] > closest.point[0]);
+
 				return {
 					track,
-					index: null,
+					index,
 					point: closest.point,
 					new: true,
 					curve: null,
@@ -195,11 +222,12 @@
 		}
 	}
 
-	function smooth() {
+	/** @param {boolean} all */
+	function smooth(all) {
 		for (const track of value.tracks) {
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
-				if (selected_points.includes(point)) {
+				if (all || selected_points.includes(point)) {
 					const prev = track.points[index - 1];
 					const next = track.points[index + 1];
 
@@ -227,36 +255,15 @@
 							(next[1] - point[1]) * (next_curve[1])
 						];
 
-						const prev_handle_mag_1 = mag(prev_handle);
-						const next_handle_mag_1 = mag(next_handle);
-
 						// find the mean gradient...
-						const mean = (prev_handle[1] / prev_handle[0] + next_handle[1] / next_handle[0]) / 2;
+						const prev_gradient = prev_handle[1] / prev_handle[0];
+						const next_gradient = next_handle[1] / next_handle[0];
+						// const mean = Math.sign(prev_gradient) !== Math.sign(next_gradient) ? 0 : (prev_gradient + next_gradient) / 2;
+						const mean = (prev_gradient + next_gradient) / 2;
 
-						// ...adjust y values of both handles such that both gradients match the mean...
+						// ...and adjust y values of both handles such that both gradients match the mean
 						prev_handle[1] = prev_handle[0] * mean;
 						next_handle[1] = next_handle[0] * mean;
-
-						// ...then match the original magnitude (TODO do we also need to constrain?)
-						const prev_handle_mag_2 = mag(prev_handle);
-						const next_handle_mag_2 = mag(next_handle);
-
-						const prev_multiplier = Math.min(
-							prev_handle_mag_1 / prev_handle_mag_2,
-							(prev[0] - point[0]) / prev_handle[0],
-							(prev[1] - point[1]) / prev_handle[1]
-						);
-
-						const next_multiplier = Math.min(
-							next_handle_mag_1 / next_handle_mag_2,
-							(next[0] - point[0]) / next_handle[0],
-							(next[1] - point[1]) / next_handle[1]
-						);
-
-						prev_handle[0] *= prev_multiplier;
-						prev_handle[1] *= prev_multiplier;
-						next_handle[0] *= next_multiplier;
-						next_handle[1] *= next_multiplier;
 
 						prev_curve[2] = 1 - ((prev_handle[0]) / (prev[0] - point[0]));
 						prev_curve[3] = 1 - ((prev_handle[1]) / (prev[1] - point[1]));
@@ -310,8 +317,8 @@
 				const selection = select(drag.start.x, drag.start.y);
 
 				if (selection && selection.new) {
-					console.log('selection', selection.new);
-					return;
+					selection.track.points.splice(selection.index, 0, selection.point);
+					selection.track.curves.splice(selection.index, 0, [0.333, 0.333, 0.667, 0.667]);
 				}
 
 				drag.context.selection = selection;
@@ -328,9 +335,7 @@
 
 						drag.context.bounds = {
 							x1: EPSILON,
-							x2: 1 - EPSILON,
-							y1: 0,
-							y2: 1
+							x2: 1 - EPSILON
 						};
 					} else {
 						drag.context.start = [...selection.point];
@@ -340,9 +345,7 @@
 
 						drag.context.bounds = {
 							x1: prev ? prev[0] + EPSILON : -Infinity,
-							x2: next ? next[0] - EPSILON : +Infinity,
-							y1: -Infinity,
-							y2: +Infinity
+							x2: next ? next[0] - EPSILON : +Infinity
 						};
 					}
 
@@ -365,10 +368,10 @@
 						}
 					}
 
-					const { x1, x2, y1, y2 } = drag.context.bounds;
+					const { x1, x2 } = drag.context.bounds;
 
 					const x = yootils.clamp(drag.context.start[0] + dx * drag.context.multiplier.x, x1, x2);
-					const y = yootils.clamp(drag.context.start[1] - dy * drag.context.multiplier.y, y1, y2);
+					const y = drag.context.start[1] - dy * drag.context.multiplier.y;
 
 					if (drag.context.selection.curve) {
 						if (drag.context.selection.prev) {
@@ -406,7 +409,6 @@
 		on:pointermove={e => {
 			if (!e.buttons) {
 				const selection = select(e.clientX, e.clientY);
-				// console.log('selection', selection);
 				cursor = selection ? (selection.new ? 'cell' : 'move') : 'grab';
 			}
 		}}
@@ -452,7 +454,8 @@
 	</div>
 
 	<button on:click={fit}>fit</button>
-	<button on:click={smooth}>smooth</button>
+	<button on:click={() => smooth(false)}>smooth selected</button>
+	<button on:click={() => smooth(true)}>smooth all</button>
 </div>
 
 <style>
