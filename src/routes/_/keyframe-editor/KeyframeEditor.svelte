@@ -3,7 +3,7 @@
 	import * as yootils from 'yootils';
 	import { draw } from './draw.js';
 	import { drag } from '$lib/actions/drag.js';
-	import { mix } from './utils.js';
+	import { mag, mix } from './utils.js';
 
 	/** @type {string} */
 	export let name;
@@ -141,10 +141,84 @@
 				if ((dx * dx + dy * dy) < 100) {
 					return { track, index, point, curve: null, prev: null, next: null };
 				}
-
-				// TODO check curve handles, if this point is selected
 			}
 		}
+	}
+
+	function smooth() {
+		for (const track of value.tracks) {
+			for (let index = 0; index < track.points.length; index += 1) {
+				const point = track.points[index];
+				if (selected_points.includes(point)) {
+					const prev = track.points[index - 1];
+					const next = track.points[index + 1];
+
+					const prev_curve = track.curves[index - 1];
+					const next_curve = track.curves[index];
+
+					if (!prev) {
+						// flatten intro
+						next_curve[1] = 0;
+					} else if (!next) {
+						// flatten outro
+						prev_curve[3] = 1;
+					} else {
+						// equalize gradient either side of the point
+
+						/** @type {import('./types').Point} */
+						const prev_handle = [
+							(prev[0] - point[0]) * (1 - prev_curve[2]),
+							(prev[1] - point[1]) * (1 - prev_curve[3])
+						];
+
+						/** @type {import('./types').Point} */
+						const next_handle = [
+							(next[0] - point[0]) * (next_curve[0]),
+							(next[1] - point[1]) * (next_curve[1])
+						];
+
+						const prev_handle_mag_1 = mag(prev_handle);
+						const next_handle_mag_1 = mag(next_handle);
+
+						// find the mean gradient...
+						const mean = (prev_handle[1] / prev_handle[0] + next_handle[1] / next_handle[0]) / 2;
+
+						// ...adjust y values of both handles such that both gradients match the mean...
+						prev_handle[1] = prev_handle[0] * mean;
+						next_handle[1] = next_handle[0] * mean;
+
+						// ...then match the original magnitude (TODO do we also need to constrain?)
+						const prev_handle_mag_2 = mag(prev_handle);
+						const next_handle_mag_2 = mag(next_handle);
+
+						const prev_multiplier = Math.min(
+							prev_handle_mag_1 / prev_handle_mag_2,
+							(prev[0] - point[0]) / prev_handle[0],
+							(prev[1] - point[1]) / prev_handle[1]
+						);
+
+						const next_multiplier = Math.min(
+							next_handle_mag_1 / next_handle_mag_2,
+							(next[0] - point[0]) / next_handle[0],
+							(next[1] - point[1]) / next_handle[1]
+						);
+
+						prev_handle[0] *= prev_multiplier;
+						prev_handle[1] *= prev_multiplier;
+						next_handle[0] *= next_multiplier;
+						next_handle[1] *= next_multiplier;
+
+						prev_curve[2] = 1 - ((prev_handle[0]) / (prev[0] - point[0]));
+						prev_curve[3] = 1 - ((prev_handle[1]) / (prev[1] - point[1]));
+
+						next_curve[0] = next_handle[0] / (next[0] - point[0]);
+						next_curve[1] = next_handle[1] / (next[1] - point[1]);
+					}
+				}
+			}
+		}
+
+		value = value;
 	}
 
 	const padding = 20;
@@ -180,19 +254,17 @@
 			start: drag => {
 				const selection = select(drag.start.x, drag.start.y);
 
-				console.log('selection', selection);
-
 				drag.context.selection = selection;
 
 				// TODO support multiple selections
 				selected_points = [];
 
-				if (selection) {
-					drag.context.multiplier = {
-						x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
-						y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
-					};
+				drag.context.multiplier = {
+					x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
+					y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
+				};
 
+				if (selection) {
 					if (selection.curve) {
 						drag.context.start = selection.prev ? [selection.curve[2], selection.curve[3]] : [selection.curve[0], selection.curve[1]];
 
@@ -296,6 +368,7 @@
 					bounds.y1 += dy * 0.25;
 					bounds.y2 += dy * 0.25;
 				} else {
+					// TODO account for padding, invert Y
 					const px = (e.clientX - bcr.left) / bcr.width;
 					const py = (e.clientY - bcr.top) / bcr.height;
 					const cx = bounds.x1 + px * (bounds.x2 - bounds.x1);
@@ -322,6 +395,7 @@
 	</div>
 
 	<button on:click={fit}>fit</button>
+	<button on:click={smooth}>smooth</button>
 </div>
 
 <style>
