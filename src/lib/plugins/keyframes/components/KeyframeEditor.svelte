@@ -1,5 +1,5 @@
 <script>
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import * as yootils from 'yootils';
 	import { draw } from '../utils/draw.js';
 	import { drag } from '../../../actions/drag.js';
