@@ -4,6 +4,8 @@
 	import { draw } from './draw.js';
 	import { drag } from '$lib/actions/drag.js';
 	import { mag, mix } from './utils.js';
+	import bezier from 'bezier-easing';
+	import { curve } from './curve.js';
 
 	/** @type {string} */
 	export let name;
@@ -62,6 +64,7 @@
 	 *   prev: import('./types').Point;
 	 *   next: import('./types').Point;
 	 *   curve: import('./types').Curve;
+	 *   new: boolean;
 	 * }}
 	 */
 	function select(x, y) {
@@ -103,7 +106,8 @@
 								point,
 								curve,
 								prev,
-								next: null
+								next: null,
+								new: false
 							};
 						}
 					}
@@ -121,7 +125,8 @@
 								point,
 								curve,
 								prev: null,
-								next
+								next,
+								new: false
 							};
 						}
 					}
@@ -129,6 +134,7 @@
 			}
 		}
 
+		// then select existing point
 		for (const track of value.tracks) {
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
@@ -139,8 +145,52 @@
 				const dy = y - oy;
 
 				if ((dx * dx + dy * dy) < 100) {
-					return { track, index, point, curve: null, prev: null, next: null };
+					return { track, index, point, curve: null, prev: null, next: null, new: false };
 				}
+			}
+		}
+
+		// then select new point
+		const x1 = ox - 10; // TODO make this number less magical
+		const x2 = ox + 10;
+
+		for (const track of value.tracks) {
+			const fn = curve(track);
+
+			const candidates = [];
+
+			for (let x = x1; x <= x2; x += 1) {
+				const u = unproject.x(x);
+				const v = fn(u);
+
+				const y = project.y(v);
+
+				const dx = x - ox;
+				const dy = y - oy;
+
+				const d = (dx * dx + dy * dy);
+
+				if (d < 100) {
+					candidates.push({
+						/** @type {import('./types').Point} */
+						point: [u, v],
+						d
+					});
+				}
+			}
+
+			const closest = candidates.sort((a, b) => a.d - b.d)[0];
+
+			if (closest) {
+				return {
+					track,
+					index: null,
+					point: closest.point,
+					new: true,
+					curve: null,
+					prev: null,
+					next: null
+				};
 			}
 		}
 	}
@@ -233,7 +283,7 @@
 		y: project.x.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value.tracks, selected_points, project, bounds, 0); // TODO rerun x function automatically
+	$: if (ctx) draw(ctx, value.tracks, selected_points, project, unproject, bounds, 0); // TODO rerun x function automatically
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -252,17 +302,22 @@
 		bind:clientHeight={h}
 		use:drag={{
 			start: drag => {
+				drag.context.multiplier = {
+					x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
+					y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
+				};
+
 				const selection = select(drag.start.x, drag.start.y);
+
+				if (selection && selection.new) {
+					console.log('selection', selection.new);
+					return;
+				}
 
 				drag.context.selection = selection;
 
 				// TODO support multiple selections
 				selected_points = [];
-
-				drag.context.multiplier = {
-					x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
-					y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
-				};
 
 				if (selection) {
 					if (selection.curve) {
@@ -350,7 +405,9 @@
 		}}
 		on:pointermove={e => {
 			if (!e.buttons) {
-				cursor = select(e.clientX, e.clientY) ? 'move' : 'grab';
+				const selection = select(e.clientX, e.clientY);
+				// console.log('selection', selection);
+				cursor = selection ? (selection.new ? 'cell' : 'move') : 'grab';
 			}
 		}}
 		on:wheel={e => {

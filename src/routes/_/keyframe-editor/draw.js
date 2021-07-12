@@ -2,16 +2,18 @@ import * as yootils from 'yootils';
 import bezier from 'bezier-easing';
 import { get_ticks } from './ticks.js';
 import { mix } from './utils.js';
+import { curve } from './curve.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {import('./types').KeyframeTrack[]} tracks
  * @param {Array<[number, number]>} selected_points
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
+ * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(ctx, tracks, selected_points, project, bounds, playhead) {
+export function draw(ctx, tracks, selected_points, project, unproject, bounds, playhead) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -67,32 +69,18 @@ export function draw(ctx, tracks, selected_points, project, bounds, playhead) {
 	ctx.lineWidth = 1;
 
 	for (const track of tracks) {
-		for (let i = 0; i < track.curves.length; i += 1) {
-			const curve = track.curves[i];
-			const a = track.points[i];
-			const b = track.points[i + 1];
-			const fn = bezier(curve[0], curve[1], curve[2], curve[3]);
+		const fn = curve(track);
 
-			const x1 = Math.floor(project.x(a[0]));
-			const x2 = Math.ceil(project.x(b[0]));
+		ctx.beginPath();
+		for (let x = 0; x < w; x += 1) {
+			const u = unproject.x(x);
+			const v = fn(u);
 
-			const x_to_u = yootils.linearScale([x1, x2], [0, 1]);
-			const v_to_n = yootils.linearScale([0, 1], [a[1], b[1]]);
+			const y = project.y(v);
 
-			ctx.beginPath();
-
-			for (let x = x1; x <= x2; x += 1) {
-				const u = x_to_u(x);
-				const v = fn(u);
-
-				const n = v_to_n(v);
-				const y = project.y(n);
-
-				ctx.lineTo(x, y);
-			}
-
-			ctx.stroke();
+			ctx.lineTo(x, y);
 		}
+		ctx.stroke();
 
 		for (let i = 0; i < track.points.length; i += 1) {
 			const point = track.points[i];
