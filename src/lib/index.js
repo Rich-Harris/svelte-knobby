@@ -159,3 +159,5 @@ export function knobby(initial) {
 		set
 	};
 }
+
+export { context } from './context.js';

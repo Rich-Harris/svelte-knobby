@@ -1,5 +1,5 @@
 <script>
-	import { getContext } from 'svelte';
+	import { context } from '../context.js';
 
 	/** @type {string} */
 	export let name;
@@ -7,7 +7,7 @@
 	/** @type {(values?: any) => any} */
 	export let value;
 
-	const { run, set } = getContext('knobby');
+	const { run, set } = context();
 </script>
 
 <button on:click={() => {

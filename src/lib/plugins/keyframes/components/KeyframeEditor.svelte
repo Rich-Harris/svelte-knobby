@@ -2,9 +2,10 @@
 	import { onMount, getContext } from 'svelte';
 	import * as yootils from 'yootils';
 	import { draw } from '../utils/draw.js';
-	import { drag } from '$lib/actions/drag.js';
+	import { drag } from '../../../actions/drag.js';
 	import { mix } from '../utils/utils.js';
 	import { curve } from '../utils/curve.js';
+	import { context } from '../../../context.js';
 
 	/** @type {string} */
 	export let name;
@@ -15,7 +16,9 @@
 	/** @type {(values: any) => number} */
 	export let playhead = null;
 
-	const { run } = getContext('knobby'); // TODO make a typed function for this
+	const { observe } = context(); // TODO make a typed function for this
+
+	const current_playhead = observe(playhead);
 
 	const EPSILON = 0.000001;
 
@@ -289,7 +292,7 @@
 		y: project.x.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value, selected_points, project, unproject, bounds, 0); // TODO rerun x function automatically
+	$: if (ctx) draw(ctx, value, selected_points, project, unproject, bounds, $current_playhead);
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');

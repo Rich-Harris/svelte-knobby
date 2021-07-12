@@ -1,17 +1,27 @@
 <script>
-	import { setContext } from 'svelte';
+	import { writable, derived } from 'svelte/store';
 	import Items from './Items.svelte';
 	import Folder from './knobs/Folder.svelte';
 	import { extract, merge } from './utils.js';
+	import { init } from './context.js';
 
 	/** @type {import('svelte/store').Writable<any>}*/
 	export let store;
 
-	setContext('knobby', {
+	init({
 		run: fn => fn(extract($store)),
 		set: values => {
 			const merged = merge($store, values);
 			store.set(merged);
+		},
+		observe: fn => {
+			if (typeof fn !== 'function') {
+				return {
+					subscribe: writable(fn).subscribe
+				};
+			}
+
+			return derived(store, $store => fn(extract($store)));
 		}
 	});
 </script>

@@ -63,6 +63,12 @@ export function draw(ctx, tracks, selected_points, project, unproject, bounds, p
 		ctx.fillText(String(tick), padding * 0.5, y + 2);
 	}
 
+	// draw playhead
+	ctx.beginPath();
+	const x = project.x(playhead);
+	line(ctx, x, 0, x, h, 'white', 3);
+	line(ctx, x, 0, x, h, '#999', 1);
+
 	for (const track of tracks) {
 		const fn = curve(track);
 
