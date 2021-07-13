@@ -1,6 +1,7 @@
 import { SvelteComponent } from 'svelte/internal';
 
 export type Node = {
+	[key: string]: any;
 	$folder?: true;
 	$component: typeof SvelteComponent | typeof SvelteComponentDev;
 	$label?: string;

@@ -4,14 +4,14 @@ import { curve } from './curve.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
- * @param {import('../types').KeyframeTrack[]} tracks
+ * @param {Record<string, import('../types').KeyframeTrack>} value
  * @param {Array<[number, number]>} selected_points
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(ctx, tracks, selected_points, project, unproject, bounds, playhead) {
+export function draw(ctx, value, selected_points, project, unproject, bounds, playhead) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -69,7 +69,8 @@ export function draw(ctx, tracks, selected_points, project, unproject, bounds, p
 	line(ctx, x, 0, x, h, 'white', 3);
 	line(ctx, x, 0, x, h, '#999', 1);
 
-	for (const track of tracks) {
+	for (const key in value) {
+		const track = value[key];
 		const fn = curve(track);
 
 		ctx.beginPath();

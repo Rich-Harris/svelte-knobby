@@ -26,9 +26,8 @@
 
 		phi: keyframes({
 			playhead: values => values.constrained,
-			tracks: [
-				{
-					label: 'a label',
+			value: {
+				one: {
 					points: [
 						[0, 0],
 						[50, 20],
@@ -41,8 +40,9 @@
 						[0.33, 0, 0.67, 1]
 					]
 				},
-				{
-					label: 'another label',
+				two: {
+					$label: 'two (custom label)',
+					$color: '#3eff00',
 					points: [
 						[0, 20],
 						[50, 30],
@@ -55,7 +55,7 @@
 						[0.33, 0, 0.67, 1]
 					]
 				}
-			]
+			}
 		}),
 
 		// specify options by using a { value } object

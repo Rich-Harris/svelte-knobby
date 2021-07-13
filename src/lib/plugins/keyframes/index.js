@@ -3,13 +3,13 @@ import KeyframeEditor from './components/KeyframeEditor.svelte';
 export { curve } from './utils/curve.js';
 
 /**
- * @param {{ playhead?: (values: any) => number, tracks: import('./types').KeyframeTrack[] }} value
+ * @param {{ playhead?: (values: any) => number, value: Record<string, import('./types').KeyframeTrack> }} options
  * @returns {import('../../types').Node}
  */
-export function keyframes({ playhead, tracks }) {
+export function keyframes({ playhead, value }) {
 	return {
 		$component: KeyframeEditor,
 		playhead,
-		value: tracks
+		value
 	};
 }

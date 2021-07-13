@@ -55,6 +55,10 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 
 TODO
 
+## Plugins
+
+- [Keyframe editor](src/lib/plugins/keyframes/README.md)
+
 ## License
 
 MIT

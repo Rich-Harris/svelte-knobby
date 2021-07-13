@@ -52,7 +52,9 @@
 			if (point[1] > bounds.y2) bounds.y2 = point[1];
 		}
 
-		for (const track of value) {
+		for (const key in value) {
+			const track = value[key];
+
 			for (let i = 0; i < track.points.length; i += 1) {
 				const point = track.points[i];
 				const prev = track.points[i - 1];
@@ -118,7 +120,8 @@
 		}
 
 		// try to select handle first
-		for (const track of value) {
+		for (const key in value) {
+			const track = value[key];
 			for (let i = 0; i < track.points.length; i += 1) {
 				const point = track.points[i];
 
@@ -168,7 +171,9 @@
 		}
 
 		// then select existing point
-		for (const track of value) {
+		for (const key in value) {
+			const track = value[key];
+
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
 				const x = project.x(point[0]);
@@ -187,7 +192,8 @@
 		const x1 = ox - 10; // TODO make this number less magical
 		const x2 = ox + 10;
 
-		for (const track of value) {
+		for (const key in value) {
+			const track = value[key];
 			const fn = curve(track);
 
 			const candidates = [];
@@ -232,7 +238,9 @@
 
 	/** @param {boolean} all */
 	function smooth(all) {
-		for (const track of value) {
+		for (const key in value) {
+			const track = value[key];
+
 			for (let index = 0; index < track.points.length; index += 1) {
 				const point = track.points[index];
 				if (all || selected_points.includes(point)) {
