@@ -1,5 +1,11 @@
 # svelte-knobby changelog
 
+## 0.1.11
+
+- Include plugins in package
+- [Keyframe plugin] Prevent zero-width bounds
+- [Keyframe plugin] Fix zoom origin
+
 ## 0.1.10
 
 - Persist position/expanded state to localStorage

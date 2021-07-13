@@ -295,7 +295,7 @@
 
 	$: unproject = {
 		x: project.x.inverse(),
-		y: project.x.inverse()
+		y: project.y.inverse()
 	}
 
 	$: if (ctx) draw(ctx, value, selected_points, project, unproject, bounds, $current_playhead);
@@ -435,11 +435,11 @@
 					bounds.y1 += dy * 0.25;
 					bounds.y2 += dy * 0.25;
 				} else {
-					// TODO account for padding, invert Y
-					const px = (e.clientX - bcr.left) / bcr.width;
-					const py = (e.clientY - bcr.top) / bcr.height;
-					const cx = bounds.x1 + px * (bounds.x2 - bounds.x1);
-					const cy = bounds.y1 + py * (bounds.y2 - bounds.y1);
+					const x = e.clientX - bcr.left;
+					const y = e.clientY - bcr.top;
+
+					const cx = unproject.x(x);
+					const cy = unproject.y(y);
 
 					const amount = Math.pow(Math.exp(-e.wheelDeltaY), 0.01);
 
