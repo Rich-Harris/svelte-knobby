@@ -7,6 +7,14 @@
 
 <div>
 	{#each Object.entries(value) as [name, node]}
-		<svelte:component this={node.$component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
+		<div class="item">
+			<svelte:component this={node.$component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
+		</div>
 	{/each}
 </div>
+
+<style>
+	.item {
+		margin: 0 0 0.3rem 0;
+	}
+</style>

@@ -285,8 +285,6 @@
 	.knobby :global(input:not([type])),
 	.knobby :global(input[type="text"]),
 	.knobby :global(input[type="number"]) {
-		width: 100%;
-		height: 100%;
 		margin: 0;
 		border-radius: var(--border-radius);
 		background: var(--bg);

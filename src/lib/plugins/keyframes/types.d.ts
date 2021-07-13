@@ -14,3 +14,15 @@ export type Scales = {
 	x: (n: number) => number;
 	y: (n: number) => number;
 };
+
+export type Selection = {
+	key: string;
+	index: number;
+};
+
+export type Handle = {
+	a: Point;
+	b: Point;
+	index: number;
+	offset: number;
+};

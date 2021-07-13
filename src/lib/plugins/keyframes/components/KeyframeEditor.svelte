@@ -3,11 +3,11 @@
 	import * as yootils from 'yootils';
 	import { draw } from '../utils/draw.js';
 	import { drag } from '../../../actions/drag.js';
-	import { select } from '../utils/select.js';
+	import { select_handle, select_new_point, select_point } from '../operations/select.js';
 	import { context } from '../../../context.js';
-	import Toggles from './Toggles.svelte';
 	import { fit } from '../utils/fit.js';
-import { smooth } from '../utils/smooth.js';
+	import { smooth } from '../utils/smooth.js';
+	import Toggles from './Toggles.svelte';
 
 	/** @type {string} */
 	export let name;
@@ -25,10 +25,10 @@ import { smooth } from '../utils/smooth.js';
 	const EPSILON = 0.000001;
 
 	/** @type {string[]} */
-	let selected_tracks = Object.keys(value);
+	let active_tracks = Object.keys(value);
 
-	/** @type {import('../types').Point[]} */
-	let selected_points = [];
+	/** @type {{ key: string, index: number }} */
+	let selected;
 
 	let w = 0;
 	let h = 0;
@@ -39,7 +39,7 @@ import { smooth } from '../utils/smooth.js';
 	/** @type {CanvasRenderingContext2D} */
 	let ctx;
 
-	let bounds = fit(value, selected_tracks);
+	let bounds = fit(value, active_tracks);
 
 	let cursor = 'grab';
 
@@ -55,7 +55,11 @@ import { smooth } from '../utils/smooth.js';
 		y: project.y.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value, selected_tracks, selected_points, project, unproject, bounds, $current_playhead);
+	$: if (selected && !active_tracks.includes(selected.key)) {
+		selected = null;
+	}
+
+	$: if (ctx) draw(ctx, value, active_tracks, selected, project, unproject, bounds, $current_playhead);
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -67,7 +71,7 @@ import { smooth } from '../utils/smooth.js';
 }}>
 	<p>{name}</p>
 
-	<Toggles {value} bind:selected_tracks/>
+	<Toggles {value} bind:active_tracks/>
 
 	<div
 		class="canvas-container"
@@ -76,51 +80,70 @@ import { smooth } from '../utils/smooth.js';
 		bind:clientHeight={h}
 		use:drag={{
 			start: drag => {
+				const { offsetX: ox, offsetY: oy } = drag.start;
+
 				drag.context.multiplier = {
 					x: (bounds.x2 - bounds.x1) / (canvas.offsetWidth - padding * 2),
 					y: (bounds.y2 - bounds.y1) / (canvas.offsetHeight - padding * 2)
 				};
 
-				const selection = select(value, drag.start.offsetX, drag.start.offsetY, project, unproject, selected_tracks, selected_points);
+				const handle = select_handle(value, ox, oy, project, selected);
 
-				if (selection && selection.new) {
-					selection.track.points.splice(selection.index, 0, selection.point);
-					selection.track.curves.splice(selection.index, 0, [0.333, 0.333, 0.667, 0.667]);
+				if (handle) {
+					cursor = 'move';
+
+					const curve = value[selected.key].curves[handle.index];
+					drag.context.start = [curve[0 + handle.offset], curve[1 + handle.offset]];
+
+					drag.context.multiplier.x /= (handle.b[0] - handle.a[0]);
+					drag.context.multiplier.y /= (handle.b[1] - handle.a[1]);
+
+					drag.context.selection = selected;
+					drag.context.handle = handle;
+
+					drag.context.bounds = {
+						x1: EPSILON,
+						x2: 1 - EPSILON
+					};
+
+					return;
 				}
 
-				drag.context.selection = selection;
+				selected = select_point(value, drag.start.offsetX, drag.start.offsetY, project, active_tracks);
 
-				// TODO support multiple selections
-				selected_points = [];
+				if (!selected) {
+					const insert = select_new_point(value, ox, oy, project, unproject, active_tracks);
 
-				if (selection) {
-					if (selection.curve) {
-						drag.context.start = selection.prev ? [selection.curve[2], selection.curve[3]] : [selection.curve[0], selection.curve[1]];
+					if (insert) {
+						const track = value[insert.key];
+						track.points.splice(insert.index, 0, insert.point);
+						track.curves.splice(Math.min(insert.index, track.curves.length - 1), 0, [0.333, 0.333, 0.667, 0.667]);
 
-						drag.context.multiplier.x /= (selection.prev ? selection.point[0] - selection.prev[0] : selection.next[0] - selection.point[0]);
-						drag.context.multiplier.y /= (selection.prev ? selection.point[1] - selection.prev[1] : selection.next[1] - selection.point[1]);
-
-						drag.context.bounds = {
-							x1: EPSILON,
-							x2: 1 - EPSILON
-						};
-					} else {
-						drag.context.start = [...selection.point];
-
-						const prev = selection.track.points[selection.index - 1];
-						const next = selection.track.points[selection.index + 1];
-
-						drag.context.bounds = {
-							x1: prev ? prev[0] + EPSILON : -Infinity,
-							x2: next ? next[0] - EPSILON : +Infinity
-						};
+						selected = { key: insert.key, index: insert.index };
+						console.log('inserted', selected);
 					}
-
-					// TODO allow multiple points to be selected
-					selected_points = [selection.point];
 				}
 
-				cursor = selection ? 'move' : 'grabbing';
+				drag.context.selection = selected;
+
+				if (selected) {
+					const track = value[selected.key];
+
+					const point = track.points[selected.index];
+					const prev = track.points[selected.index - 1];
+					const next = track.points[selected.index + 1];
+
+					drag.context.start = [...point];
+
+					drag.context.bounds = {
+						x1: prev ? prev[0] + EPSILON : -Infinity,
+						x2: next ? next[0] - EPSILON : +Infinity
+					};
+
+					cursor = 'move';
+				} else {
+					cursor = 'grabbing';
+				}
 			},
 			move: (drag, e) => {
 				if (drag.context.selection) {
@@ -140,16 +163,14 @@ import { smooth } from '../utils/smooth.js';
 					const x = yootils.clamp(drag.context.start[0] + dx * drag.context.multiplier.x, x1, x2);
 					const y = drag.context.start[1] - dy * drag.context.multiplier.y;
 
-					if (drag.context.selection.curve) {
-						if (drag.context.selection.prev) {
-							drag.context.selection.curve[2] = x;
-							drag.context.selection.curve[3] = y;
-						} else {
-							drag.context.selection.curve[0] = x;
-							drag.context.selection.curve[1] = y;
-						}
+					if (drag.context.handle) {
+						const curve = value[drag.context.selection.key].curves[drag.context.handle.index];
+
+						curve[0 + drag.context.handle.offset] = x;
+						curve[1 + drag.context.handle.offset] = y;
 					} else {
-						const { point } = drag.context.selection;
+						const track = value[drag.context.selection.key];
+						const point = track.points[drag.context.selection.index];
 
 						point[0] = x;
 						point[1] = y;
@@ -175,8 +196,12 @@ import { smooth } from '../utils/smooth.js';
 		}}
 		on:pointermove={e => {
 			if (!e.buttons) {
-				const selection = select(value, e.offsetX, e.offsetY, project, unproject, selected_tracks, selected_points);
-				cursor = selection ? (selection.new ? 'cell' : 'move') : 'grab';
+				const { offsetX: ox, offsetY: oy } = e;
+				cursor = (select_handle(value, ox, oy, project, selected) || select_point(value, ox, oy, project, active_tracks))
+					? 'move'
+					: select_new_point(value, ox, oy, project, unproject, active_tracks)
+						? 'cell'
+						: 'grab';
 			}
 		}}
 		on:wheel={e => {
@@ -220,58 +245,75 @@ import { smooth } from '../utils/smooth.js';
 		<canvas bind:this={canvas}></canvas>
 	</div>
 
-	<button on:click={() => value = smooth(value, selected_points)} title="Smooth {selected_points.length > 0 ? 'selected point' : 'all points'}" aria-label="Smooth">
-		<svg viewBox="0 0 24 24">
-			<path fill="currentColor" d="M18.5,2A1.5,1.5 0 0,1 20,3.5A1.5,1.5 0 0,1 18.5,5C18.27,5 18.05,4.95 17.85,4.85L14.16,8.55L14.5,9C16.69,7.74 19.26,7 22,7L23,7.03V9.04L22,9C19.42,9 17,9.75 15,11.04A3.96,3.96 0 0,1 11.04,15C9.75,17 9,19.42 9,22L9.04,23H7.03L7,22C7,19.26 7.74,16.69 9,14.5L8.55,14.16L4.85,17.85C4.95,18.05 5,18.27 5,18.5A1.5,1.5 0 0,1 3.5,20A1.5,1.5 0 0,1 2,18.5A1.5,1.5 0 0,1 3.5,17C3.73,17 3.95,17.05 4.15,17.15L7.84,13.45C7.31,12.78 7,11.92 7,11A4,4 0 0,1 11,7C11.92,7 12.78,7.31 13.45,7.84L17.15,4.15C17.05,3.95 17,3.73 17,3.5A1.5,1.5 0 0,1 18.5,2M11,9A2,2 0 0,0 9,11A2,2 0 0,0 11,13A2,2 0 0,0 13,11A2,2 0 0,0 11,9Z" />
-		</svg>
-	</button>
+	<div class="controls">
+		<div class="left">
+			{#if selected && active_tracks.includes(selected.key)}
+				<input type="number" bind:value={value[selected.key].points[selected.index][0]}>
+				<input type="number" bind:value={value[selected.key].points[selected.index][1]}>
+			{/if}
+		</div>
 
-	<button disabled={selected_points.length === 0} title="Remove selected point" aria-label="Remove selected point" on:click={() => {
-		for (const key in value) {
-			const track = value[key];
-			let i = track.points.length;
-			while (i--) {
-				const point = track.points[i];
-				if (selected_points.includes(point)) {
-					track.points.splice(i, 1);
-					track.curves.splice(i, 1);
+		<div class="right">
+			<button on:click={() => value = smooth(value, selected)} title="Smooth {selected ? 'selected point' : 'all points'}" aria-label="Smooth">
+				<svg viewBox="0 0 24 24">
+					<path fill="currentColor" d="M18.5,2A1.5,1.5 0 0,1 20,3.5A1.5,1.5 0 0,1 18.5,5C18.27,5 18.05,4.95 17.85,4.85L14.16,8.55L14.5,9C16.69,7.74 19.26,7 22,7L23,7.03V9.04L22,9C19.42,9 17,9.75 15,11.04A3.96,3.96 0 0,1 11.04,15C9.75,17 9,19.42 9,22L9.04,23H7.03L7,22C7,19.26 7.74,16.69 9,14.5L8.55,14.16L4.85,17.85C4.95,18.05 5,18.27 5,18.5A1.5,1.5 0 0,1 3.5,20A1.5,1.5 0 0,1 2,18.5A1.5,1.5 0 0,1 3.5,17C3.73,17 3.95,17.05 4.15,17.15L7.84,13.45C7.31,12.78 7,11.92 7,11A4,4 0 0,1 11,7C11.92,7 12.78,7.31 13.45,7.84L17.15,4.15C17.05,3.95 17,3.73 17,3.5A1.5,1.5 0 0,1 18.5,2M11,9A2,2 0 0,0 9,11A2,2 0 0,0 11,13A2,2 0 0,0 13,11A2,2 0 0,0 11,9Z" />
+				</svg>
+			</button>
 
-					selected_points = selected_points.filter(x => x !== point);
-				}
-			}
-		}
+			<button disabled={!selected || value[selected.key].points.length === 1} title="Remove selected point" aria-label="Remove selected point" on:click={() => {
+				const track = value[selected.key];
+				track.points.splice(selected.index, 1);
+				track.curves.splice(Math.min(selected.index, track.curves.length - 1), 1);
 
-		value = value;
-	}}>
-		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-			<path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
-		</svg>
-	</button>
+				selected = null;
 
-	<button on:click={() => {
-		navigator.clipboard.writeText(JSON.stringify(value));
-	}} title="Copy to clipboard" aria-label="Copy to clipboard">
-		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-			<path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
-		</svg>
-	</button>
+				value = value;
+			}}>
+				<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+					<path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+				</svg>
+			</button>
 
-	<button on:click={() => bounds = fit(value, selected_tracks)} title="Fit to window" aria-label="Fit to window">
-		<svg viewBox="0 0 24 24">
-			<path fill="currentColor" d="M20,2H4C2.89,2 2,2.89 2,4V20C2,21.11 2.89,22 4,22H20C21.11,22 22,21.11 22,20V4C22,2.89 21.11,2 20,2M20,20H4V4H20M13,8V10H11V8H9L12,5L15,8M16,15V13H14V11H16V9L19,12M10,13H8V15L5,12L8,9V11H10M15,16L12,19L9,16H11V14H13V16" />
-		</svg>
-	</button>
+			<button on:click={() => {
+				navigator.clipboard.writeText(JSON.stringify(value));
+			}} title="Copy to clipboard" aria-label="Copy to clipboard">
+				<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+					<path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+				</svg>
+			</button>
+
+			<button on:click={() => bounds = fit(value, active_tracks)} title="Fit to window" aria-label="Fit to window">
+				<svg viewBox="0 0 24 24">
+					<path fill="currentColor" d="M20,2H4C2.89,2 2,2.89 2,4V20C2,21.11 2.89,22 4,22H20C21.11,22 22,21.11 22,20V4C22,2.89 21.11,2 20,2M20,20H4V4H20M13,8V10H11V8H9L12,5L15,8M16,15V13H14V11H16V9L19,12M10,13H8V15L5,12L8,9V11H10M15,16L12,19L9,16H11V14H13V16" />
+				</svg>
+			</button>
+		</div>
+	</div>
+
+
 </div>
 
 <style>
-	.keyframe-editor:focus-visible {
-		position: relative;
-		margin: -2px;
+	.keyframe-editor {
+		margin: -2px -2px 1rem -2px;
 		padding: 2px;
+	}
+
+	.keyframe-editor:focus-visible {
 		outline: none;
+	}
+
+	.keyframe-editor:focus-visible::after {
+		content: '';
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 		border-radius: calc(var(--border-radius) * 0.25);
 		box-shadow: 0 0 0 2px var(--focus-color);
 		z-index: 2;
+		pointer-events: none;
 	}
 
 	.keyframe-editor:focus-within > span {
@@ -302,6 +344,25 @@ import { smooth } from '../utils/smooth.js';
 		mix-blend-mode: multiply;
 	}
 
+	.controls {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.controls .left {
+		display: block;
+		/* display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-gap: 0.5rem; */
+		/* margin-right: 0.5rem; */
+	}
+
+	.controls .left input {
+		width: 6rem;
+		height: 2rem;
+		margin: 0 0 0.5rem 0;
+	}
+
 	button {
 		width: 2rem;
 		border-radius: 16px;
@@ -310,8 +371,8 @@ import { smooth } from '../utils/smooth.js';
 		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
-		margin: 0.5rem 0 0.5rem 0;
 		padding: 0.2rem;
+		margin: 0 0 0.5rem 0;
 	}
 
 	button:disabled {

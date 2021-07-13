@@ -24,7 +24,7 @@
 		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
-		margin: 0.5rem 0 0.5rem 0;
+		margin: 0.1rem 0 0.1rem 0;
 		padding: 0.5rem 0.5rem;
 	}
 

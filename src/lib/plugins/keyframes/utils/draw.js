@@ -6,23 +6,14 @@ import { colors } from './colors.js';
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {Record<string, import('../types').KeyframeTrack>} value
- * @param {string[]} selected_tracks
- * @param {Array<[number, number]>} selected_points
+ * @param {string[]} active_tracks
+ * @param {import('../types').Selection} selected
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(
-	ctx,
-	value,
-	selected_tracks,
-	selected_points,
-	project,
-	unproject,
-	bounds,
-	playhead
-) {
+export function draw(ctx, value, active_tracks, selected, project, unproject, bounds, playhead) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -81,8 +72,8 @@ export function draw(
 	line(ctx, x, 0, x, h, '#999', 1);
 
 	Object.entries(value).forEach(([key, track], i) => {
-		const selected = selected_tracks.includes(key);
-		const color = selected ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
+		const is_active = active_tracks.includes(key);
+		const color = is_active ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
 
 		const fn = curve(track);
 
@@ -97,13 +88,13 @@ export function draw(
 		}
 
 		ctx.strokeStyle = color;
-		ctx.lineWidth = selected ? 2 : 1;
+		ctx.lineWidth = is_active ? 2 : 1;
 		ctx.stroke();
 	});
 
 	Object.entries(value).forEach(([key, track], i) => {
-		const selected = selected_tracks.includes(key);
-		const color = selected ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
+		const is_active = active_tracks.includes(key);
+		const color = is_active ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
 
 		for (let i = 0; i < track.points.length; i += 1) {
 			const point = track.points[i];
@@ -111,7 +102,7 @@ export function draw(
 			const x = project.x(point[0]);
 			const y = project.y(point[1]);
 
-			const is_selected = selected_points.includes(point);
+			const is_selected = selected && selected.key === key && selected.index === i;
 
 			if (is_selected) {
 				const prev = track.points[i - 1];
@@ -125,7 +116,7 @@ export function draw(
 					const hy = project.y(handle[1]);
 
 					line(ctx, x, y, hx, hy, 'black', 1);
-					circle(ctx, hx, hy, 3, 'black');
+					circle(ctx, hx, hy, 3, 2, 'black', 'white');
 				}
 
 				if (next) {
@@ -136,11 +127,11 @@ export function draw(
 					const hy = project.y(handle[1]);
 
 					line(ctx, x, y, hx, hy, 'black', 1);
-					circle(ctx, hx, hy, 3, 'black');
+					circle(ctx, hx, hy, 3, 2, 'black', 'white');
 				}
 			}
 
-			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? 'black' : color);
+			circle(ctx, x, y, is_selected ? 5 : 3, 5, 'white', is_selected ? 'black' : color);
 		}
 	});
 }
@@ -150,13 +141,15 @@ export function draw(
  * @param {number} x
  * @param {number} y
  * @param {number} r
+ * @param {number} line_width
+ * @param {string} stroke
  * @param {string} fill
  */
-function circle(ctx, x, y, r, fill) {
+function circle(ctx, x, y, r, line_width, stroke, fill) {
 	ctx.beginPath();
 	ctx.arc(x, y, r, 0, Math.PI * 2);
-	ctx.strokeStyle = 'white';
-	ctx.lineWidth = 5;
+	ctx.strokeStyle = stroke;
+	ctx.lineWidth = line_width;
 	ctx.fillStyle = fill;
 	ctx.stroke();
 	ctx.fill();

@@ -2,7 +2,7 @@
 	import { colors } from '../utils/colors.js';
 
 	/** @type {string[]} */
-	export let selected_tracks;
+	export let active_tracks;
 
 	/** @type {Record<string, import('../types').KeyframeTrack>} */
 	export let value;
@@ -11,7 +11,7 @@
 <div class="toggles">
 	{#each Object.keys(value) as key, i}
 		<label>
-			<input type=checkbox bind:group={selected_tracks} value={key}>
+			<input type=checkbox bind:group={active_tracks} value={key}>
 			<span class="checkbox" style="--bg: {value[key].$color || colors[i % colors.length]}"></span>
 			<span>{value[key].$label || key}</span>
 		</label>

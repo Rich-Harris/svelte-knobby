@@ -1,9 +1,9 @@
 /**
  *
  * @param {Record<string, import('../types').KeyframeTrack>} value
- * @param {string[]} selected_tracks
+ * @param {string[]} active_tracks
  */
-export function fit(value, selected_tracks) {
+export function fit(value, active_tracks) {
 	const bounds = {
 		x1: +Infinity,
 		x2: -Infinity,
@@ -20,7 +20,7 @@ export function fit(value, selected_tracks) {
 	}
 
 	for (const key in value) {
-		if (selected_tracks.includes(key)) {
+		if (active_tracks.includes(key)) {
 			const track = value[key];
 
 			for (let i = 0; i < track.points.length; i += 1) {
