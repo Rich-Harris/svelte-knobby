@@ -6,7 +6,7 @@ const config = {
 
 		package: {
 			exports: {
-				include: ['index.js']
+				include: ['index.js', 'plugins/*/index.js']
 			}
 		}
 	}
