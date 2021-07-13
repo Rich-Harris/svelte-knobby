@@ -8,6 +8,8 @@
 	import { fit } from '../ui/fit.js';
 	import { smooth } from '../operations/smooth.js';
 	import Toggles from './Toggles.svelte';
+	import { mix, unmix } from '../utils/number.js';
+	import { find_snap } from '../operations/snap.js';
 
 	/** @type {string} */
 	export let name;
@@ -22,6 +24,7 @@
 
 	const current_playhead = observe(playhead);
 
+	const padding = 20;
 	const EPSILON = 0.000001;
 
 	/** @type {string[]} */
@@ -32,6 +35,8 @@
 
 	let w = 0;
 	let h = 0;
+	let cursor = 'grab';
+	let snapping = false;
 
 	/** @type {HTMLCanvasElement} */
 	let canvas;
@@ -41,9 +46,8 @@
 
 	let bounds = fit(value, active_tracks);
 
-	let cursor = 'grab';
-
-	const padding = 20;
+	/** @type {import('../types').Snap} */
+	let snap;
 
 	$: project = {
 		x: yootils.linearScale([bounds.x1, bounds.x2], [padding, w - padding]),
@@ -59,16 +63,24 @@
 		selected = null;
 	}
 
-	$: if (ctx) draw(ctx, value, active_tracks, selected, project, unproject, bounds, $current_playhead);
+	$: if (ctx) draw(ctx, value, active_tracks, selected, project, unproject, bounds, $current_playhead, snap);
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
 	});
 </script>
 
-<div class="keyframe-editor" tabindex="0" on:keydown={e => {
-	// TODO nudge selection, undo/redo
-}}>
+<div
+	class="keyframe-editor"
+	tabindex="0"
+	on:keydown={e => {
+		// TODO nudge selection, undo/redo
+		if (e.code === 'KeyS') snapping = true;
+	}}
+	on:keyup={e => {
+		if (e.code === 'KeyS') snapping = false;
+	}}
+>
 	<p>{name}</p>
 
 	<Toggles {value} bind:active_tracks/>
@@ -93,17 +105,16 @@
 					cursor = 'move';
 
 					const curve = value[selected.key].curves[handle.index];
-					drag.context.start = [curve[0 + handle.offset], curve[1 + handle.offset]];
+					drag.context.start = [
+						mix(handle.a[0], handle.b[0], curve[0 + handle.offset]),
+						mix(handle.a[1], handle.b[1], curve[1 + handle.offset])
+					];
 
-					drag.context.multiplier.x /= (handle.b[0] - handle.a[0]);
-					drag.context.multiplier.y /= (handle.b[1] - handle.a[1]);
-
-					drag.context.selection = selected;
 					drag.context.handle = handle;
 
 					drag.context.bounds = {
-						x1: EPSILON,
-						x2: 1 - EPSILON
+						x1: handle.a[0] + EPSILON,
+						x2: handle.b[0] - EPSILON
 					};
 
 					return;
@@ -120,11 +131,8 @@
 						track.curves.splice(Math.min(insert.index, track.curves.length - 1), 0, [0.333, 0.333, 0.667, 0.667]);
 
 						selected = { key: insert.key, index: insert.index };
-						console.log('inserted', selected);
 					}
 				}
-
-				drag.context.selection = selected;
 
 				if (selected) {
 					const track = value[selected.key];
@@ -146,7 +154,9 @@
 				}
 			},
 			move: (drag, e) => {
-				if (drag.context.selection) {
+				const { multiplier, handle, start } = drag.context;
+
+				if (selected) {
 					let dx = drag.x;
 					let dy = drag.y;
 
@@ -160,17 +170,29 @@
 
 					const { x1, x2 } = drag.context.bounds;
 
-					const x = yootils.clamp(drag.context.start[0] + dx * drag.context.multiplier.x, x1, x2);
-					const y = drag.context.start[1] - dy * drag.context.multiplier.y;
+					let x = yootils.clamp(start[0] + dx * multiplier.x, x1, x2);
+					let y = start[1] - dy * multiplier.y;
 
-					if (drag.context.handle) {
-						const curve = value[drag.context.selection.key].curves[drag.context.handle.index];
+					snap = snapping && find_snap(x, y, value, selected, $current_playhead, 10 * drag.context.multiplier.x, 10 * drag.context.multiplier.y);
 
-						curve[0 + drag.context.handle.offset] = x;
-						curve[1 + drag.context.handle.offset] = y;
+					if (snap) {
+						if (snap.x) {
+							x = snap.x = yootils.clamp(snap.x, x1, x2);
+						}
+
+						if (snap.y) {
+							y = snap.y;
+						}
+					}
+
+					if (handle) {
+						const curve = value[selected.key].curves[handle.index];
+
+						curve[0 + handle.offset] = unmix(handle.a[0], handle.b[0], x);
+						curve[1 + handle.offset] = unmix(handle.a[1], handle.b[1], y);
 					} else {
-						const track = value[drag.context.selection.key];
-						const point = track.points[drag.context.selection.index];
+						const track = value[selected.key];
+						const point = track.points[selected.index];
 
 						point[0] = x;
 						point[1] = y;
@@ -178,8 +200,8 @@
 
 					value = value;
 				} else {
-					const dx = drag.dx * drag.context.multiplier.x;
-					const dy = drag.dy * drag.context.multiplier.y;
+					const dx = drag.dx * multiplier.x;
+					const dy = drag.dy * multiplier.y;
 
 					bounds.x1 -= dx;
 					bounds.x2 -= dx;

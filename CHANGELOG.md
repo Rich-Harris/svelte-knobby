@@ -6,6 +6,7 @@
 - [Keyframe plugin] Make keyframe tracks toggleable
 - [Keyframe plugin] Color coded keyframe tracks
 - [Keyframe plugin] Number editor for selected point
+- [Keyframe plugin] Snapping
 
 ## 0.1.11
 

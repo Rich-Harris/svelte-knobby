@@ -12,8 +12,19 @@ import { colors } from './colors.js';
  * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
+ * @param {import('../types').Snap} snap
  */
-export function draw(ctx, value, active_tracks, selected, project, unproject, bounds, playhead) {
+export function draw(
+	ctx,
+	value,
+	active_tracks,
+	selected,
+	project,
+	unproject,
+	bounds,
+	playhead,
+	snap
+) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -91,6 +102,18 @@ export function draw(ctx, value, active_tracks, selected, project, unproject, bo
 		ctx.lineWidth = is_active ? 2 : 1;
 		ctx.stroke();
 	});
+
+	if (snap) {
+		if (snap.x) {
+			const x = project.x(snap.x);
+			line(ctx, x, 0, x, h, 'magenta', 1);
+		}
+
+		if (snap.y) {
+			const y = project.y(snap.y);
+			line(ctx, 0, y, w, y, 'magenta', 1);
+		}
+	}
 
 	Object.entries(value).forEach(([key, track], i) => {
 		const is_active = active_tracks.includes(key);

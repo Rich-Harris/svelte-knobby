@@ -26,3 +26,8 @@ export type Handle = {
 	index: number;
 	offset: number;
 };
+
+export type Snap = {
+	x: number;
+	y: number;
+};
