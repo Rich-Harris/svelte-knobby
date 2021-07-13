@@ -77,6 +77,12 @@
 				}
 			}
 		}
+
+		// prevent zero-width bounds
+		bounds.x1 -= 0.01;
+		bounds.x2 += 0.01;
+		bounds.y1 -= 0.01;
+		bounds.y2 += 0.01;
 	}
 
 	fit();
