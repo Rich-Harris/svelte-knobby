@@ -1,5 +1,5 @@
-import { curve } from '../utils/curve.js';
-import { mix } from '../utils/utils.js';
+import { curve } from '../curve.js';
+import { mix } from '../utils/number.js';
 
 /** @typedef {import('../types').Keyframes} Keyframes */
 /** @typedef {import('../types').Scales} Scales */

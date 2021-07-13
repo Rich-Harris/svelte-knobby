@@ -1,6 +1,6 @@
 import { get_ticks } from './ticks.js';
-import { mix } from './utils.js';
-import { curve } from './curve.js';
+import { mix } from '../utils/number.js';
+import { curve } from '../curve.js';
 import { colors } from './colors.js';
 
 /**

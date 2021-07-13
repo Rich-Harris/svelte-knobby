@@ -1,6 +1,6 @@
 import KeyframeEditor from './components/KeyframeEditor.svelte';
 
-export { curve } from './utils/curve.js';
+export { curve } from './curve.js';
 
 /**
  * @param {{ playhead?: (values: any) => number, value: Record<string, import('./types').KeyframeTrack> }} options

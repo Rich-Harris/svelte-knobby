@@ -1,5 +1,5 @@
 <script>
-	import { colors } from '../utils/colors.js';
+	import { colors } from '../ui/colors.js';
 
 	/** @type {string[]} */
 	export let active_tracks;

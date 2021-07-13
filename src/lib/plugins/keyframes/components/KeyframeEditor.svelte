@@ -1,12 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
 	import * as yootils from 'yootils';
-	import { draw } from '../utils/draw.js';
+	import { draw } from '../ui/draw.js';
 	import { drag } from '../../../actions/drag.js';
 	import { select_handle, select_new_point, select_point } from '../operations/select.js';
 	import { context } from '../../../context.js';
-	import { fit } from '../utils/fit.js';
-	import { smooth } from '../utils/smooth.js';
+	import { fit } from '../ui/fit.js';
+	import { smooth } from '../operations/smooth.js';
 	import Toggles from './Toggles.svelte';
 
 	/** @type {string} */
