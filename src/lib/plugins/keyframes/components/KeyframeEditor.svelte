@@ -6,11 +6,12 @@
 	import { mix } from '../utils/utils.js';
 	import { curve } from '../utils/curve.js';
 	import { context } from '../../../context.js';
+	import Toggles from './Toggles.svelte';
 
 	/** @type {string} */
 	export let name;
 
-	/** @type {import('../types').KeyframeTrack[]} */
+	/** @type {Record<string, import('../types').KeyframeTrack>} */
 	export let value;
 
 	/** @type {(values: any) => number} */
@@ -21,6 +22,9 @@
 	const current_playhead = observe(playhead);
 
 	const EPSILON = 0.000001;
+
+	/** @type {string[]} */
+	let selected_tracks = Object.keys(value);
 
 	/** @type {import('../types').Point[]} */
 	let selected_points = [];
@@ -306,7 +310,7 @@
 		y: project.y.inverse()
 	}
 
-	$: if (ctx) draw(ctx, value, selected_points, project, unproject, bounds, $current_playhead);
+	$: if (ctx) draw(ctx, value, selected_tracks, selected_points, project, unproject, bounds, $current_playhead);
 
 	onMount(() => {
 		ctx = canvas.getContext('2d');
@@ -316,7 +320,9 @@
 <div class="keyframe-editor" tabindex="0" on:keydown={e => {
 	// TODO nudge selection, undo/redo
 }}>
-	<span>{name}</span>
+	<p>{name}</p>
+
+	<Toggles {value} bind:selected_tracks/>
 
 	<div
 		class="canvas-container"
@@ -541,7 +547,7 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		background: rgba(0,0,0,0.05);
+		background: rgba(0,0,0,0.04);
 	}
 
 	canvas {

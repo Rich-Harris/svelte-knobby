@@ -1,17 +1,28 @@
 import { get_ticks } from './ticks.js';
 import { mix } from './utils.js';
 import { curve } from './curve.js';
+import { colors } from './colors.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {Record<string, import('../types').KeyframeTrack>} value
+ * @param {string[]} selected_tracks
  * @param {Array<[number, number]>} selected_points
  * @param {{ x: (n: number) => number, y: (n: number) => number }} project
  * @param {{ x: (n: number) => number, y: (n: number) => number }} unproject
  * @param {{ x1: number, x2: number, y1: number, y2: number }} bounds
  * @param {number} playhead
  */
-export function draw(ctx, value, selected_points, project, unproject, bounds, playhead) {
+export function draw(
+	ctx,
+	value,
+	selected_tracks,
+	selected_points,
+	project,
+	unproject,
+	bounds,
+	playhead
+) {
 	const w = ctx.canvas.offsetWidth;
 	const h = ctx.canvas.offsetHeight;
 
@@ -69,8 +80,10 @@ export function draw(ctx, value, selected_points, project, unproject, bounds, pl
 	line(ctx, x, 0, x, h, 'white', 3);
 	line(ctx, x, 0, x, h, '#999', 1);
 
-	for (const key in value) {
-		const track = value[key];
+	Object.entries(value).forEach(([key, track], i) => {
+		const selected = selected_tracks.includes(key);
+		const color = selected ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
+
 		const fn = curve(track);
 
 		ctx.beginPath();
@@ -83,9 +96,14 @@ export function draw(ctx, value, selected_points, project, unproject, bounds, pl
 			ctx.lineTo(x, y);
 		}
 
-		ctx.strokeStyle = 'black';
-		ctx.lineWidth = 1;
+		ctx.strokeStyle = color;
+		ctx.lineWidth = selected ? 2 : 1;
 		ctx.stroke();
+	});
+
+	Object.entries(value).forEach(([key, track], i) => {
+		const selected = selected_tracks.includes(key);
+		const color = selected ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
 
 		for (let i = 0; i < track.points.length; i += 1) {
 			const point = track.points[i];
@@ -106,8 +124,8 @@ export function draw(ctx, value, selected_points, project, unproject, bounds, pl
 					const hx = project.x(handle[0]);
 					const hy = project.y(handle[1]);
 
-					line(ctx, x, y, hx, hy, '#ff3e00', 1);
-					circle(ctx, hx, hy, 3, '#ff3e00');
+					line(ctx, x, y, hx, hy, 'black', 1);
+					circle(ctx, hx, hy, 3, 'black');
 				}
 
 				if (next) {
@@ -117,14 +135,14 @@ export function draw(ctx, value, selected_points, project, unproject, bounds, pl
 					const hx = project.x(handle[0]);
 					const hy = project.y(handle[1]);
 
-					line(ctx, x, y, hx, hy, '#ff3e00', 1);
-					circle(ctx, hx, hy, 3, '#ff3e00');
+					line(ctx, x, y, hx, hy, 'black', 1);
+					circle(ctx, hx, hy, 3, 'black');
 				}
 			}
 
-			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? '#ff3e00' : 'black');
+			circle(ctx, x, y, is_selected ? 4 : 3, is_selected ? 'black' : color);
 		}
-	}
+	});
 }
 
 /**
