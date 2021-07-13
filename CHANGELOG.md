@@ -1,5 +1,11 @@
 # svelte-knobby changelog
 
+## 0.1.12 (unreleased)
+
+- Change keyframes data structure
+- Make keyframe tracks toggleable
+- Color coded keyframe tracks
+
 ## 0.1.11
 
 - Include plugins in package

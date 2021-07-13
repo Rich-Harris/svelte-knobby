@@ -7,3 +7,10 @@ export type KeyframeTrack = {
 	points: Point[];
 	curves: Curve[];
 };
+
+export type Keyframes = Record<string, KeyframeTrack>;
+
+export type Scales = {
+	x: (n: number) => number;
+	y: (n: number) => number;
+};
