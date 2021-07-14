@@ -8,6 +8,12 @@ const config = {
 			exports: {
 				include: ['index.js', 'plugins/*/index.js']
 			}
+		},
+
+		vite: {
+			optimizeDeps: {
+				include: ['bezier-easing', 'yootils']
+			}
 		}
 	}
 };
