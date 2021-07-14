@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.14
+
+- Cmd-Z/Shift-Cmd-Z undo/redo
+
 ## 0.1.13
 
 - [Keyframe plugin] Undo/redo buttons

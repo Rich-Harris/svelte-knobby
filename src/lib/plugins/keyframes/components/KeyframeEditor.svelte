@@ -88,6 +88,14 @@
 	on:keydown={e => {
 		// TODO nudge selection, undo/redo
 		if (e.code === 'KeyS') snapping = true;
+
+		if (e.code === 'KeyZ' && e.metaKey) {
+			if (e.shiftKey) {
+				({ value, selected } = stack.redo());
+			} else {
+				({ value, selected } = stack.undo());
+			}
+		}
 	}}
 	on:keyup={e => {
 		if (e.code === 'KeyS') snapping = false;
