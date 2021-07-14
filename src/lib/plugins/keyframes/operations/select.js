@@ -64,7 +64,7 @@ export function select_handle(value, ox, oy, project, selected) {
 		return dx * dx + dy * dy < 100;
 	}
 
-	if (prev) {
+	if (prev && prev[1] !== point[1]) {
 		const curve = track.curves[selected.index - 1];
 
 		/** @type {Point} */
@@ -80,7 +80,7 @@ export function select_handle(value, ox, oy, project, selected) {
 		}
 	}
 
-	if (next) {
+	if (next && next[1] !== point[1]) {
 		const curve = track.curves[selected.index];
 
 		/** @type {Point} */

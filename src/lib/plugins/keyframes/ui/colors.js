@@ -1,5 +1,5 @@
 // https://spectrum.adobe.com/page/color-for-data-visualization/
-export const colors = [
+export const palette = [
 	'rgb(85,189,197)',
 	'rgb(77,73,203)',
 	'rgb(220,139,57)',
@@ -13,3 +13,5 @@ export const colors = [
 	'rgb(71,139,110)',
 	'rgb(173,233,1087)'
 ];
+
+export const snap = 'rgba(200,100,255,0.8)';

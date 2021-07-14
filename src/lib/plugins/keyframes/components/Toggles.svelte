@@ -1,5 +1,5 @@
 <script>
-	import { colors } from '../ui/colors.js';
+	import { palette } from '../ui/colors.js';
 
 	/** @type {string[]} */
 	export let active_tracks;
@@ -12,7 +12,7 @@
 	{#each Object.keys(value) as key, i}
 		<label>
 			<input type=checkbox bind:group={active_tracks} value={key}>
-			<span class="checkbox" style="--bg: {value[key].$color || colors[i % colors.length]}"></span>
+			<span class="checkbox" style="--bg: {value[key].$color || palette[i % palette.length]}"></span>
 			<span>{value[key].$label || key}</span>
 		</label>
 	{/each}

@@ -211,6 +211,7 @@
 			},
 			end: drag => {
 				cursor = 'grab';
+				snap = null;
 			}
 		}}
 		on:pointerdown={e => {

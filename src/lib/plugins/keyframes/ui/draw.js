@@ -1,7 +1,7 @@
 import { get_ticks } from './ticks.js';
 import { mix } from '../utils/number.js';
 import { curve } from '../curve.js';
-import { colors } from './colors.js';
+import * as colors from './colors.js';
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -84,7 +84,7 @@ export function draw(
 
 	Object.entries(value).forEach(([key, track], i) => {
 		const is_active = active_tracks.includes(key);
-		const color = is_active ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
+		const color = is_active ? track.$color || colors.palette[i] : 'rgba(0,0,0,0.1)';
 
 		const fn = curve(track);
 
@@ -104,20 +104,22 @@ export function draw(
 	});
 
 	if (snap) {
+		ctx.setLineDash([2, 2]);
 		if (snap.x) {
 			const x = project.x(snap.x);
-			line(ctx, x, 0, x, h, 'magenta', 1);
+			line(ctx, x, 0, x, h, colors.snap, 1);
 		}
 
 		if (snap.y) {
 			const y = project.y(snap.y);
-			line(ctx, 0, y, w, y, 'magenta', 1);
+			line(ctx, 0, y, w, y, colors.snap, 1);
 		}
+		ctx.setLineDash([]);
 	}
 
 	Object.entries(value).forEach(([key, track], i) => {
 		const is_active = active_tracks.includes(key);
-		const color = is_active ? track.$color || colors[i] : 'rgba(0,0,0,0.1)';
+		const color = is_active ? track.$color || colors.palette[i] : 'rgba(0,0,0,0.1)';
 
 		for (let i = 0; i < track.points.length; i += 1) {
 			const point = track.points[i];
@@ -131,7 +133,7 @@ export function draw(
 				const prev = track.points[i - 1];
 				const next = track.points[i + 1];
 
-				if (prev) {
+				if (prev && prev[1] !== point[1]) {
 					const curve = track.curves[i - 1];
 					const handle = [mix(prev[0], point[0], curve[2]), mix(prev[1], point[1], curve[3])];
 
@@ -142,7 +144,7 @@ export function draw(
 					circle(ctx, hx, hy, 3, 2, 'black', 'white');
 				}
 
-				if (next) {
+				if (next && next[1] !== point[1]) {
 					const curve = track.curves[i];
 					const handle = [mix(point[0], next[0], curve[0]), mix(point[1], next[1], curve[1])];
 
