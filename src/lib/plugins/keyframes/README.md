@@ -2,6 +2,8 @@
 
 ## API
 
+> TODO make a REPL demo
+
 ```svelte
 <script>
   import { knobby } from 'svelte-knobby';
