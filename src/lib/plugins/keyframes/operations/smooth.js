@@ -51,6 +51,8 @@ export function smooth(value, active_tracks, selected) {
 	return smoothed;
 }
 
+// TODO typescript doesn't like the local mutations... figure out something else
+
 /**
  * @param {KeyframeTrack} track
  * @param {number} index

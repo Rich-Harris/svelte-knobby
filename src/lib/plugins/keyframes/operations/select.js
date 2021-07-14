@@ -104,7 +104,7 @@ export function select_handle(value, ox, oy, project, selected) {
  * @param {Scales} project
  * @param {Scales} unproject
  * @param {string[]} active_tracks
- * @returns {{ key: string, index: number, point: Point }}
+ * @returns {{ key: string, index: number, curve_index: number, point: readonly Point }}
  */
 export function select_new_point(value, ox, oy, project, unproject, active_tracks) {
 	const x1 = ox - 10; // TODO make this number less magical
@@ -148,6 +148,7 @@ export function select_new_point(value, ox, oy, project, unproject, active_track
 				return {
 					key,
 					index,
+					curve_index: Math.min(index, track.curves.length - 1),
 					point: closest.point
 				};
 			}

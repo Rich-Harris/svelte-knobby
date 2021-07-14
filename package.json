@@ -34,5 +34,8 @@
 		"overrides": {
 			"@sveltejs/kit": "link:../../KIT/kit/packages/kit"
 		}
+	},
+	"dependencies": {
+		"svelte-undo": "^1.0.0"
 	}
 }

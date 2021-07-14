@@ -4,8 +4,8 @@ export type Curve = readonly [number, number, number, number];
 export type KeyframeTrack = {
 	readonly $label?: string;
 	readonly $color?: string;
-	readonly points: Point[];
-	readonly curves: Curve[];
+	readonly points: readonly Point[];
+	readonly curves: readonly Curve[];
 };
 
 export type Keyframes = Record<string, KeyframeTrack>;

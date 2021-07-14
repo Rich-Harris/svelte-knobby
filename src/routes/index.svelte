@@ -24,10 +24,10 @@
 			clicks: 0
 		}),
 
-		phi: keyframes({
+		one: keyframes({
 			playhead: values => values.constrained,
 			value: {
-				one: {
+				cx: {
 					points: [
 						[0, 0],
 						[50, 20],
@@ -40,8 +40,8 @@
 						[0.33, 0, 0.67, 1]
 					]
 				},
-				two: {
-					$label: 'two (custom label)',
+				cy: {
+					$label: 'cy (custom label)',
 					$color: '#3eff00',
 					points: [
 						[0, 20],
@@ -86,7 +86,7 @@
 	// $controls.message = 'Hello Knobby!';
 </script>
 
-<pre>{JSON.stringify($controls.phi, null, '  ')}</pre>
+<pre>{JSON.stringify($controls.one, null, '  ')}</pre>
 
 {#if $controls.checked}
 	<Thing/>

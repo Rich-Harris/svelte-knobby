@@ -10,19 +10,31 @@
 	import Toggles from './Toggles.svelte';
 	import { mix, unmix } from '../utils/number.js';
 	import { find_snap } from '../operations/snap.js';
+	import { createStack } from 'svelte-undo';
+
+	/** @typedef {import('../types').Keyframes} Keyframes */
+	/** @typedef {import('../types').Point} Point */
+	/** @typedef {import('../types').Curve} Curve */
+	/** @typedef {import('../types').Snap} Snap */
 
 	/** @type {string} */
 	export let name;
 
-	/** @type {Record<string, import('../types').KeyframeTrack>} */
+	/** @type {Keyframes} */
 	export let value;
 
 	/** @type {(values: any) => number} */
 	export let playhead = null;
 
 	const { observe } = context(); // TODO make a typed function for this
-
 	const current_playhead = observe(playhead);
+
+	const stack = createStack({
+		value,
+		selected: null
+	});
+
+	const update_stack = () => stack.push({ value, selected });
 
 	const padding = 20;
 	const EPSILON = 0.000001;
@@ -46,7 +58,7 @@
 
 	let bounds = fit(value, active_tracks);
 
-	/** @type {import('../types').Snap} */
+	/** @type {Snap} */
 	let snap;
 
 	$: project = {
@@ -127,8 +139,21 @@
 
 					if (insert) {
 						const track = value[insert.key];
-						track.points.splice(insert.index, 0, insert.point);
-						track.curves.splice(Math.min(insert.index, track.curves.length - 1), 0, [0.333, 0.333, 0.667, 0.667]);
+
+						/** @type {readonly Point[]} */
+						const points = [...track.points.slice(0, insert.index), insert.point, ...track.points.slice(insert.index)];
+
+						/** @type {readonly Curve[]} */
+						const curves = [...track.curves.slice(0, insert.curve_index), [0.333, 0.333, 0.667, 0.667], ...track.curves.slice(insert.curve_index)];
+
+						value = {
+							...value,
+							[insert.key]: {
+								...track,
+								points,
+								curves
+							}
+						}
 
 						selected = { key: insert.key, index: insert.index };
 					}
@@ -234,6 +259,8 @@
 			end: drag => {
 				cursor = 'grab';
 				snap = null;
+
+				update_stack();
 			}
 		}}
 		on:pointerdown={e => {
@@ -293,42 +320,104 @@
 	<div class="controls">
 		<div class="left">
 			{#if selected && active_tracks.includes(selected.key)}
-				<input type="number" bind:value={value[selected.key].points[selected.index][0]}>
-				<input type="number" bind:value={value[selected.key].points[selected.index][1]}>
+				<input
+					type="number"
+					value={value[selected.key].points[selected.index][0]}
+					on:input={e => {
+						const track = value[selected.key];
+						const x = +e.target.value;
+						value = {
+							...value,
+							[selected.key]: {
+								...track,
+								points: track.points.map((point, i) => {
+									if (i === selected.index) return [x, point[1]];
+									return point;
+								})
+							}
+						};
+					}}
+					on:change={update_stack}
+				>
+
+				<input
+					type="number"
+					value={value[selected.key].points[selected.index][1]}
+					on:input={e => {
+						const track = value[selected.key];
+						const y = +e.target.value;
+						value = {
+							...value,
+							[selected.key]: {
+								...track,
+								points: track.points.map((point, i) => {
+									if (i === selected.index) return [point[0], y];
+									return point;
+								})
+							}
+						};
+					}}
+					on:change={update_stack}
+				>
 			{/if}
 		</div>
 
 		<div class="right">
-			<button on:click={() => value = smooth(value, active_tracks, selected)} title="Smooth {selected ? 'selected point' : 'all points'}" aria-label="Smooth">
-				<svg viewBox="0 0 24 24">
+			<button disabled={$stack.first} title="Undo" on:click={e => {
+				({ value, selected } = stack.undo());
+			}}>
+				<svg viewBox="0 0 24 24" aria-label="Undo">
+					<path fill="currentColor" d="M20 13.5C20 17.09 17.09 20 13.5 20H6V18H13.5C16 18 18 16 18 13.5S16 9 13.5 9H7.83L10.91 12.09L9.5 13.5L4 8L9.5 2.5L10.92 3.91L7.83 7H13.5C17.09 7 20 9.91 20 13.5Z" />
+				</svg>
+			</button>
+
+			<button disabled={$stack.last} title="Undo" on:click={e => {
+				({ value, selected } = stack.redo());
+			}}>
+				<svg viewBox="0 0 24 24" aria-label="Redo">
+					<path fill="currentColor" d="M10.5 18H18V20H10.5C6.91 20 4 17.09 4 13.5S6.91 7 10.5 7H16.17L13.08 3.91L14.5 2.5L20 8L14.5 13.5L13.09 12.09L16.17 9H10.5C8 9 6 11 6 13.5S8 18 10.5 18Z" />
+				</svg>
+			</button>
+
+			<button on:click={() => value = smooth(value, active_tracks, selected)} title="Smooth {selected ? 'selected point' : 'all points'}">
+				<svg viewBox="0 0 24 24" aria-label="Smooth">
 					<path fill="currentColor" d="M18.5,2A1.5,1.5 0 0,1 20,3.5A1.5,1.5 0 0,1 18.5,5C18.27,5 18.05,4.95 17.85,4.85L14.16,8.55L14.5,9C16.69,7.74 19.26,7 22,7L23,7.03V9.04L22,9C19.42,9 17,9.75 15,11.04A3.96,3.96 0 0,1 11.04,15C9.75,17 9,19.42 9,22L9.04,23H7.03L7,22C7,19.26 7.74,16.69 9,14.5L8.55,14.16L4.85,17.85C4.95,18.05 5,18.27 5,18.5A1.5,1.5 0 0,1 3.5,20A1.5,1.5 0 0,1 2,18.5A1.5,1.5 0 0,1 3.5,17C3.73,17 3.95,17.05 4.15,17.15L7.84,13.45C7.31,12.78 7,11.92 7,11A4,4 0 0,1 11,7C11.92,7 12.78,7.31 13.45,7.84L17.15,4.15C17.05,3.95 17,3.73 17,3.5A1.5,1.5 0 0,1 18.5,2M11,9A2,2 0 0,0 9,11A2,2 0 0,0 11,13A2,2 0 0,0 13,11A2,2 0 0,0 11,9Z" />
 				</svg>
 			</button>
 
-			<button disabled={!selected || value[selected.key].points.length === 1} title="Remove selected point" aria-label="Remove selected point" on:click={() => {
+			<button disabled={!selected || value[selected.key].points.length === 1} title="Remove selected point" on:click={() => {
 				const track = value[selected.key];
-				track.points.splice(selected.index, 1);
-				track.curves.splice(Math.min(selected.index, track.curves.length - 1), 1);
+
+				const curve_index = Math.min(selected.index, track.curves.length - 1);
+
+				value = {
+					...value,
+					[selected.key]: {
+						...track,
+						points: track.points.filter((point, i) => i !== selected.index),
+						curves: track.curves.filter((curve, i) => i !== curve_index)
+					}
+				};
 
 				selected = null;
 
-				value = value;
+				update_stack();
 			}}>
-				<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+				<svg viewBox="0 0 24 24" aria-label="Remove selected point">
 					<path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
 				</svg>
 			</button>
 
 			<button on:click={() => {
 				navigator.clipboard.writeText(JSON.stringify(value));
-			}} title="Copy to clipboard" aria-label="Copy to clipboard">
-				<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+			}} title="Copy to clipboard">
+				<svg viewBox="0 0 24 24" aria-label="Copy to clipboard">
 					<path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
 				</svg>
 			</button>
 
-			<button on:click={() => bounds = fit(value, active_tracks)} title="Fit to window" aria-label="Fit to window">
-				<svg viewBox="0 0 24 24">
+			<button on:click={() => bounds = fit(value, active_tracks)} title="Fit to window">
+				<svg viewBox="0 0 24 24" aria-label="Fit to window">
 					<path fill="currentColor" d="M20,2H4C2.89,2 2,2.89 2,4V20C2,21.11 2.89,22 4,22H20C21.11,22 22,21.11 22,20V4C22,2.89 21.11,2 20,2M20,20H4V4H20M13,8V10H11V8H9L12,5L15,8M16,15V13H14V11H16V9L19,12M10,13H8V15L5,12L8,9V11H10M15,16L12,19L9,16H11V14H13V16" />
 				</svg>
 			</button>
@@ -359,10 +448,6 @@
 		box-shadow: 0 0 0 2px var(--focus-color);
 		z-index: 2;
 		pointer-events: none;
-	}
-
-	.keyframe-editor:focus-within > span {
-		font-weight: bold;
 	}
 
 	.canvas-container {

@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.1.13
+
+- [Keyframe plugin] Undo/redo buttons
+
 ## 0.1.12
 
 - [Keyframe plugin] Change keyframes data structure
