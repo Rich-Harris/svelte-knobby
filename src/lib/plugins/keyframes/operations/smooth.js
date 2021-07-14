@@ -1,25 +1,58 @@
-/**
- * @param {import('../types').Keyframes} value
- * @param {import('../types').Selection} selected
- */
-export function smooth(value, selected) {
-	if (selected) {
-		smooth_point(value[selected.key], selected.index);
-	} else {
-		for (const key in value) {
-			const track = value[key];
+/** @typedef {import('../types').Keyframes} Keyframes */
+/** @typedef {import('../types').KeyframeTrack} KeyframeTrack */
+/** @typedef {import('../types').Selection} Selection */
+/** @typedef {import('../types').Point} Point */
 
-			for (let index = 0; index < track.points.length; index += 1) {
-				smooth_point(track, index);
+/**
+ * @param {Keyframes} value
+ * @param {string[]} active_tracks
+ * @param {Selection} selected
+ */
+export function smooth(value, active_tracks, selected) {
+	if (selected) {
+		const track = value[selected.key];
+
+		/** @type {KeyframeTrack} */
+		const smoothed = {
+			...track,
+			points: track.points,
+			curves: track.curves.map((curve) => [curve[0], curve[1], curve[2], curve[3]])
+		};
+
+		smooth_point(smoothed, selected.index);
+
+		return {
+			...value,
+			[selected.key]: smoothed
+		};
+	}
+
+	/** @type {Keyframes} */
+	const smoothed = {};
+
+	for (const key in value) {
+		const track = value[key];
+
+		if (active_tracks.includes(key)) {
+			smoothed[key] = {
+				...track,
+				points: track.points,
+				curves: track.curves.map((curve) => [curve[0], curve[1], curve[2], curve[3]])
+			};
+
+			for (let i = 0; i < track.points.length; i += 1) {
+				smooth_point(smoothed[key], i);
 			}
+		} else {
+			smoothed[key] = value[key];
 		}
 	}
 
-	return value;
+	return smoothed;
 }
 
 /**
- * @param {import('../types').KeyframeTrack} track
+ * @param {KeyframeTrack} track
  * @param {number} index
  */
 function smooth_point(track, index) {
@@ -39,13 +72,13 @@ function smooth_point(track, index) {
 	} else {
 		// equalize gradient either side of the point
 
-		/** @type {import('../types').Point} */
+		/** @type {Point} */
 		const prev_handle = [
 			(prev[0] - point[0]) * (1 - prev_curve[2]),
 			(prev[1] - point[1]) * (1 - prev_curve[3])
 		];
 
-		/** @type {import('../types').Point} */
+		/** @type {Point} */
 		const next_handle = [
 			(next[0] - point[0]) * next_curve[0],
 			(next[1] - point[1]) * next_curve[1]
