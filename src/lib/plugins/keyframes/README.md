@@ -72,4 +72,18 @@ The `curve` function takes a `{ points, curves }` object and returns an `(x) => 
 
 ## Usage
 
-TODO document keyboard controls, buttons, etc
+> TODO flesh this out with screenshots etc
+
+Above the editor is a list of the _active tracks_. You can enable/disable tracks by clicking on them; inactive tracks will not be selectable, and are not included when you use the 'smooth' or 'fit to window' buttons (see below).
+
+Move the editor window by grabbing an empty part and dragging. This will clear any existing selections; to move the window without doing so, hold the `option` key and scroll.
+
+Zoom by scrolling while holding the `command` key (to zoom along the x axis), the `shift` key (to zoom along the y axis), or both. Fit the currently active tracks to the window by hitting the 'fit to window' button.
+
+Select a point by clicking on it. This will reveal _handles_ for adjusting the curve, where appropriate. While dragging a point or a handle, hold `shift` to restrict dragging to be either vertical or horizontal, and hold `s` to snap to x/y values that exist elsewhere in the editor (including the playhead). You can also adjust a point by using the numerical inputs below the editor.
+
+To smooth a point (ensuring that the handles either side of it are on the same gradient), click the 'smooth' button. If no point is selected, this will smooth all points on all currently active tracks.
+
+Remove a point by selecting it and pressing the trash button.
+
+To save the data, click the 'copy to clipboard' button.
