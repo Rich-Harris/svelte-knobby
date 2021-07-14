@@ -1,11 +1,11 @@
-export type Point = [number, number];
-export type Curve = [number, number, number, number];
+export type Point = readonly [number, number];
+export type Curve = readonly [number, number, number, number];
 
 export type KeyframeTrack = {
-	$label?: string;
-	$color?: string;
-	points: Point[];
-	curves: Curve[];
+	readonly $label?: string;
+	readonly $color?: string;
+	readonly points: Point[];
+	readonly curves: Curve[];
 };
 
 export type Keyframes = Record<string, KeyframeTrack>;

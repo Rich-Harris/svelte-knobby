@@ -185,20 +185,42 @@
 						}
 					}
 
+					const track = value[selected.key];
+
 					if (handle) {
-						const curve = value[selected.key].curves[handle.index];
+						value = {
+							...value,
+							[selected.key]: {
+								...track,
+								curves: track.curves.map((curve, i) => {
+									if (i === handle.index) {
+										const u = unmix(handle.a[0], handle.b[0], x);
+										const v = unmix(handle.a[1], handle.b[1], y);
 
-						curve[0 + handle.offset] = unmix(handle.a[0], handle.b[0], x);
-						curve[1 + handle.offset] = unmix(handle.a[1], handle.b[1], y);
+										return [
+											handle.offset === 0 ? u : curve[0],
+											handle.offset === 0 ? v : curve[1],
+											handle.offset === 2 ? u : curve[2],
+											handle.offset === 2 ? v : curve[3]
+										];
+									}
+
+									return curve;
+								})
+							}
+						}
 					} else {
-						const track = value[selected.key];
-						const point = track.points[selected.index];
-
-						point[0] = x;
-						point[1] = y;
+						value = {
+							...value,
+							[selected.key]: {
+								...track,
+								points: track.points.map((point, i) => {
+									if (i === selected.index) return [x, y];
+									return point;
+								})
+							}
+						};
 					}
-
-					value = value;
 				} else {
 					const dx = drag.dx * multiplier.x;
 					const dy = drag.dy * multiplier.y;
@@ -234,8 +256,8 @@
 				const bcr = canvas.getBoundingClientRect();
 
 				if (e.altKey) {
-					const dx = e.wheelDeltaX * (bounds.x2 - bounds.x1) / bcr.width;
-					const dy = e.wheelDeltaY * (bounds.y2 - bounds.y1) / bcr.height;
+					const dx = -e.deltaX * (bounds.x2 - bounds.x1) / bcr.width;
+					const dy = -e.deltaY * (bounds.y2 - bounds.y1) / bcr.height;
 
 					bounds.x1 -= dx * 0.25;
 					bounds.x2 -= dx * 0.25;
@@ -248,7 +270,7 @@
 					const cx = unproject.x(x);
 					const cy = unproject.y(y);
 
-					const amount = Math.pow(Math.exp(-e.wheelDeltaY), 0.01);
+					const amount = Math.pow(Math.exp(e.deltaY), 0.01);
 
 					if (e.metaKey) {
 						// zoom x
