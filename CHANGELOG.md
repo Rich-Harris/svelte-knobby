@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.1.15
+
+- Allow min/max/step options to be functions, for programming constraints
+- Promote bezier-easing to prod dependency
+
 ## 0.1.14
 
 - Cmd-Z/Shift-Cmd-Z undo/redo

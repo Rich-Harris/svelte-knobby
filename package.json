@@ -14,7 +14,6 @@
 	},
 	"devDependencies": {
 		"@sveltejs/kit": "^1.0.0-next.125",
-		"bezier-easing": "^2.1.0",
 		"eslint": "^7.22.0",
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-plugin-svelte3": "^3.2.0",
@@ -22,8 +21,7 @@
 		"prettier-plugin-svelte": "^2.2.0",
 		"svelte": "^3.34.0",
 		"svelte2tsx": "^0.4.1",
-		"typescript": "^4.3.5",
-		"yootils": "^0.2.1"
+		"typescript": "^4.3.5"
 	},
 	"peerDependencies": {
 		"svelte": "^3.34.0"
@@ -36,6 +34,8 @@
 		}
 	},
 	"dependencies": {
-		"svelte-undo": "^1.0.2"
+		"bezier-easing": "^2.1.0",
+		"svelte-undo": "^1.0.2",
+		"yootils": "^0.2.1"
 	}
 }

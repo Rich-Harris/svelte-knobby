@@ -1,4 +1,6 @@
 <script>
+	import { context } from '../context.js';
+
 	/** @type {string} */
 	export let name;
 
@@ -13,13 +15,34 @@
 
 	/** @type {number} */
 	export let step = undefined;
+
+	const { observe } = context();
+
+	const _step = observe(step);
+	const _min = observe(min);
+	const _max = observe(max);
+
+	const hidden = document.createElement('input');
+	hidden.type = 'range';
+
+	$: {
+		// turns out it's way easier to do this than actually
+		// calculate the new constrained value, given
+		// floating point errors etc
+		hidden.min = $_min;
+		hidden.max = $_max;
+		hidden.step = $_step;
+		hidden.valueAsNumber = value;
+
+		value = hidden.valueAsNumber;
+	}
 </script>
 
 <div class="knobby-row">
 	<label for={name}>{name}</label>
 	<div class="inputs">
-		<input type="range" bind:value {min} {max} {step}>
-		<input id={name} type="number" bind:value {min} {max} {step}>
+		<input type="range" bind:value min={$_min} max={$_max} {step}>
+		<input id={name} type="number" bind:value min={$_min} max={$_max} {step}>
 	</div>
 </div>
 

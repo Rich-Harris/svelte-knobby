@@ -11,6 +11,26 @@ import { extract, merge } from './utils';
 
 /** @typedef {import('./types').Node} Node */
 
+/** @param {any} input */
+function is_numeric(input) {
+	if (typeof input.value !== 'number') return false;
+
+	for (const key in input) {
+		if (key.startsWith('$')) continue;
+
+		if (key === 'min' || key === 'max' || key === 'step') {
+			const value = input[key];
+			if (value && typeof value !== 'function' && typeof value !== 'number') {
+				return false;
+			}
+		} else if (key !== 'value') {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 /**
  * @param {any} input
  * @returns {import('./types').Node}
@@ -54,13 +74,11 @@ function interpret(input) {
 	if (input.$component) return input;
 
 	// try to figure out which component matches
-	if (typeof input.value === 'number') {
-		if ('min' in input && 'max' in input) {
-			return {
-				$component: Range,
-				...input
-			};
-		}
+	if (is_numeric(input)) {
+		return {
+			$component: 'min' in input && 'max' in input ? Range : Number,
+			...input
+		};
 	}
 
 	/** @type {import('./types').Node} */
