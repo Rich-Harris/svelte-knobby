@@ -1,6 +1,6 @@
 {
 	"name": "svelte-knobby",
-	"version": "0.1.14",
+	"version": "0.1.15",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
