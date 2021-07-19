@@ -4,9 +4,9 @@ Add knobs to your Svelte apps. [Demo](https://svelte.dev/repl/85c0f69007524dd9a4
 
 ```svelte
 <script>
-  import { knobby } from 'svelte-knobby';
+  import * as knobby from 'svelte-knobby';
 
-  const controls = knobby({
+  const controls = knobby.panel({
     // primitive values are handled automatically
     message: 'Hello World!',
     color: '#ff3e00',

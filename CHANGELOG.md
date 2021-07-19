@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.2.0
+
+- BREAKING Rename `knobby` export to `panel`
+- Add `toggle(visibility)` export
+
 ## 0.1.15
 
 - Allow min/max/step options to be functions, for programming constraints

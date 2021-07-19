@@ -99,6 +99,8 @@ function interpret(input) {
 	return node;
 }
 
+let visible = true;
+
 /** @type {import('svelte').SvelteComponent} */
 let controls;
 
@@ -108,18 +110,20 @@ const stores = [];
 function update() {
 	if (typeof document === 'undefined') return;
 
-	if (!controls) {
-		controls = new Knobby({ target: document.body });
-	}
+	if (visible) {
+		if (!controls) {
+			controls = new Knobby({ target: document.body });
+		}
 
-	controls.$set({ stores });
+		controls.$set({ stores });
+	}
 }
 
 /**
  * @param {any} initial
  * @returns {import('svelte/store').Writable<any>}
  */
-export function knobby(initial) {
+export function panel(initial) {
 	/** @type {import('./types').Node} */
 	const node = {
 		$folder: true,
@@ -176,6 +180,19 @@ export function knobby(initial) {
 		},
 		set
 	};
+}
+
+/** @param {boolean} visibility */
+export function toggle(visibility) {
+	if (visible === (visible = visibility)) return;
+
+	if (visible) {
+		console.log('here');
+		update();
+	} else if (controls) {
+		controls.$destroy();
+		controls = null;
+	}
 }
 
 export { context } from './context.js';

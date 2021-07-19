@@ -1,9 +1,9 @@
 <script>
-	import { knobby } from '$lib';
+	import * as knobby from '$lib';
 	import { keyframes } from '$lib/plugins/keyframes';
 	import Thing from './_/Thing.svelte';
 
-	const controls = knobby({
+	const controls = knobby.panel({
 		// labelled control panels are collapsible
 		$label: 'Main options',
 
@@ -84,7 +84,15 @@
 
 	// the returned store is writable
 	// $controls.message = 'Hello Knobby!';
+
+	let visible = true;
+	$: knobby.toggle(visible);
 </script>
+
+<label>
+	<input type=checkbox bind:checked={visible}>
+	visible
+</label>
 
 <pre>{JSON.stringify($controls.one, null, '  ')}</pre>
 
