@@ -1,17 +1,21 @@
 <script>
 	import Items from '../Items.svelte';
 	import { toggle } from '../actions/toggle.js';
+	import * as storage from '../storage.js';
 
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {Record<string, any>} */
 	export let value;
 
-	let open = true;
+	const key = config.id && `open:${config.id}`;
+
+	let open = key ? storage.get(key, true) : true;
+	$: if (key) storage.set(key, open);
 </script>
 
-<details use:toggle={value => (open = value)} open>
+<details {open} use:toggle={value => (open = value)}>
 	<summary>
 		<svg viewBox="0 0 24 24">
 			{#if open}
@@ -21,7 +25,7 @@
 			{/if}
 		</svg>
 
-		{name}
+		{config.label}
 	</summary>
 
 	<div class="folder">

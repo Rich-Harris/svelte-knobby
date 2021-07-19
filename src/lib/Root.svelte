@@ -28,7 +28,7 @@
 
 <div class="root">
 	{#if $store.$label}
-		<Folder name={$store.$label} bind:value={$store.value}/>
+		<Folder config={{ id: $store.$id, label: $store.$label }} bind:value={$store.value}/>
 	{:else}
 		<Items bind:value={$store.value}/>
 	{/if}

@@ -1,5 +1,10 @@
 # svelte-knobby changelog
 
+## 0.3.0
+
+- BREAKING Move all `$`-prefixed properties into a reserved `config` object
+- Store folder open state in localStorage
+
 ## 0.2.0
 
 - BREAKING Rename `knobby` export to `panel`

@@ -3,8 +3,8 @@
 
 	import { context } from '../context.js';
 
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {number} */
 	export let value;
@@ -41,7 +41,7 @@
 </script>
 
 <label class="knobby-row">
-	<span>{name}</span>
+	<span>{config.label}</span>
 	<input type="number" bind:value {step}>
 </label>
 

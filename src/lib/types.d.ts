@@ -9,6 +9,11 @@ export type Node = {
 	value: any;
 };
 
+export type Config = {
+	id?: string;
+	label?: string;
+};
+
 export type Context<T = any> = {
 	run: (values: T) => T;
 	set: (values: T) => void;

@@ -17,8 +17,8 @@
 	/** @typedef {import('../types').Curve} Curve */
 	/** @typedef {import('../types').Snap} Snap */
 
-	/** @type {string} */
-	export let name;
+	/** @type {import('../../../types').Config} */
+	export let config;
 
 	/** @type {Keyframes} */
 	export let value;
@@ -101,7 +101,7 @@
 		if (e.code === 'KeyS') snapping = false;
 	}}
 >
-	<p>{name}</p>
+	<p>{config.label}</p>
 
 	<Toggles {value} bind:active_tracks/>
 

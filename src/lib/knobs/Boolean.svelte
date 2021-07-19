@@ -1,15 +1,15 @@
 <script>
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {boolean} */
 	export let value;
 </script>
 
 <div class="knobby-row">
-	<label for={name}>{name}</label>
+	<label for={config.label}>{config.label}</label>
 	<label class="grid">
-		<input id={name} type=checkbox bind:checked={value}>
+		<input id={config.label} type=checkbox bind:checked={value}>
 		<span class="checkbox">
 			<svg viewBox="0 0 24 24">
 				<path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />

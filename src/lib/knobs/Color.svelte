@@ -1,16 +1,16 @@
 <script>
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {string} */
 	export let value;
 </script>
 
 <div class="knobby-row">
-	<label for={name}>{name}</label>
+	<label for={config.label}>{config.label}</label>
 	<div class="color">
 		<div class="picker">
-			<input id={name} type="color" bind:value>
+			<input id={config.label} type="color" bind:value>
 			<span style="background-color: {value}"></span>
 		</div>
 		<input bind:value>

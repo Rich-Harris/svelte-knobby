@@ -6,9 +6,9 @@
 </script>
 
 <div>
-	{#each Object.entries(value) as [name, node]}
+	{#each Object.entries(value) as [key, node]}
 		<div class="item">
-			<svelte:component this={node.$component} name={node.$label || name} bind:value={value[name].value} {...get_opts(node)}/>
+			<svelte:component this={node.$component} bind:value={value[key].value} {...get_opts(node, key)}/>
 		</div>
 	{/each}
 </div>

@@ -4,6 +4,8 @@
 	import Thing from './_/Thing.svelte';
 
 	const controls = knobby.panel({
+		$id: 'main', // enable localStorage features
+
 		// labelled control panels are collapsible
 		$label: 'Main options',
 

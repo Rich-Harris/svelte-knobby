@@ -1,103 +1,9 @@
-import Number from './knobs/Number.svelte';
-import Range from './knobs/Range.svelte';
-import Boolean from './knobs/Boolean.svelte';
-import Button from './knobs/Button.svelte';
-import Folder from './knobs/Folder.svelte';
-import String from './knobs/String.svelte';
-import Color from './knobs/Color.svelte';
 import Knobby from './Knobby.svelte';
 import { writable } from 'svelte/store';
-import { extract, merge } from './utils';
+import { extract, merge } from './utils.js';
+import { interpret } from './interpret.js';
 
 /** @typedef {import('./types').Node} Node */
-
-/** @param {any} input */
-function is_numeric(input) {
-	if (typeof input.value !== 'number') return false;
-
-	for (const key in input) {
-		if (key.startsWith('$')) continue;
-
-		if (key === 'min' || key === 'max' || key === 'step') {
-			const value = input[key];
-			if (value && typeof value !== 'function' && typeof value !== 'number') {
-				return false;
-			}
-		} else if (key !== 'value') {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-/**
- * @param {any} input
- * @returns {import('./types').Node}
- */
-function interpret(input) {
-	if (typeof input === 'number') {
-		return {
-			$component: Number,
-			value: input
-		};
-	}
-
-	if (typeof input === 'boolean') {
-		return {
-			$component: Boolean,
-			value: input
-		};
-	}
-
-	if (typeof input === 'string') {
-		if (/^#[a-fA-F0-9]{6}$/.test(input)) {
-			return {
-				$component: Color,
-				value: input
-			};
-		}
-
-		return {
-			$component: String,
-			value: input
-		};
-	}
-
-	if (typeof input === 'function') {
-		return {
-			$component: Button,
-			value: input
-		};
-	}
-
-	if (input.$component) return input;
-
-	// try to figure out which component matches
-	if (is_numeric(input)) {
-		return {
-			$component: 'min' in input && 'max' in input ? Range : Number,
-			...input
-		};
-	}
-
-	/** @type {import('./types').Node} */
-	const node = {
-		$folder: true,
-		$component: Folder,
-		value: {}
-	};
-
-	for (const key in input) {
-		if (key.startsWith('$')) {
-			node[key] = input[key];
-		} else {
-			node.value[key] = interpret(input[key]);
-		}
-	}
-
-	return node;
-}
 
 let visible = true;
 
@@ -126,6 +32,7 @@ function update() {
 export function panel(initial) {
 	/** @type {import('./types').Node} */
 	const node = {
+		$id: initial.$id,
 		$folder: true,
 		$component: null,
 		value: {}
@@ -135,7 +42,7 @@ export function panel(initial) {
 		if (key.startsWith('$')) {
 			node[key] = initial[key];
 		} else {
-			node.value[key] = interpret(initial[key]);
+			node.value[key] = interpret(initial[key], initial.$id && `${initial.$id}.${key}`);
 		}
 	}
 
@@ -187,7 +94,6 @@ export function toggle(visibility) {
 	if (visible === (visible = visibility)) return;
 
 	if (visible) {
-		console.log('here');
 		update();
 	} else if (controls) {
 		controls.$destroy();

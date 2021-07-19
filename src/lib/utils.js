@@ -1,10 +1,23 @@
-/** @param {import('./types').Node} node */
-export function get_opts(node) {
+/**
+ * @param {import('./types').Node} node
+ * @param {string} label
+ */
+export function get_opts(node, label) {
 	/** @type {Record<string, any>} */
-	const opts = {};
+	const opts = {
+		config: {
+			label
+		}
+	};
 
 	for (const key in node) {
-		if (!key.startsWith('$')) {
+		if (key === 'config') {
+			throw new Error('"config" is a reserved property name');
+		}
+
+		if (key.startsWith('$')) {
+			opts.config[key.slice(1)] = node[key];
+		} else {
 			opts[key] = node[key];
 		}
 	}

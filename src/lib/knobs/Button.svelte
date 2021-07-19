@@ -1,8 +1,8 @@
 <script>
 	import { context } from '../context.js';
 
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {(values?: any) => any} */
 	export let value;
@@ -13,7 +13,7 @@
 <button on:click={() => {
 	const new_value = run(value);
 	if (new_value) set(new_value);
-}}>{name}</button>
+}}>{config.label}</button>
 
 <style>
 	button {

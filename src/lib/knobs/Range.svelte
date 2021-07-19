@@ -1,8 +1,8 @@
 <script>
 	import { context } from '../context.js';
 
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {number} */
 	export let value;
@@ -39,10 +39,10 @@
 </script>
 
 <div class="knobby-row">
-	<label for={name}>{name}</label>
+	<label for={config.label}>{config.label}</label>
 	<div class="inputs">
 		<input type="range" bind:value min={$_min} max={$_max} {step}>
-		<input id={name} type="number" bind:value min={$_min} max={$_max} {step}>
+		<input id={config.label} type="number" bind:value min={$_min} max={$_max} {step}>
 	</div>
 </div>
 

@@ -1,13 +1,13 @@
 <script>
-	/** @type {string} */
-	export let name;
+	/** @type {import('../types').Config} */
+	export let config;
 
 	/** @type {string} */
 	export let value;
 </script>
 
 <label class="knobby-row">
-	<span>{name}</span>
+	<span>{config.label}</span>
 	<input bind:value>
 </label>
 
