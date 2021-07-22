@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.3.1
+
+- Bump `yootils`
+
 ## 0.3.0
 
 - BREAKING Move all `$`-prefixed properties into a reserved `config` object

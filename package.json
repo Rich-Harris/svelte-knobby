@@ -36,6 +36,6 @@
 	"dependencies": {
 		"bezier-easing": "^2.1.0",
 		"svelte-undo": "^1.0.2",
-		"yootils": "^0.2.1"
+		"yootils": "^0.3.0"
 	}
 }
