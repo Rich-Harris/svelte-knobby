@@ -16,7 +16,7 @@
 	export let max = undefined;
 
 	/** @type {number} */
-	export let step = undefined;
+	export let step = get_step(value);
 
 	const { observe } = context();
 
@@ -26,6 +26,19 @@
 
 	const hidden = document.createElement('input');
 	hidden.type = 'range';
+
+	/** @param {number} value */
+	function get_step(value) {
+		const str = String(value);
+		if (/e[+-]/.test(str)) return 1;
+
+		if (str.includes('.')) {
+			const decimal_places = str.length - (str.indexOf('.') + 1);
+			return 1 / Math.pow(10, decimal_places);
+		}
+
+		return 1;
+	}
 
 	$: {
 		// turns out it's way easier to do this than actually
@@ -42,7 +55,7 @@
 
 <label class="knobby-row">
 	<span>{config.label}</span>
-	<input type="number" bind:value {step}>
+	<input type="number" bind:value {step} />
 </label>
 
 <style>
