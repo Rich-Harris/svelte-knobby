@@ -1,6 +1,6 @@
 {
 	"name": "svelte-knobby",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
@@ -8,9 +8,9 @@
 		"lint": "prettier --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
 		"format": "prettier --write --plugin-search-dir=. .",
 		"package": "svelte-kit package",
-		"release": "npm run package && npm publish package",
+		"release": "npm run package && cd package && npm publish",
 		"postversion": "git push && git push --tags && npm run release",
-		"prepublishOnly": "echo \"Did you mean to run 'svelte-kit package && npm publish package'?\" && exit 1"
+		"prepublishOnly": "echo \"Did you mean to run 'npm run release'?\" && exit 1"
 	},
 	"devDependencies": {
 		"@sveltejs/kit": "^1.0.0-next.125",
