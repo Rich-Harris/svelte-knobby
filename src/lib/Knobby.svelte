@@ -24,8 +24,8 @@
 
 	let transform = 'translate(0, 0)';
 
-	$: vertical = (top === null ? `bottom: ${bottom}px` : `top: ${top}px`);
-	$: horizontal = (left === null ? `right: ${right}px` : `left: ${left}px`);
+	$: vertical = top === null ? `bottom: ${bottom}px` : `top: ${top}px`;
+	$: horizontal = left === null ? `right: ${right}px` : `left: ${left}px`;
 
 	// persist values to localStorage
 	$: storage.set('top', top);
@@ -71,19 +71,27 @@
 	{open}
 	bind:this={knobby}
 	class="knobby"
-	use:toggle={value => expanded = value}
-	style="{vertical}; {horizontal}; --knobby-panel-width: {width}px; --knobby-column-width: {Math.max(width - 200, 160)}px; transform: {transform}"
+	use:toggle={(value) => (expanded = value)}
+	style="{vertical}; {horizontal}; --knobby-panel-width: {width}px; --knobby-column-width: {Math.max(
+		width - 200,
+		160
+	)}px; transform: {transform}"
 >
 	<summary class="title-bar">
 		<span class:open={expanded}>
 			<svg role="img" viewBox="0 0 24 24">
-				<path fill="currentColor" stroke="currentColor" style="stroke-linejoin: round; stroke-width: 3;" d="M5,8L19,8L12,15Z" />
+				<path
+					fill="currentColor"
+					stroke="currentColor"
+					style="stroke-linejoin: round; stroke-width: 3;"
+					d="M5,8L19,8L12,15Z"
+				/>
 			</svg>
 		</span>
 
 		<div
 			class="drag-bar"
-			on:click={e => (e.stopPropagation(), e.preventDefault())}
+			on:click={(e) => (e.stopPropagation(), e.preventDefault())}
 			use:drag={{
 				start: (drag) => {
 					const bcr = knobby.getBoundingClientRect();
@@ -100,67 +108,76 @@
 
 					transform = `translate(${x}px, ${y}px)`;
 				},
-				end: drag => {
+				end: (drag) => {
 					update_positions();
 					transform = 'translate(0, 0)';
 				}
 			}}
 		>
 			<svg role="img" aria-label="drag handle" viewBox="0 0 24 24">
-				<path fill="currentColor" d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z" />
+				<path
+					fill="currentColor"
+					d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z"
+				/>
 			</svg>
 		</div>
 	</summary>
 
 	<div class="content">
 		{#each stores as store}
-			<Root {store}/>
+			<Root {store} />
 		{/each}
 	</div>
 
-	<div class="drag-handle left" use:drag={{
-		start: (drag) => {
-			const bcr = knobby.getBoundingClientRect();
+	<div
+		class="drag-handle left"
+		use:drag={{
+			start: (drag) => {
+				const bcr = knobby.getBoundingClientRect();
 
-			drag.context.bounds = {
-				left: -bcr.left,
-				right: bcr.width - min_width
-			};
+				drag.context.bounds = {
+					left: -bcr.left,
+					right: bcr.width - min_width
+				};
 
-			drag.context.initial = { left, width };
-		},
-		move: drag => {
-			const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
+				drag.context.initial = { left, width };
+			},
+			move: (drag) => {
+				const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
 
-			width = drag.context.initial.width - dx;
-			if (left !== null) left = drag.context.initial.left + dx;
-		},
-		end: drag => {
-			update_positions();
-		}
-	}}></div>
+				width = drag.context.initial.width - dx;
+				if (left !== null) left = drag.context.initial.left + dx;
+			},
+			end: (drag) => {
+				update_positions();
+			}
+		}}
+	/>
 
-	<div class="drag-handle right" use:drag={{
-		start: (drag) => {
-			const bcr = knobby.getBoundingClientRect();
+	<div
+		class="drag-handle right"
+		use:drag={{
+			start: (drag) => {
+				const bcr = knobby.getBoundingClientRect();
 
-			drag.context.bounds = {
-				left: -(bcr.width - min_width),
-				right: window.innerWidth - bcr.right
-			};
+				drag.context.bounds = {
+					left: -(bcr.width - min_width),
+					right: window.innerWidth - bcr.right
+				};
 
-			drag.context.initial = { right, width };
-		},
-		move: drag => {
-			const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
+				drag.context.initial = { right, width };
+			},
+			move: (drag) => {
+				const dx = clamp(drag.x, drag.context.bounds.left, drag.context.bounds.right);
 
-			width = drag.context.initial.width + dx;
-			if (right !== null) right = drag.context.initial.right - dx;
-		},
-		end: drag => {
-			update_positions();
-		}
-	}}></div>
+				width = drag.context.initial.width + dx;
+				if (right !== null) right = drag.context.initial.right - dx;
+			},
+			end: (drag) => {
+				update_positions();
+			}
+		}}
+	/>
 </details>
 
 <style>
@@ -168,11 +185,11 @@
 		--hue: 240;
 		--bg: hsl(var(--hue), 11%, 95%);
 		--fg: hsla(var(--hue), 11%, 40%, 1);
-		--gap: 0.5rem;
+		--gap: 8px;
 		--light: rgba(255, 255, 255, 1);
 		--dark: hsla(var(--hue), 11%, 88%, 1);
 		--flash: hsla(var(--hue), 50%, 40%, 1);
-		--border-radius: 0.4rem;
+		--border-radius: 6px;
 		--focus-color: hsla(var(--hue), 11%, 40%);
 		--convex: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
 		--concave: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
@@ -182,22 +199,22 @@
 		flex-direction: column;
 		z-index: 99999;
 		width: var(--knobby-panel-width);
-		max-width: calc(100% - 2rem);
-		max-height: calc(100% - 2rem);
+		max-width: calc(100% - 32px);
+		max-height: calc(100% - 32px);
 		background-color: var(--bg);
 		color: var(--fg);
 		border-radius: var(--border-radius);
 		box-shadow: inset 2px 2px 4px var(--light), inset -2px -2px 4px var(--dark);
 		filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.03));
-		font-family: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
+		font-family: ui-monospace, SFMono-Regular, Menlo, 'Roboto Mono', monospace;
 		font-size: 13px;
 		transition: filter 0.2s;
 	}
 
 	summary span {
 		display: block;
-		width: 1rem;
-		height: 1rem;
+		width: 16px;
+		height: 16px;
 		transform: rotate(-90deg);
 		transition: transform 0.2s;
 	}
@@ -213,14 +230,14 @@
 	}
 
 	.title-bar {
-		--size: 1.8rem;
+		--size: 28px;
 		display: grid;
 		grid-template-columns: var(--size) 1fr var(--size);
-		grid-gap: 0.5rem;
+		grid-gap: 8px;
 		user-select: none;
 		height: var(--size);
 		align-items: center;
-		padding: 0rem 0.4rem;
+		padding: 0 6px;
 		color: var(--flash);
 	}
 
@@ -248,8 +265,8 @@
 	}
 
 	.content {
-		padding: 0 0.8rem;
-		max-height: calc(100vh - 3.8rem);
+		padding: 0 13px;
+		max-height: calc(100vh - 61px);
 		overflow-y: auto;
 		overflow-x: hidden;
 	}
@@ -283,15 +300,15 @@
 	}
 
 	.knobby :global(input:not([type])),
-	.knobby :global(input[type="text"]),
-	.knobby :global(input[type="number"]) {
+	.knobby :global(input[type='text']),
+	.knobby :global(input[type='number']) {
 		margin: 0;
 		border-radius: var(--border-radius);
 		background: var(--bg);
 		box-shadow: var(--concave);
 		/* border: 1px solid rgba(0, 0, 0, 0.05); */
 		border: none;
-		padding: 0.2rem 0.4rem;
+		padding: 3px 6px;
 		font: inherit;
 		color: hsla(var(--hue), 11%, 20%, 1);
 	}
@@ -305,8 +322,8 @@
 		grid-template-columns: 1fr var(--knobby-column-width);
 		grid-gap: var(--gap);
 		align-items: center;
-		min-height: 2rem;
-		margin: 0 0 0.3rem 0;
+		min-height: 32px;
+		margin: 0 0 5px 0;
 	}
 
 	.knobby :global(.knobby-row:last-child) {
@@ -323,5 +340,4 @@
 	.knobby :global(.knobby-row:focus-within > :first-child) {
 		font-weight: bold;
 	}
-
 </style>

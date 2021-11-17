@@ -10,10 +10,12 @@
 	const { run, set } = context();
 </script>
 
-<button on:click={() => {
-	const new_value = run(value);
-	if (new_value) set(new_value);
-}}>{config.label}</button>
+<button
+	on:click={() => {
+		const new_value = run(value);
+		if (new_value) set(new_value);
+	}}>{config.label}</button
+>
 
 <style>
 	button {
@@ -24,8 +26,8 @@
 		border: none;
 		border-radius: var(--border-radius);
 		font: inherit;
-		margin: 0.1rem 0 0.1rem 0;
-		padding: 0.5rem 0.5rem;
+		margin: 2px 0 2px 0;
+		padding: 8px 8px;
 	}
 
 	button:active {

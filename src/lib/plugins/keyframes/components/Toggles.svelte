@@ -11,36 +11,35 @@
 <div class="toggles">
 	{#each Object.keys(value) as key, i}
 		<label>
-			<input type=checkbox bind:group={active_tracks} value={key}>
-			<span class="checkbox" style="--bg: {value[key].$color || palette[i % palette.length]}"></span>
+			<input type="checkbox" bind:group={active_tracks} value={key} />
+			<span class="checkbox" style="--bg: {value[key].$color || palette[i % palette.length]}" />
 			<span>{value[key].$label || key}</span>
 		</label>
 	{/each}
 </div>
 
-
 <style>
 	.toggles {
 		user-select: none;
-		margin: 0 0 0.5rem 0;
+		margin: 0 0 8px 0;
 	}
 
 	.checkbox {
 		position: relative;
 		display: inline-block;
-		width: calc(1.2rem);
-		height: calc(1.2rem);
+		width: calc(19px);
+		height: calc(19px);
 		left: 1px;
 		top: 1px;
 		border-radius: var(--border-radius);
-		margin: 0 0.4rem 0 0;
+		margin: 0 6px 0 0;
 		box-shadow: var(--convex);
 	}
 
 	label {
 		display: inline-flex;
 		align-items: center;
-		margin: 0 1rem 0 0;
+		margin: 0 16px 0 0;
 	}
 
 	input {
@@ -48,7 +47,7 @@
 	}
 
 	input:checked + .checkbox {
-		box-shadow: inset 2px 2px 8px rgba(0,0,0,0.3), inset -2px -2px 2px rgba(255,255,255,0.4);
+		box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.3), inset -2px -2px 2px rgba(255, 255, 255, 0.4);
 		background: var(--bg);
 	}
 
@@ -57,7 +56,6 @@
 	}
 
 	input {
-		/* margin: 0 0.5em 0 0; */
 		width: 0;
 	}
 </style>

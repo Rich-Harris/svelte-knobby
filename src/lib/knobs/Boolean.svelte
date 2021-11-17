@@ -9,10 +9,13 @@
 <div class="knobby-row">
 	<label for={config.label}>{config.label}</label>
 	<label class="grid">
-		<input id={config.label} type=checkbox bind:checked={value}>
+		<input id={config.label} type="checkbox" bind:checked={value} />
 		<span class="checkbox">
 			<svg viewBox="0 0 24 24">
-				<path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+				<path
+					fill="currentColor"
+					d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+				/>
 			</svg>
 		</span>
 		<span>{value}</span>
@@ -22,7 +25,7 @@
 <style>
 	.grid {
 		display: grid;
-		grid-template-columns: 0 2rem 1fr;
+		grid-template-columns: 0 32px 1fr;
 		align-items: center;
 		user-select: none;
 	}
@@ -30,12 +33,12 @@
 	.checkbox {
 		position: relative;
 		display: inline-block;
-		width: calc(2rem - 2px);
-		height: calc(2rem - 2px);
+		width: calc(32px - 2px);
+		height: calc(32px - 2px);
 		left: 1px;
 		top: 1px;
 		border-radius: var(--border-radius);
-		margin: 0 0.5rem 0 0;
+		margin: 0 8px 0 0;
 		box-shadow: var(--convex);
 	}
 
@@ -50,7 +53,7 @@
 	}
 
 	input:checked + .checkbox {
-		box-shadow: inset 2px 2px 8px rgba(0,0,0,0.3), inset -2px -2px 2px rgba(255,255,255,0.4);
+		box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.3), inset -2px -2px 2px rgba(255, 255, 255, 0.4);
 		background: hsl(var(--hue), 50%, 65%);
 	}
 
@@ -60,11 +63,11 @@
 	}
 
 	.grid span:last-child {
-		margin-left: 0.5rem;
+		margin-left: 8px;
 	}
 
 	input:checked + .checkbox + span:last-child {
-		margin-left: 0.7rem;
+		margin-left: 11px;
 	}
 
 	input:focus-visible + .checkbox {
@@ -72,7 +75,6 @@
 	}
 
 	input {
-		/* margin: 0 0.5em 0 0; */
 		width: 0;
 	}
 </style>
