@@ -9,34 +9,34 @@
 	export let store;
 
 	init({
-		run: fn => fn(extract($store)),
-		set: values => {
+		run: (fn) => fn(extract($store)),
+		set: (values) => {
 			const merged = merge($store, values);
 			store.set(merged);
 		},
-		observe: fn => {
+		observe: (fn) => {
 			if (typeof fn !== 'function') {
 				return {
 					subscribe: writable(fn).subscribe
 				};
 			}
 
-			return derived(store, $store => fn(extract($store)));
+			return derived(store, ($store) => fn(extract($store)));
 		}
 	});
 </script>
 
 <div class="root">
 	{#if $store.$label}
-		<Folder config={{ id: $store.$id, label: $store.$label }} bind:value={$store.value}/>
+		<Folder config={{ id: $store.$id, label: $store.$label }} bind:value={$store.value} />
 	{:else}
-		<Items bind:value={$store.value}/>
+		<Items bind:value={$store.value} />
 	{/if}
 </div>
 
 <style>
 	.root {
-		padding: 0.5em 0;
+		padding: 6px 0;
 		border-bottom: 1px solid var(--dark);
 	}
 

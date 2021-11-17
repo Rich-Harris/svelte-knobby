@@ -10,17 +10,17 @@
 	<label for={config.label}>{config.label}</label>
 	<div class="color">
 		<div class="picker">
-			<input id={config.label} type="color" bind:value>
-			<span style="background-color: {value}"></span>
+			<input id={config.label} type="color" bind:value />
+			<span style="background-color: {value}" />
 		</div>
-		<input bind:value>
+		<input bind:value />
 	</div>
 </div>
 
 <style>
 	.color {
 		display: grid;
-		grid-template-columns: 2rem 1fr;
+		grid-template-columns: 32px 1fr;
 		grid-gap: 4px;
 		height: 100%;
 	}
@@ -44,10 +44,10 @@
 		height: 100%;
 		border-radius: var(--border-radius);
 		pointer-events: none;
-		box-shadow: inset 2px 2px 3px rgba(0,0,0,0.1), inset -2px -2px 3px rgba(255,255,255,0.05);
+		box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.1), inset -2px -2px 3px rgba(255, 255, 255, 0.05);
 	}
 
-	input[type=color] {
+	input[type='color'] {
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -60,7 +60,7 @@
 		opacity: 0.01;
 	}
 
-	input[type=color]:focus-visible + span {
+	input[type='color']:focus-visible + span {
 		box-shadow: 0 0 0 2px var(--focus-color);
 	}
 </style>
