@@ -33,8 +33,8 @@
 	.picker {
 		width: 100%;
 		height: 100%;
-		border-radius: var(--border-radius);
-		box-shadow: var(--convex);
+		border-radius: var(--knobby-internal-border-radius);
+		box-shadow: var(--knobby-internal-convex);
 		padding: 2px;
 	}
 
@@ -42,7 +42,7 @@
 		display: block;
 		width: 100%;
 		height: 100%;
-		border-radius: var(--border-radius);
+		border-radius: var(--knobby-internal-border-radius);
 		pointer-events: none;
 		box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.1), inset -2px -2px 3px rgba(255, 255, 255, 0.05);
 	}
@@ -61,6 +61,6 @@
 	}
 
 	input[type='color']:focus-visible + span {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 </style>

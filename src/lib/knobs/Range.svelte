@@ -50,7 +50,7 @@
 	.inputs {
 		display: grid;
 		grid-template-columns: 1fr 65px;
-		grid-gap: var(--gap);
+		grid-gap: var(--knobby-internal-gap);
 		height: 100%;
 	}
 
@@ -77,10 +77,11 @@
 		height: 16px;
 		width: 16px;
 		border-radius: 50%;
-		background: hsl(var(--hue), 50%, 65%);
+		background: hsl(var(--knobby-internal-hue), 50%, 65%);
 		cursor: pointer;
 		margin-top: -6px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
-		box-shadow: var(--convex), var(--convex), var(--convex);
+		box-shadow: var(--knobby-internal-convex), var(--knobby-internal-convex),
+			var(--knobby-internal-convex);
 	}
 
 	/* Firefox */
@@ -88,17 +89,18 @@
 		height: 16px;
 		width: 16px;
 		border-radius: 50%;
-		background: hsl(var(--hue), 50%, 65%);
+		background: hsl(var(--knobby-internal-hue), 50%, 65%);
 		cursor: pointer;
-		box-shadow: var(--convex), var(--convex), var(--convex);
+		box-shadow: var(--knobby-internal-convex), var(--knobby-internal-convex),
+			var(--knobby-internal-convex);
 	}
 
 	input[type='range']:focus-visible::-webkit-slider-thumb {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 
 	input[type='range']:focus-visible::-moz-range-thumb {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 
 	/* track — chrome */
@@ -106,8 +108,9 @@
 		width: 100%;
 		height: 8px;
 		cursor: pointer;
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
-		border-radius: var(--border-radius);
+		box-shadow: inset 2px 2px 2px var(--knobby-internal-dark),
+			inset -2px -2px 2px var(--knobby-internal-light);
+		border-radius: var(--knobby-internal-border-radius);
 	}
 
 	/* track — duplicated for FF */
@@ -115,7 +118,8 @@
 		width: 100%;
 		height: 8px;
 		cursor: pointer;
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
-		border-radius: var(--border-radius);
+		box-shadow: inset 2px 2px 2px var(--knobby-internal-dark),
+			inset -2px -2px 2px var(--knobby-internal-light);
+		border-radius: var(--knobby-internal-border-radius);
 	}
 </style>

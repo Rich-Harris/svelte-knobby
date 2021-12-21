@@ -511,8 +511,8 @@
 		height: 100%;
 		top: 0;
 		left: 0;
-		border-radius: calc(var(--border-radius) * 0.25);
-		box-shadow: 0 0 0 2px var(--focus-color);
+		border-radius: calc(var(--knobby-internal-border-radius) * 0.25);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 		z-index: 2;
 		pointer-events: none;
 	}
@@ -520,8 +520,10 @@
 	.canvas-container {
 		width: 100%;
 		height: 200px;
-		border-radius: var(--border-radius); /* TODO namespace and catalog these values */
-		box-shadow: var(--concave);
+		border-radius: var(
+			--knobby-internal-border-radius
+		); /* TODO namespace and catalog these values */
+		box-shadow: var(--knobby-internal-concave);
 		overflow: hidden;
 		user-select: none;
 		margin: 0 0 8px 0;
@@ -563,10 +565,10 @@
 	button {
 		width: 32px;
 		border-radius: 16px;
-		background: var(--bg);
-		box-shadow: var(--convex);
+		background: var(--knobby-internal-bg);
+		box-shadow: var(--knobby-internal-convex);
 		border: none;
-		border-radius: var(--border-radius);
+		border-radius: var(--knobby-internal-border-radius);
 		font: inherit;
 		padding: 3px;
 		margin: 0 0 8px 0;
@@ -578,7 +580,7 @@
 	}
 
 	button:active {
-		box-shadow: var(--concave);
+		box-shadow: var(--knobby-internal-concave);
 	}
 
 	button svg {

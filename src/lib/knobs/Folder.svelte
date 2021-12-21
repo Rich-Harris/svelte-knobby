@@ -61,7 +61,7 @@
 		height: 13px;
 		opacity: 0.2;
 		margin: 0 5px 0 0;
-		color: var(--flash);
+		color: var(--knobby-internal-flash);
 		transition: opacity 0.2s;
 	}
 
@@ -77,7 +77,7 @@
 		position: relative;
 		margin: 0;
 		padding: 0 0 0 8px;
-		/* border-left: 1px solid hsla(var(--hue), 11%, 90%, 1); */
+		/* border-left: 1px solid hsla(var(--knobby-internal-hue), 11%, 90%, 1); */
 	}
 
 	.folder::before {
@@ -87,8 +87,8 @@
 		height: calc(100% + 8px);
 		left: 0;
 		top: -8px;
-		border-left: 1px solid var(--dark);
-		border-right: 1px solid var(--light);
+		border-left: 1px solid var(--knobby-internal-dark);
+		border-right: 1px solid var(--knobby-internal-light);
 	}
 
 	summary:focus-visible + .folder::before {

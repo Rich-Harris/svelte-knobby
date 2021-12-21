@@ -37,7 +37,7 @@
 <style>
 	.root {
 		padding: 6px 0;
-		border-bottom: 1px solid var(--dark);
+		border-bottom: 1px solid var(--knobby-internal-dark);
 	}
 
 	.root:last-child {

@@ -21,16 +21,16 @@
 	button {
 		width: 100%;
 		border-radius: 16px;
-		background: var(--bg);
-		box-shadow: var(--convex);
+		background: var(--knobby-internal-bg);
+		box-shadow: var(--knobby-internal-convex);
 		border: none;
-		border-radius: var(--border-radius);
+		border-radius: var(--knobby-internal-border-radius);
 		font: inherit;
 		margin: 2px 0 2px 0;
 		padding: 8px 8px;
 	}
 
 	button:active {
-		box-shadow: var(--concave);
+		box-shadow: var(--knobby-internal-concave);
 	}
 </style>
