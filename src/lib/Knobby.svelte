@@ -72,7 +72,7 @@
 	bind:this={knobby}
 	class="knobby"
 	use:toggle={(value) => (expanded = value)}
-	style="{vertical}; {horizontal}; --knobby-panel-width: {width}px; --knobby-column-width: {Math.max(
+	style="{vertical}; {horizontal}; --knobby-internal-panel-width: {width}px; --knobby-internal-column-width: {Math.max(
 		width - 200,
 		160
 	)}px; transform: {transform}"
@@ -182,29 +182,40 @@
 
 <style>
 	.knobby {
-		--hue: 240;
-		--bg: hsl(var(--hue), 11%, 95%);
-		--fg: hsla(var(--hue), 11%, 40%, 1);
-		--gap: 8px;
-		--light: rgba(255, 255, 255, 1);
-		--dark: hsla(var(--hue), 11%, 88%, 1);
-		--flash: hsla(var(--hue), 50%, 40%, 1);
-		--border-radius: 6px;
-		--focus-color: hsla(var(--hue), 11%, 40%);
-		--convex: 3px 3px 6px var(--dark), -2px -2px 6px var(--light);
-		--concave: inset 2px 2px 8px var(--dark), inset -2px -2px 15px var(--light);
+		/* public properties */
+		--knobby-internal-hue: var(--knobby-hue, 240);
+
+		/* colors */
+		--knobby-internal-hue: 240;
+		--knobby-internal-bg: hsl(var(--knobby-internal-hue), 11%, 95%);
+		--knobby-internal-fg: hsla(var(--knobby-internal-hue), 11%, 40%, 1);
+		--knobby-internal-light: rgba(255, 255, 255, 1);
+		--knobby-internal-dark: hsla(var(--knobby-internal-hue), 11%, 88%, 1);
+		--knobby-internal-flash: hsla(var(--knobby-internal-hue), 50%, 40%, 1);
+		--knobby-internal-focus-color: hsla(var(--knobby-internal-hue), 11%, 40%);
+
+		/* dimensions */
+		--knobby-internal-border-radius: 4px;
+		--knobby-internal-gap: 8px;
+
+		/* utilities */
+		--knobby-internal-convex: 1px 1px 4px var(--knobby-internal-dark),
+			-2px -2px 4px var(--knobby-internal-light);
+		--knobby-internal-concave: inset 1px 1px 4px var(--knobby-internal-dark),
+			inset -1px -1px 8px var(--knobby-internal-light);
 
 		position: fixed;
 		display: flex;
 		flex-direction: column;
 		z-index: 99999;
-		width: var(--knobby-panel-width);
+		width: var(--knobby-internal-panel-width);
 		max-width: calc(100% - 32px);
 		max-height: calc(100% - 32px);
-		background-color: var(--bg);
-		color: var(--fg);
-		border-radius: var(--border-radius);
-		box-shadow: inset 2px 2px 4px var(--light), inset -2px -2px 4px var(--dark);
+		background-color: var(--knobby-internal-bg);
+		color: var(--knobby-internal-fg);
+		border-radius: var(--knobby-internal-border-radius);
+		box-shadow: inset 2px 2px 4px var(--knobby-internal-light),
+			inset -2px -2px 4px var(--knobby-internal-dark);
 		filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.03));
 		font-family: ui-monospace, SFMono-Regular, Menlo, 'Roboto Mono', monospace;
 		font-size: 13px;
@@ -238,7 +249,7 @@
 		height: var(--size);
 		align-items: center;
 		padding: 0 6px;
-		color: var(--flash);
+		color: var(--knobby-internal-flash);
 	}
 
 	.title-bar svg {
@@ -265,7 +276,7 @@
 	}
 
 	.content {
-		padding: 0 13px;
+		padding: 0 20px;
 		max-height: calc(100vh - 61px);
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -303,24 +314,23 @@
 	.knobby :global(input[type='text']),
 	.knobby :global(input[type='number']) {
 		margin: 0;
-		border-radius: var(--border-radius);
-		background: var(--bg);
-		box-shadow: var(--concave);
-		/* border: 1px solid rgba(0, 0, 0, 0.05); */
+		border-radius: var(--knobby-internal-border-radius);
+		background: var(--knobby-internal-bg);
+		box-shadow: var(--knobby-internal-concave);
 		border: none;
-		padding: 3px 6px;
+		padding: 3px 8px;
 		font: inherit;
-		color: hsla(var(--hue), 11%, 20%, 1);
+		color: hsla(var(--knobby-internal-hue), 11%, 20%, 1);
 	}
 
 	.knobby :global(:focus-visible) {
-		outline-color: var(--focus-color);
+		outline-color: var(--knobby-internal-focus-color);
 	}
 
 	.knobby :global(.knobby-row) {
 		display: grid;
-		grid-template-columns: 1fr var(--knobby-column-width);
-		grid-gap: var(--gap);
+		grid-template-columns: 1fr var(--knobby-internal-column-width);
+		grid-gap: var(--knobby-internal-gap);
 		align-items: center;
 		min-height: 32px;
 		margin: 0 0 5px 0;

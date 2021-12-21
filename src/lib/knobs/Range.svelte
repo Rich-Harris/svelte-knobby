@@ -41,7 +41,14 @@
 <div class="knobby-row">
 	<label for={config.label}>{config.label}</label>
 	<div class="inputs">
-		<input type="range" bind:value min={$_min} max={$_max} {step} />
+		<input
+			type="range"
+			bind:value
+			min={$_min}
+			max={$_max}
+			{step}
+			style="--progress: {(100 * (value - $_min)) / ($_max - $_min)}%"
+		/>
 		<input id={config.label} type="number" bind:value min={$_min} max={$_max} {step} />
 	</div>
 </div>
@@ -50,11 +57,26 @@
 	.inputs {
 		display: grid;
 		grid-template-columns: 1fr 65px;
-		grid-gap: var(--gap);
+		grid-gap: var(--knobby-internal-gap);
 		height: 100%;
 	}
 
 	input[type='range'] {
+		--fill: hsl(var(--knobby-internal-hue), 50%, 65%);
+		--track-bg: linear-gradient(
+			to right,
+			hsl(var(--knobby-internal-hue), 50%, 80%),
+			hsl(var(--knobby-internal-hue), 50%, 80%) var(--progress),
+			rgba(0, 0, 0, 0.05) var(--progress),
+			rgba(0, 0, 0, 0.05)
+		);
+		--track-height: 6px;
+		--track-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1),
+			inset -1px -1px 2px rgba(255, 255, 255, 0.8);
+		--thumb-size: 14px;
+		--thumb-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.4),
+			inset -1px -1px 1px rgba(0, 0, 0, 0.2);
+
 		-webkit-appearance: none;
 		width: 100%;
 		background: transparent;
@@ -74,48 +96,50 @@
 	/* thumb */
 	input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
-		height: 16px;
-		width: 16px;
+		height: var(--thumb-size);
+		width: var(--thumb-size);
 		border-radius: 50%;
-		background: hsl(var(--hue), 50%, 65%);
+		background: var(--fill);
 		cursor: pointer;
-		margin-top: -6px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
-		box-shadow: var(--convex), var(--convex), var(--convex);
+		margin-top: -4px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+		box-shadow: var(--thumb-shadow);
 	}
 
 	/* Firefox */
 	input[type='range']::-moz-range-thumb {
-		height: 16px;
-		width: 16px;
+		height: var(--thumb-size);
+		width: var(--thumb-size);
 		border-radius: 50%;
-		background: hsl(var(--hue), 50%, 65%);
+		background: var(--fill);
 		cursor: pointer;
-		box-shadow: var(--convex), var(--convex), var(--convex);
+		box-shadow: var(--thumb-shadow);
 	}
 
 	input[type='range']:focus-visible::-webkit-slider-thumb {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 
 	input[type='range']:focus-visible::-moz-range-thumb {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 
 	/* track — chrome */
 	input[type='range']::-webkit-slider-runnable-track {
 		width: 100%;
-		height: 8px;
+		height: var(--track-height);
 		cursor: pointer;
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
-		border-radius: var(--border-radius);
+		box-shadow: var(--track-shadow);
+		border-radius: var(--knobby-internal-border-radius);
+		background: var(--track-bg);
 	}
 
 	/* track — duplicated for FF */
 	input[type='range']::-moz-range-track {
 		width: 100%;
-		height: 8px;
+		height: var(--track-height);
 		cursor: pointer;
-		box-shadow: inset 2px 2px 2px var(--dark), inset -2px -2px 2px var(--light);
-		border-radius: var(--border-radius);
+		box-shadow: var(--track-shadow);
+		border-radius: var(--knobby-internal-border-radius);
+		background: var(--track-bg);
 	}
 </style>

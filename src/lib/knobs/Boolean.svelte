@@ -37,9 +37,9 @@
 		height: calc(32px - 2px);
 		left: 1px;
 		top: 1px;
-		border-radius: var(--border-radius);
+		border-radius: var(--knobby-internal-border-radius);
 		margin: 0 8px 0 0;
-		box-shadow: var(--convex);
+		box-shadow: var(--knobby-internal-convex);
 	}
 
 	svg {
@@ -49,12 +49,12 @@
 		left: 20%;
 		top: 20%;
 		opacity: 0.05;
-		color: var(--flash);
+		color: var(--knobby-internal-flash);
 	}
 
 	input:checked + .checkbox {
-		box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.3), inset -2px -2px 2px rgba(255, 255, 255, 0.4);
-		background: hsl(var(--hue), 50%, 65%);
+		box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.3), inset -1px -1px 1px rgba(255, 255, 255, 0.4);
+		background: hsl(var(--knobby-internal-hue), 50%, 65%);
 	}
 
 	input:checked + .checkbox svg {
@@ -71,7 +71,7 @@
 	}
 
 	input:focus-visible + .checkbox {
-		box-shadow: 0 0 0 2px var(--focus-color);
+		box-shadow: 0 0 0 2px var(--knobby-internal-focus-color);
 	}
 
 	input {
