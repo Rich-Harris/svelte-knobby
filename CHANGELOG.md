@@ -1,6 +1,6 @@
 # svelte-knobby changelog
 
-## 0.3.2
+## 0.3.2-4
 
 - Tweak styles
 
