@@ -201,8 +201,8 @@
 		/* utilities */
 		--knobby-internal-convex: 1px 1px 4px var(--knobby-internal-dark),
 			-2px -2px 4px var(--knobby-internal-light);
-		--knobby-internal-concave: inset 2px 2px 8px var(--knobby-internal-dark),
-			inset -2px -2px 15px var(--knobby-internal-light);
+		--knobby-internal-concave: inset 1px 1px 4px var(--knobby-internal-dark),
+			inset -1px -1px 8px var(--knobby-internal-light);
 
 		position: fixed;
 		display: flex;
@@ -276,7 +276,7 @@
 	}
 
 	.content {
-		padding: 0 13px;
+		padding: 0 20px;
 		max-height: calc(100vh - 61px);
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -317,9 +317,8 @@
 		border-radius: var(--knobby-internal-border-radius);
 		background: var(--knobby-internal-bg);
 		box-shadow: var(--knobby-internal-concave);
-		/* border: 1px solid rgba(0, 0, 0, 0.05); */
 		border: none;
-		padding: 3px 6px;
+		padding: 3px 8px;
 		font: inherit;
 		color: hsla(var(--knobby-internal-hue), 11%, 20%, 1);
 	}

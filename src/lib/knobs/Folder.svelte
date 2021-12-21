@@ -18,17 +18,12 @@
 <details {open} use:toggle={(value) => (open = value)}>
 	<summary>
 		<svg viewBox="0 0 24 24">
-			{#if open}
-				<path
-					fill="currentColor"
-					d="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z"
-				/>
-			{:else}
-				<path
-					fill="currentColor"
-					d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"
-				/>
-			{/if}
+			<path
+				fill="currentColor"
+				stroke="currentColor"
+				style="stroke-linejoin: round; stroke-width: 3;"
+				d="M5,8L19,8L12,15Z"
+			/>
 		</svg>
 
 		{config.label}
@@ -54,6 +49,7 @@
 		padding: 8px 0;
 		margin: 0 0 2px -5px;
 		align-items: center;
+		font-weight: bold;
 	}
 
 	summary svg {
@@ -61,16 +57,16 @@
 		height: 13px;
 		opacity: 0.2;
 		margin: 0 5px 0 0;
-		color: var(--knobby-internal-flash);
-		transition: opacity 0.2s;
+		transition: opacity 0.2s, transform 0.1s;
+		transform: rotate(-90deg);
 	}
 
 	summary:hover svg {
 		opacity: 1;
 	}
 
-	[open] > summary::before {
-		transform: rotate(90deg);
+	[open] > summary svg {
+		transform: rotate(0);
 	}
 
 	.folder {
@@ -87,8 +83,6 @@
 		height: calc(100% + 8px);
 		left: 0;
 		top: -8px;
-		border-left: 1px solid var(--knobby-internal-dark);
-		border-right: 1px solid var(--knobby-internal-light);
 	}
 
 	summary:focus-visible + .folder::before {

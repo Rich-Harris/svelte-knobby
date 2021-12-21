@@ -53,7 +53,7 @@
 	}
 
 	input:checked + .checkbox {
-		box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.3), inset -2px -2px 2px rgba(255, 255, 255, 0.4);
+		box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.3), inset -1px -1px 1px rgba(255, 255, 255, 0.4);
 		background: hsl(var(--knobby-internal-hue), 50%, 65%);
 	}
 
