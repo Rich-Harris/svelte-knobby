@@ -1,5 +1,9 @@
 # svelte-knobby changelog
 
+## 0.3.2
+
+- Tweak styles
+
 ## 0.3.1
 
 - Bump `yootils`
