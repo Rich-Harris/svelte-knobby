@@ -189,14 +189,18 @@
 		--knobby-internal-hue: 240;
 		--knobby-internal-bg: hsl(var(--knobby-internal-hue), 11%, 95%);
 		--knobby-internal-fg: hsla(var(--knobby-internal-hue), 11%, 40%, 1);
-		--knobby-internal-gap: 8px;
 		--knobby-internal-light: rgba(255, 255, 255, 1);
 		--knobby-internal-dark: hsla(var(--knobby-internal-hue), 11%, 88%, 1);
 		--knobby-internal-flash: hsla(var(--knobby-internal-hue), 50%, 40%, 1);
-		--knobby-internal-border-radius: 6px;
 		--knobby-internal-focus-color: hsla(var(--knobby-internal-hue), 11%, 40%);
-		--knobby-internal-convex: 3px 3px 6px var(--knobby-internal-dark),
-			-2px -2px 6px var(--knobby-internal-light);
+
+		/* dimensions */
+		--knobby-internal-border-radius: 4px;
+		--knobby-internal-gap: 8px;
+
+		/* utilities */
+		--knobby-internal-convex: 1px 1px 4px var(--knobby-internal-dark),
+			-2px -2px 4px var(--knobby-internal-light);
 		--knobby-internal-concave: inset 2px 2px 8px var(--knobby-internal-dark),
 			inset -2px -2px 15px var(--knobby-internal-light);
 
