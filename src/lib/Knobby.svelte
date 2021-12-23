@@ -257,7 +257,7 @@
 		opacity: 0.2;
 	}
 
-	.title-bar > :hover svg {
+	.title-bar svg:hover {
 		opacity: 1;
 	}
 
@@ -349,5 +349,9 @@
 
 	.knobby :global(.knobby-row:focus-within > :first-child) {
 		font-weight: bold;
+	}
+
+	.knobby :global(summary::-webkit-details-marker) {
+		display:none;
 	}
 </style>
