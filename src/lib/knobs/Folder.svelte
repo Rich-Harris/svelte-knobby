@@ -41,7 +41,6 @@
 	}
 
 	summary {
-		display: flex;
 		position: relative;
 		font-size: 13px;
 		list-style: none;
