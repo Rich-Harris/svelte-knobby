@@ -13,14 +13,15 @@
 		"prepublishOnly": "echo \"Did you mean to run 'npm run release'?\" && exit 1"
 	},
 	"devDependencies": {
-		"@sveltejs/kit": "^1.0.0-next.125",
-		"eslint": "^7.22.0",
+		"@sveltejs/kit": "^1.0.0-next.298",
+		"eslint": "^8.11.0",
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-plugin-svelte3": "^3.2.0",
-		"prettier": "~2.2.1",
+		"micromatch": "^4.0.4",
+		"prettier": "^2.6.0",
 		"prettier-plugin-svelte": "^2.2.0",
 		"svelte": "^3.34.0",
-		"svelte2tsx": "^0.4.1",
+		"svelte2tsx": "^0.5.6",
 		"typescript": "^4.3.5"
 	},
 	"peerDependencies": {
